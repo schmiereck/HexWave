@@ -1,0 +1,16 @@
+
+g	java:S112`"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ8ÚñöŠ1
+{	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(öó‰Åøÿÿÿÿ8ÛñöŠ1
+^
+java:S1854A"<Remove this useless assignment to local variable "mainPane".(çğŸÄıÿÿÿÿ8èñöŠ1
+X	java:S125,"<This block of commented-out lines of code should be removed.(ºÔÑ‚8éñöŠ1
+X	java:S1254"<This block of commented-out lines of code should be removed.(–ê¾8ìñöŠ1
+]	java:S125?"<This block of commented-out lines of code should be removed.(Ù—¯Ÿÿÿÿÿÿ8ğñöŠ1
+O
+java:S1481A"-Remove this unused "mainPane" local variable.(çğŸÄıÿÿÿÿ8ğñöŠ1
+]	java:S125B"<This block of commented-out lines of code should be removed.(îêÊşÿÿÿÿ8ğñöŠ1
+X	java:S125D"<This block of commented-out lines of code should be removed.(§ò„Ç8ğñöŠ1
+]	java:S125G"<This block of commented-out lines of code should be removed.(Çœ±½ûÿÿÿÿ8ğñöŠ1
+X	java:S125J"<This block of commented-out lines of code should be removed.(êíÒà8ğñöŠ1
+X	java:S125L"<This block of commented-out lines of code should be removed.(ÁÙ™˜8ğñöŠ1
+]	java:S125N"<This block of commented-out lines of code should be removed.(ÇèÀ…şÿÿÿÿ8ğñöŠ1

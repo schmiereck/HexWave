@@ -19,14 +19,18 @@ directions:
 
 ## ToDo
 * use Energie
-    * eat other parts
+    * DONE eat other parts
+    * DONE death if low/ empty
+    * DONE simple energy consumption 
     * energy consumption depending on the complexity and (output-) actions
-    * slop down if low
-    * death if low/ empty
+    * slow down if low
     * reproduction if high
 * Add Inputs
+  * DONE Neighbour Part-Types
   * Field(s)
+  * Energie
 * reproduction
+  * DONE cloning if population shrinks
   * asexual reproduction
   * sexual reproduction
 * Tentacles/ Pull-/Push-Fields
@@ -35,9 +39,13 @@ directions:
 * more complex environment
   * Air, Water, Wallpaper, ...
   * Gravitation
+  * Acceleration (Gravitation)
+  * Impulse
 * Add Outputs
   * Signal-Field
+  * Pull-/Push-Fields
 * UI
   * Zoom and Scroll
+  * Save and Load
 
 ## DONE

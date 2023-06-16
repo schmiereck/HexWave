@@ -1,0 +1,8 @@
+
+u	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(êˆŠt8Í½¹‡1
+\
+java:S1118":Add a private constructor to hide the implicit public one.(¹´Äşÿÿÿÿ8—Í½¹‡1
+X	java:S125
+"<This block of commented-out lines of code should be removed.(ÑÁ¥8˜Í½¹‡1
+P
+java:S1144k"3Remove this unused private "calcNextRotDir" method.(¬£8 Í½¹‡1
