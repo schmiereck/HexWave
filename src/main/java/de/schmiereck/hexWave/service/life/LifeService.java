@@ -1,5 +1,6 @@
 package de.schmiereck.hexWave.service.life;
 
+import de.schmiereck.hexWave.math.HexParticle;
 import de.schmiereck.hexWave.service.brain.Brain;
 import de.schmiereck.hexWave.service.brain.BrainService;
 import de.schmiereck.hexWave.service.genom.Genom;
@@ -9,6 +10,7 @@ import de.schmiereck.hexWave.service.hexGrid.Cell;
 import de.schmiereck.hexWave.service.hexGrid.GridNode;
 import de.schmiereck.hexWave.service.hexGrid.HexGridService;
 import de.schmiereck.hexWave.service.hexGrid.Part;
+import de.schmiereck.hexWave.utils.HexMathUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,7 +101,17 @@ public class LifeService {
 
         this.runBirth();
 
+        this.lifePartList.stream().forEach(lifePart -> {
+            this.calcGravitationalAcceleration(lifePart);
+        });
+
         this.hexGridService.calcNext();
+    }
+
+    private void calcGravitationalAcceleration(final LifePart lifePart) {
+        final HexParticle hexParticle = lifePart.getPart().getHexParticle();
+        hexParticle.velocityHexVector.c -= 1;
+        hexParticle.velocityHexVector.b += 1;
     }
 
     private void runBirth() {
@@ -179,34 +191,52 @@ public class LifeService {
     }
 
     private void runMove(final LifePart lifePart) {
-        final Brain brain = lifePart.getBrain();
-        final double moveA = brain.getOutput(GenomOutput.OutputName.MoveA);
-        final double moveB = brain.getOutput(GenomOutput.OutputName.MoveB);
-        final double moveC = brain.getOutput(GenomOutput.OutputName.MoveC);
+        final HexParticle hexParticle = lifePart.getPart().getHexParticle();
+        HexMathUtils.transferVelocityToMove(hexParticle.getVelocityHexVector(), hexParticle.getMoveHexVector());
+        final Cell.Dir moveDir = HexMathUtils.determineNextMove(hexParticle.getMoveHexVector());
 
-        final Cell.Dir dir;
-
-        if (Math.abs(moveA) > Math.abs(moveB)) {
-            if (Math.abs(moveA) > Math.abs(moveC)) {
-                dir = this.calcMoveDir(moveA, Cell.Dir.AP, Cell.Dir.AN);
+        if (Objects.nonNull(moveDir)) {
+            final Part blockingPart = this.movePart(lifePart, moveDir);
+            if (Objects.isNull(blockingPart)) {
+                HexMathUtils.calcNextMove(moveDir, hexParticle.getMoveHexVector());
             } else {
-                dir = this.calcMoveDir(moveC, Cell.Dir.CP, Cell.Dir.CN);
+                if (blockingPart.getPartType() == Part.PartType.Wall) {
+                    HexMathUtils.calcElasticCollisionWithSolidWall(hexParticle, moveDir);
+                } else {
+                    HexMathUtils.calcElasticCollision(hexParticle, moveDir, blockingPart.getHexParticle());
+                }
             }
         } else {
-            if (Math.abs(moveB) > Math.abs(moveC)) {
-                dir = this.calcMoveDir(moveB, Cell.Dir.BP, Cell.Dir.BN);
+            final Brain brain = lifePart.getBrain();
+            final double moveA = brain.getOutput(GenomOutput.OutputName.MoveA);
+            final double moveB = brain.getOutput(GenomOutput.OutputName.MoveB);
+            final double moveC = brain.getOutput(GenomOutput.OutputName.MoveC);
+
+            final Cell.Dir dir;
+
+            if (Math.abs(moveA) > Math.abs(moveB)) {
+                if (Math.abs(moveA) > Math.abs(moveC)) {
+                    dir = this.calcMoveDir(moveA, Cell.Dir.AP, Cell.Dir.AN);
+                } else {
+                    dir = this.calcMoveDir(moveC, Cell.Dir.CP, Cell.Dir.CN);
+                }
             } else {
-                dir = this.calcMoveDir(moveC, Cell.Dir.CP, Cell.Dir.CN);
+                if (Math.abs(moveB) > Math.abs(moveC)) {
+                    dir = this.calcMoveDir(moveB, Cell.Dir.BP, Cell.Dir.BN);
+                } else {
+                    dir = this.calcMoveDir(moveC, Cell.Dir.CP, Cell.Dir.CN);
+                }
+            }
+            if (Objects.nonNull(dir)) {
+                this.movePart(lifePart, dir);
+                lifePart.getPart().addEnergy(-0.01);
             }
         }
 
-        if (Objects.nonNull(dir)) {
-            this.movePart(lifePart, dir);
-            lifePart.getPart().addEnergy(-0.01);
-        }
     }
 
-    private void movePart(final LifePart lifePart, final Cell.Dir dir) {
+    private Part movePart(final LifePart lifePart, final Cell.Dir dir) {
+        final Part blockingPart;
         final GridNode gridNode = lifePart.getGridNode();
         final GridNode newGridNode = this.hexGridService.getNeighbourGridNode(gridNode, dir);
         if (newGridNode.getPartList(this.hexGridService.getActCellArrPos()).isEmpty()) {
@@ -214,7 +244,11 @@ public class LifeService {
             this.hexGridService.removePart(gridNode, part);
             this.hexGridService.addPart(newGridNode, part);
             lifePart.setGridNode(newGridNode);
+            blockingPart = null;
+        } else {
+            blockingPart = newGridNode.getPartList(this.hexGridService.getActCellArrPos()).get(0);
         }
+        return blockingPart;
     }
 
     private Cell.Dir calcMoveDir(double moveA, Cell.Dir pDir, Cell.Dir nDir) {

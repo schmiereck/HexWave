@@ -20,50 +20,6 @@ public class DirUtils {
         return OppositeDirArr[dir.ordinal()];
     }
 
-    public static double calcDirProb(final double dir, final int axis) {
-        if (dir >= 0.0D) {
-            return switch (axis) {
-                case -2 -> calcDirFunc(-2.0D - dir);
-                case -1 -> calcDirFunc(-1.0D - dir);
-                case 0 -> calcDirFunc(dir);
-                case 1 -> calcDirFunc(1.0D - dir);
-                case 2 -> calcDirFunc(2.0D - dir);
-                default -> throw new IllegalStateException("Unexpected axis value: " + axis);
-            };
-        } else {
-            return switch (axis) {
-                case -2 -> calcDirFunc(-2.0D - dir);
-                case -1 -> calcDirFunc(-1.0D - dir);
-                case 0 -> calcDirFunc(-dir);
-                case 1 -> calcDirFunc(1.0D - dir);
-                case 2 -> calcDirFunc(2.0D - dir);
-                default -> throw new IllegalStateException("Unexpected axis value: " + axis);
-            };
-        }
-    }
-
-    /**
-     * <pre><code>
-     *          *
-     *        . | .
-     *      .   |   .
-     *    .     |     .
-     *  +---+---+---+---+---+
-     * -2  -1   0   1   2   3
-     * </code></pre>
-     */
-    public static double calcDirFunc(final double dir) {
-        if ((dir > -2.0D) && (dir < 2.0D)) {
-            if (dir >= 0.0D) {
-                return ((2.0D - dir) / 2.0D) * HexGridService.PROBABILITY;
-            } else {
-                return ((2.0D + dir) / 2.0D) * HexGridService.PROBABILITY;
-            }
-        } else {
-            return 0.0D;
-        }
-    }
-
     /**
      *  4   bn  cp  5
      *       \ /

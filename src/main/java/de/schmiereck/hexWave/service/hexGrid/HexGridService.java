@@ -57,23 +57,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class HexGridService {
 
-    public static final int PROBABILITY = 1 * 2 * 3 * 5 * 7;
-    public static final int PROBABILITY_0 = 0;
-    public static final int PROBABILITY_1_1 = PROBABILITY;
-    public static final int PROBABILITY_1_2 = PROBABILITY / 2;
-    public static final int PROBABILITY_1_3 = PROBABILITY / 3;
-    public static final int PROBABILITY_2_3 = PROBABILITY_1_3 * 2;
-    public static final int PROBABILITY_1_4 = PROBABILITY / 4;
-    public static final int PROBABILITY_2_4 = PROBABILITY_1_4 * 2;
-    public static final int PROBABILITY_3_4 = PROBABILITY_1_4 * 3;
-    public static final int PROBABILITY_1_8 = PROBABILITY / 8;
-    public static final int PROBABILITY_2_8 = PROBABILITY_1_8 * 2;
-    public static final int PROBABILITY_3_8 = PROBABILITY_1_8 * 3;
-    public static final int PROBABILITY_1_10 = PROBABILITY / 10;
-    public static final int PROBABILITY_4_10 = PROBABILITY_1_10 * 4;
-    public static final int PROBABILITY_6_10 = PROBABILITY_1_10 * 6;
-    public static final int PROBABILITY_9_10 = PROBABILITY_1_10 * 9;
-
     private static final int[][][] DirOffsetArr = {
             {
                     //!np {0, 0},    // NP
@@ -101,8 +84,6 @@ public class HexGridService {
         Anti
     };
     private FieldCalcType fieldCalcType = FieldCalcType.Anti;
-
-    private NumService numService = new NumService(PROBABILITY);
 
     private HexGrid hexGrid;
 
