@@ -92,7 +92,9 @@ public class HexGridService {
 
     public enum FieldTypeEnum {
         Part(0),
-        Sun(1);
+        PartPull(1),
+        PartPush(2),
+        Sun(3);
 
         public int no;
 
@@ -103,9 +105,13 @@ public class HexGridService {
     private FieldType[] fieldTypeArr = new FieldType[FieldTypeEnum.values().length];
     private final int maxAreaDistance;
 
+    public static boolean useWallPushField = false;
+
     public HexGridService() {
-        this.fieldTypeArr[FieldTypeEnum.Part.no] = new FieldType(5);    // Part
-        this.fieldTypeArr[FieldTypeEnum.Sun.no] = new FieldType(0);    // Sun
+        this.fieldTypeArr[FieldTypeEnum.Part.no] = new FieldType(5, true);    // Part
+        this.fieldTypeArr[FieldTypeEnum.PartPull.no] = new FieldType(3, false);
+        this.fieldTypeArr[FieldTypeEnum.PartPush.no] = new FieldType(5, false);
+        this.fieldTypeArr[FieldTypeEnum.Sun.no] = new FieldType(0, true);    // Sun
         this.maxAreaDistance = this.fieldTypeArr[FieldTypeEnum.Part.no].getMaxAreaDistance();
     }
 
@@ -208,16 +214,31 @@ public class HexGridService {
             for (int posX = 0; posX < this.hexGrid.getNodeCountX(); posX++) {
                 final GridNode gridNode = this.getGridNode(posX, posY);
 
-                for (final FieldTypeEnum fieldTypeEnum : FieldTypeEnum.values()) {
-                    final FieldType fieldType = this.getFieldType(fieldTypeEnum);
+                //for (final FieldTypeEnum fieldTypeEnum : FieldTypeEnum.values()) {
+                //    final FieldType fieldType = this.getFieldType(fieldTypeEnum);
+                //}
 
-                    populatePartFieldToHigherAreas(gridNode, fieldCalcType, this.getMaxAreaDistance());
-                    populateAntiPartFieldToHigherAreas(gridNode, fieldCalcType, this.getMaxAreaDistance());
+                populatePartFieldToHigherAreas(gridNode, fieldCalcType, this.getMaxAreaDistance());
+                populateAntiPartFieldToHigherAreas(gridNode, fieldCalcType, this.getMaxAreaDistance());
 
-                    gridNode.getPartList(this.getActCellArrPos()).stream().forEach(part -> {
-                        sendPartField(gridNode, part);
-                    });
-                }
+                gridNode.getPartList(this.getActCellArrPos()).stream().forEach(part -> {
+                    sendPartField(gridNode, part);
+
+                    // TODO Wenn Pull-Field output gesetzt, dann Feld aussenden.
+
+                    if (useWallPushField)
+                    if (part.getPartType() == Part.PartType.Wall) {
+                        final PartField pushPartField = new PartField(part, this.fieldTypeArr[FieldTypeEnum.PartPush.no]);
+                        {
+                            final GridNodeArea lastGridNodeArea = gridNode.getGridNodeArea(Cell.Dir.BN, 0);
+                            lastGridNodeArea.addPartField(pushPartField);
+                        }
+                        {
+                            final GridNodeArea lastGridNodeArea = gridNode.getGridNodeArea(Cell.Dir.CP, 0);
+                            lastGridNodeArea.addPartField(pushPartField);
+                        }
+                    }
+                });
             }
         }
 
@@ -233,11 +254,13 @@ public class HexGridService {
                                 // Hit one of the PartFields of this Grid-Node a Part?
                                 gridNodeArea.getPartFieldList().stream().
                                         forEach(partField -> {
-                                            gridNode.getPartList(this.getActCellArrPos()).stream().
-                                                    filter(part -> partField.getPart() != part).
-                                                    forEach(part -> {
-                                                        sendAntiPartField(gridNode, gridNodeAreaRef, gridNodeArea, partField, partField.getPart());
-                                                    });
+                                            if (partField.getFieldType().getUseRefection()) {
+                                                gridNode.getPartList(this.getActCellArrPos()).stream().
+                                                        filter(part -> partField.getPart() != part).
+                                                        forEach(part -> {
+                                                            sendAntiPartField(gridNode, gridNodeAreaRef, gridNodeArea, partField, partField.getPart());
+                                                        });
+                                            }
                                         });
                             });
                 }
@@ -277,6 +300,10 @@ public class HexGridService {
                     case Crumble -> lastPartFieldList = crumbleFieldsOnParts(gridNode, dir, lastPartFieldList, areaDistance, gridNodeArea);
                     //case Anti -> lastPartFieldList = antiFieldsOnParts(gridNode, dir, lastPartFieldList, areaDistance, gridNodeArea);
                 }
+                // Add populated Part-Field to each Grid-Node/ Part.
+                //gridNodeArea.getPartList().stream().forEach(part -> {
+                //});
+
                 lastPartFieldList = gridNodeArea.setPartFieldList(lastPartFieldList);
             }
         }
@@ -363,7 +390,7 @@ public class HexGridService {
                     gridNodeArea.forEarchGridNode(baseGridNode -> {
                         final GridNodeArea baseGridNodeArea = baseGridNode.getGridNodeArea(dir, 0);
                         if (baseGridNodeArea.getPartList().isEmpty()) {
-                            baseGridNodeArea.getPartFieldList().add(new PartField(partField, partField.getFieldType(), areaDistance));
+                            baseGridNodeArea.addPartField(new PartField(partField, partField.getFieldType(), areaDistance));
                         }
                 });
 
@@ -480,19 +507,22 @@ public class HexGridService {
         return value;
     }
 
-    public double retrieveActGridNodePartFieldValue(final int posX, final int posY) {
+    public double retrieveActGridNodePartFieldValue(final int posX, final int posY, final FieldType filterFieldType) {
         double value = 0.0D;
         final GridNode gridNode = this.getGridNode(posX, posY);
 
         for (final GridNodeAreaRef gridNodeAreaRef : gridNode.getGridNodeAreaRefList()) {
             final GridNodeArea gridNodeArea = gridNodeAreaRef.getGridNodeArea();
             final double refValue = gridNodeAreaRef.getValue();
-            for (final PartField partField : gridNodeArea.getPartFieldList()) {
-                value += refValue / partField.getParentAreaDistance();
+            for (final PartField gridNodeAreaPartField : gridNodeArea.getPartFieldList()) {
+                if (gridNodeAreaPartField.getFieldType() == filterFieldType) {
+                    value += refValue / gridNodeAreaPartField.getParentAreaDistance();
+                }
             }
             for (final PartField antiPartField : gridNodeArea.getAntiPartFieldList()) {
-                //value += calcDiffValue(gridNode, gridNodeArea) * refValue;
-                value -= refValue / GridNodeArea.calcGridNodeSizeForAreaDistance(antiPartField.getParentAreaDistance());
+                if (antiPartField.getFieldType() == filterFieldType) {
+                    value -= refValue / GridNodeArea.calcGridNodeSizeForAreaDistance(antiPartField.getParentAreaDistance());
+                }
             }
         }
         return value;

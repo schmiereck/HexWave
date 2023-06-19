@@ -11,6 +11,6 @@ import de.schmiereck.hexWave.service.hexGrid.Cell;
  * v2' = (m2 * v2 + m1 * (2 * v1 - v2)) / (m1 + m2)
  */
 public class MoveHexVector extends HexVector {
-    public Cell.Dir lastDir = Cell.Dir.AP;
+    public Cell.Dir lastCheckedDir = Cell.Dir.AP;
 
 }

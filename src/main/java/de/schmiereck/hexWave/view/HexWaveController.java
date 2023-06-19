@@ -44,6 +44,12 @@ public class HexWaveController implements Initializable
 
     private GridModel gridModel = new GridModel();
 
+    private AnimationTimer animationTimer;
+
+    public static boolean useSunshine = false;
+    public static boolean useLifeParts = false;
+    public static boolean useBall = true;
+
     @FXML
     public void initialize() {
     }
@@ -54,7 +60,8 @@ public class HexWaveController implements Initializable
 
         //this.hexGridService.initialize(2, 1);
         this.hexGridService.initialize(10, 3);
-        this.lifeService.initialize(130);
+        this.lifeService.initialize(useLifeParts ? 130 : 0);
+        if (useBall) this.lifeService.initializeBall();
 
         final HexGrid hexGrid = this.hexGridService.getHexGrid();
 
@@ -110,8 +117,6 @@ public class HexWaveController implements Initializable
         this.updateView();
     }
 
-    private AnimationTimer animationTimer;
-
     @FXML
     public void onStartRunButtonClick(ActionEvent actionEvent) {
         if (Objects.isNull(this.animationTimer)) {
@@ -134,8 +139,9 @@ public class HexWaveController implements Initializable
 
         // Output Results.
 
-        this.lifeService.addSunshine();
+        if (useSunshine) this.lifeService.addSunshine();
         this.lifeService.runOutputActionResults();
+        this.lifeService.runCollisions();
 
         this.lifeService.calcNext();
 
@@ -158,9 +164,9 @@ public class HexWaveController implements Initializable
                 final GridCellModel gridCellModel = this.gridModel.getGridCellModel(posX, posY);
 
                 final GridNode gridNode = this.hexGridService.retrieveGridNode(posX, posY);
-                final List<Part> partList = gridNode.getPartList(0);
+                final List<Part> gridNodePartList = gridNode.getPartList(0);
 
-                final Optional<Part> optionalPart = partList.stream().findFirst();
+                final Optional<Part> optionalPart = gridNodePartList.stream().findFirst();
                 if (optionalPart.isPresent()) {
                     final Part part = optionalPart.get();
                     switch (part.getPartType()) {
@@ -173,17 +179,24 @@ public class HexWaveController implements Initializable
                     this.drawNothing(gridCellModel);
                 }
 
-                final double partFieldValue = this.hexGridService.retrieveActGridNodePartFieldValue(posX, posY);
+                final double partFieldValue = this.hexGridService.retrieveActGridNodePartFieldValue(posX, posY,
+                        this.hexGridService.getFieldType(HexGridService.FieldTypeEnum.Part));
+                final double partPushFieldValue = this.hexGridService.retrieveActGridNodePartFieldValue(posX, posY,
+                        this.hexGridService.getFieldType(HexGridService.FieldTypeEnum.PartPush));
+                final double partPullFieldValue = this.hexGridService.retrieveActGridNodePartFieldValue(posX, posY,
+                        this.hexGridService.getFieldType(HexGridService.FieldTypeEnum.PartPull));
+
+                final double fieldValue = partPushFieldValue;
 
                 final Circle gridNodeCircle2 = gridCellModel.getShape2();
 
-                if (partFieldValue > 0.0D) {
-                    gridNodeCircle2.setRadius(Math.min(partFieldValue * 4.0D, 12.0D));
+                if (fieldValue > 0.0D) {
+                    gridNodeCircle2.setRadius(Math.min(fieldValue * 4.0D, 12.0D));
                     gridNodeCircle2.setVisible(true);
                     gridNodeCircle2.setStroke(Color.RED);
                 } else {
-                    if (partFieldValue < 0.0D) {
-                        gridNodeCircle2.setRadius(Math.min(-partFieldValue * 4.0D, 12.0D));
+                    if (fieldValue < 0.0D) {
+                        gridNodeCircle2.setRadius(Math.min(-fieldValue * 4.0D, 12.0D));
                         gridNodeCircle2.setVisible(true);
                         gridNodeCircle2.setStroke(Color.BLUE);
                     } else {

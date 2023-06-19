@@ -7,7 +7,10 @@ import de.schmiereck.hexWave.service.genom.Genom;
 import de.schmiereck.hexWave.service.genom.GenomOutput;
 import de.schmiereck.hexWave.service.genom.GenomService;
 import de.schmiereck.hexWave.service.hexGrid.Cell;
+import de.schmiereck.hexWave.service.hexGrid.FieldType;
 import de.schmiereck.hexWave.service.hexGrid.GridNode;
+import de.schmiereck.hexWave.service.hexGrid.GridNodeArea;
+import de.schmiereck.hexWave.service.hexGrid.GridNodeAreaRef;
 import de.schmiereck.hexWave.service.hexGrid.HexGridService;
 import de.schmiereck.hexWave.service.hexGrid.Part;
 import de.schmiereck.hexWave.utils.HexMathUtils;
@@ -43,6 +46,8 @@ public class LifeService {
     private int sunPartCount;
     private Genom sunGenom;
 
+    public static boolean useEnergy = false;
+
     public LifeService() {
     }
 
@@ -52,13 +57,27 @@ public class LifeService {
         this.sunPartCount = this.hexGridService.getNodeCountX() / 20;
         this.sunGenom = this.genomService.createSunGenom();
 
-        final Genom genom = this.genomService.createInitialGenom();
+        final Genom lifePartGenom = this.genomService.createInitialGenom();
 
         for (int lifePartPos = 0; lifePartPos < lifePartCount; lifePartPos++) {
-            final Brain brain = this.brainService.createBrain(genom);
+            final Brain brain = this.brainService.createBrain(lifePartGenom);
 
             this.lifePartList.add(this.createLifePartByBrain(brain, this.rnd.nextDouble(InitialLifePartEnergy / 2.0D, InitialLifePartEnergy)));
         }
+    }
+
+    public void initializeBall() {
+        final Genom lifePartGenom = this.genomService.createInitialGenom();
+
+        final Brain brain = this.brainService.createBrain(lifePartGenom);
+
+        final GridNode gridNode = this.hexGridService.getGridNode(this.hexGridService.getNodeCountX() / 2, 36);
+
+        final Part part = new Part(Part.PartType.Life, this.hexGridService.getFieldType(HexGridService.FieldTypeEnum.Part), InitialLifePartEnergy, false);
+
+        gridNode.addPart(this.hexGridService.getActCellArrPos(), part);
+
+        this.lifePartList.add(new LifePart(brain, gridNode, part));
     }
 
     public void addSunshine() {
@@ -95,6 +114,13 @@ public class LifeService {
         });
     }
 
+    public void runCollisions() {
+        this.lifePartList.stream().forEach(lifePart -> {
+            //TODO this.runCollisionWithSingleDir(lifePart);
+            this.runCollisionWithDirList(lifePart);
+        });
+    }
+
     public void calcNext() {
         this.lifePartList.removeIf(lifePart -> this.runDeath(lifePart));
         this.sunPartList.removeIf(lifePart -> this.runDeath(lifePart));
@@ -103,6 +129,7 @@ public class LifeService {
 
         this.lifePartList.stream().forEach(lifePart -> {
             this.calcGravitationalAcceleration(lifePart);
+            this.calcFieldAcceleration(lifePart);
         });
 
         this.hexGridService.calcNext();
@@ -112,6 +139,61 @@ public class LifeService {
         final HexParticle hexParticle = lifePart.getPart().getHexParticle();
         hexParticle.velocityHexVector.c -= 1;
         hexParticle.velocityHexVector.b += 1;
+    }
+
+    private void calcFieldAcceleration(final LifePart lifePart) {
+        final FieldType partPushFieldType = this.hexGridService.getFieldType(HexGridService.FieldTypeEnum.PartPush);
+        final int maxAreaDistance = this.hexGridService.getMaxAreaDistance();
+        final GridNode gridNode = lifePart.getGridNode();
+        /*
+        for (final Cell.Dir dir : Cell.Dir.values()) {
+            for (int areaDistance = 0; areaDistance < maxAreaDistance; areaDistance++) {
+                final int finalAreaDistance = areaDistance;
+                final GridNodeArea gridNodeArea = gridNode.getGridNodeArea(dir, finalAreaDistance);
+                gridNodeArea.getPartFieldList().stream().forEach(gridNodeAreaPartField -> {
+                    if (gridNodeAreaPartField.getPart() != lifePart.getPart()) {
+                        if (gridNodeAreaPartField.getFieldType() == partPushFieldType) {
+                            final int fieldTypeMaxAreaDistance = partPushFieldType.getMaxAreaDistance();
+                            final int velocityDiff = (fieldTypeMaxAreaDistance - finalAreaDistance) * 16;
+                            final HexParticle hexParticle = lifePart.getPart().getHexParticle();
+                            switch (gridNodeArea.getDir()) {
+                                case AP -> hexParticle.velocityHexVector.a += velocityDiff;
+                                case AN -> hexParticle.velocityHexVector.a -= velocityDiff;
+                                case BP -> hexParticle.velocityHexVector.b += velocityDiff;
+                                case BN -> hexParticle.velocityHexVector.b -= velocityDiff;
+                                case CP -> hexParticle.velocityHexVector.c += velocityDiff;
+                                case CN -> hexParticle.velocityHexVector.c -= velocityDiff;
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        */
+        for (final GridNodeAreaRef gridNodeAreaRef : gridNode.getGridNodeAreaRefList()) {
+            final GridNodeArea gridNodeArea = gridNodeAreaRef.getGridNodeArea();
+            final double refValue = gridNodeAreaRef.getValue();
+            gridNodeArea.getPartFieldList().stream().forEach(gridNodeAreaPartField -> {
+                if (gridNodeAreaPartField.getPart() != lifePart.getPart()) {
+                    if (gridNodeAreaPartField.getFieldType() == partPushFieldType) {
+                        final int fieldTypeMaxAreaDistance = partPushFieldType.getMaxAreaDistance();
+                        final int finalAreaDistance = gridNodeArea.getAreaDistance();
+                        //final int velocityDiff = (int)((fieldTypeMaxAreaDistance - finalAreaDistance) * (refValue * finalAreaDistance));
+                        //final int velocityDiff = (int)((refValue * finalAreaDistance));
+                        final int velocityDiff = (int)((refValue));
+                        final HexParticle hexParticle = lifePart.getPart().getHexParticle();
+                        switch (gridNodeArea.getDir()) {
+                            case AP -> hexParticle.velocityHexVector.a += velocityDiff;
+                            case AN -> hexParticle.velocityHexVector.a -= velocityDiff;
+                            case BP -> hexParticle.velocityHexVector.b += velocityDiff;
+                            case BN -> hexParticle.velocityHexVector.b -= velocityDiff;
+                            case CP -> hexParticle.velocityHexVector.c += velocityDiff;
+                            case CN -> hexParticle.velocityHexVector.c -= velocityDiff;
+                        }
+                    }
+                }
+            });
+        }
     }
 
     private void runBirth() {
@@ -187,10 +269,10 @@ public class LifeService {
     private void runBrain(final LifePart lifePart) {
         final Brain brain = lifePart.getBrain();
         brainService.calcBrain(brain);
-        lifePart.getPart().addEnergy(-0.01);
+        if (useEnergy) lifePart.getPart().addEnergy(-0.01);
     }
 
-    private void runMove(final LifePart lifePart) {
+    private void runCollisionWithSingleDir(final LifePart lifePart) {
         final HexParticle hexParticle = lifePart.getPart().getHexParticle();
         HexMathUtils.transferVelocityToMove(hexParticle.getVelocityHexVector(), hexParticle.getMoveHexVector());
         final Cell.Dir moveDir = HexMathUtils.determineNextMove(hexParticle.getMoveHexVector());
@@ -200,13 +282,54 @@ public class LifeService {
             if (Objects.isNull(blockingPart)) {
                 HexMathUtils.calcNextMove(moveDir, hexParticle.getMoveHexVector());
             } else {
+                HexMathUtils.calcNextMove(moveDir, hexParticle.getMoveHexVector()); // TODO ???
                 if (blockingPart.getPartType() == Part.PartType.Wall) {
                     HexMathUtils.calcElasticCollisionWithSolidWall(hexParticle, moveDir);
                 } else {
                     HexMathUtils.calcElasticCollision(hexParticle, moveDir, blockingPart.getHexParticle());
                 }
             }
-        } else {
+        }
+    }
+
+    private void runCollisionWithDirList(final LifePart lifePart) {
+        final HexParticle hexParticle = lifePart.getPart().getHexParticle();
+        HexMathUtils.transferVelocityToMove(hexParticle.getVelocityHexVector(), hexParticle.getMoveHexVector());
+        final List<Cell.Dir> moveDirList = HexMathUtils.determineNextMoveList(hexParticle.getMoveHexVector());
+
+        if (!moveDirList.isEmpty()) {
+            Cell.Dir nextMoveDir = null;
+            for (final Cell.Dir moveDir : moveDirList) {
+                final Part blockingPart = this.checkMovePart(lifePart, moveDir);
+                if (Objects.nonNull(blockingPart)) {
+                    //HexMathUtils.calcNextMove(moveDir, hexParticle.getMoveHexVector()); // TODO ???
+                    if (blockingPart.getPartType() == Part.PartType.Wall) {
+                        HexMathUtils.calcElasticCollisionWithSolidWall(hexParticle, moveDir);
+                    } else {
+                        HexMathUtils.calcElasticCollision(hexParticle, moveDir, blockingPart.getHexParticle());
+                    }
+                } else {
+                    if (Objects.isNull(nextMoveDir)) {
+                        nextMoveDir = moveDir;
+                    }
+                }
+            }
+
+            if (Objects.nonNull(nextMoveDir)) {
+                HexMathUtils.calcNextMove(nextMoveDir, hexParticle.getMoveHexVector());
+                hexParticle.getMoveHexVector().lastCheckedDir = nextMoveDir;
+
+                final Part blockingPart = this.movePart(lifePart, nextMoveDir);
+
+                if (Objects.nonNull(blockingPart)) {
+                    throw new RuntimeException("Found unexpected blockingPart while moving.");
+                }
+            }
+        }
+    }
+
+    private void runMove(final LifePart lifePart) {
+         {
             final Brain brain = lifePart.getBrain();
             final double moveA = brain.getOutput(GenomOutput.OutputName.MoveA);
             final double moveB = brain.getOutput(GenomOutput.OutputName.MoveB);
@@ -229,7 +352,7 @@ public class LifeService {
             }
             if (Objects.nonNull(dir)) {
                 this.movePart(lifePart, dir);
-                lifePart.getPart().addEnergy(-0.01);
+                if (useEnergy) lifePart.getPart().addEnergy(-0.01);
             }
         }
 
@@ -244,6 +367,18 @@ public class LifeService {
             this.hexGridService.removePart(gridNode, part);
             this.hexGridService.addPart(newGridNode, part);
             lifePart.setGridNode(newGridNode);
+            blockingPart = null;
+        } else {
+            blockingPart = newGridNode.getPartList(this.hexGridService.getActCellArrPos()).get(0);
+        }
+        return blockingPart;
+    }
+
+    private Part checkMovePart(final LifePart lifePart, final Cell.Dir dir) {
+        final Part blockingPart;
+        final GridNode gridNode = lifePart.getGridNode();
+        final GridNode newGridNode = this.hexGridService.getNeighbourGridNode(gridNode, dir);
+        if (newGridNode.getPartList(this.hexGridService.getActCellArrPos()).isEmpty()) {
             blockingPart = null;
         } else {
             blockingPart = newGridNode.getPartList(this.hexGridService.getActCellArrPos()).get(0);
