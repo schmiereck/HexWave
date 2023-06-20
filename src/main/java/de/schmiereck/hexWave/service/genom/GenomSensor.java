@@ -8,9 +8,26 @@ public class GenomSensor implements GenomInputInterface {
         Positive,
         Negative,
         Random,
+        Energy,
         NeigbourPartTypeAP, NeigbourPartTypeAN,
         NeigbourPartTypeBP, NeigbourPartTypeBN,
-        NeigbourPartTypeCP, NeigbourPartTypeCN
+        NeigbourPartTypeCP, NeigbourPartTypeCN,
+
+        Part1FieldAP, Part1FieldAN,
+        Part1FieldBP, Part1FieldBN,
+        Part1FieldCP, Part1FieldCN,
+
+        Part2FieldAP, Part2FieldAN,
+        Part2FieldBP, Part2FieldBN,
+        Part2FieldCP, Part2FieldCN,
+
+        Part3FieldAP, Part3FieldAN,
+        Part3FieldBP, Part3FieldBN,
+        Part3FieldCP, Part3FieldCN,
+
+        ComFieldAP, ComFieldAN,
+        ComFieldBP, ComFieldBN,
+        ComFieldCP,ComFieldCN,
     }
 
     public final int sensorId;

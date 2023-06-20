@@ -18,32 +18,34 @@ directions:
   * List<GridNodeAreaRef> gridNodeAreaRefList
 
 ## ToDo
+* eat energy from other Part (not the whole)
 * use Energie
     * DONE eat other parts
     * DONE death if low/ empty
     * DONE simple energy consumption 
     * energy consumption depending on the complexity and (output-) actions
     * slow down if low
-    * reproduction if high
+    * DONE reproduction if high
 * Add Inputs
   * DONE Neighbour Part-Types
-  * Field(s)
-  * Energie
+  * DONE Field(s)
+  * DONE Energie
 * reproduction
   * DONE cloning if population shrinks
-  * asexual reproduction
+  * DONE asexual reproduction
   * sexual reproduction
 * Tentacles/ Pull-/Push-Fields
     * Move with
     * Connect/ Release to other Parts
 * more complex environment
   * Air, Water, Wallpaper, ...
-  * Gravitation
-  * Acceleration (Gravitation)
+  * DONE Gravitation
+  * DONE Acceleration (Gravitation)
   * Impulse
 * Add Outputs
-  * Signal-Field
-  * Pull-/Push-Fields
+  * DONE Com-Signal-Field
+  * DONE Pull-/Push-Fields
+    * TODO only between Parts, not on nothing
 * UI
   * Zoom and Scroll
   * Save and Load

@@ -30,6 +30,9 @@ public class GenerationLifeService {
     @Autowired
     private BrainService brainService;
 
+    @Autowired
+    private BirthLifeService birthLifeService;
+
     private final Random rnd = new Random();
 
     public void initializeLifePartList(final List<LifePart> lifePartList, final int lifePartCount) {
@@ -37,8 +40,9 @@ public class GenerationLifeService {
 
         for (int lifePartPos = 0; lifePartPos < lifePartCount; lifePartPos++) {
             final Brain brain = this.brainService.createBrain(lifePartGenom);
+            final PartIdentity partIdentity = this.birthLifeService.createPartIdentity();
 
-            lifePartList.add(this.createLifePartByBrain(brain, this.rnd.nextDouble(MainConfig.InitialLifePartEnergy / 2.0D, MainConfig.InitialLifePartEnergy)));
+            lifePartList.add(this.birthLifeService.createLifePartByBrain(partIdentity, brain, this.rnd.nextDouble(MainConfig.InitialLifePartEnergy / 2.0D, MainConfig.InitialLifePartEnergy)));
         }
     }
 
@@ -63,7 +67,9 @@ public class GenerationLifeService {
 
         for (int pos = 0; pos < (lifePartCount - youngLifePartList.size()); pos++) {
             final LifePart youngLifePart = youngLifePartList.get(pos % youngLifePartList.size());
-            final LifePart childLifePart = this.createChildLifePart(youngLifePart);
+            final LifePart childLifePart = this.birthLifeService.createChildLifePart(youngLifePart,
+                    MainConfig.PoolChildMutationRate,
+                    this.rnd.nextDouble(MainConfig.InitialLifePartEnergy / 2.0D, MainConfig.InitialLifePartEnergy));
 
             childLifePartList.add(childLifePart);
         }
@@ -80,7 +86,8 @@ public class GenerationLifeService {
                 if (lifePartList.size() == 0) {
                     final Genom genom = this.genomService.createInitialGenom();
                     final Brain brain = this.brainService.createBrain(genom);
-                    childLifePart = this.createLifePartByBrain(brain, MainConfig.InitialLifePartEnergy);
+                    final PartIdentity partIdentity = this.birthLifeService.createPartIdentity();
+                    childLifePart = this.birthLifeService.createLifePartByBrain(partIdentity, brain, MainConfig.InitialLifePartEnergy);
                 } else {
                     final LifePart parentLifePart;
                     if (onlyHighEnergy) {
@@ -93,34 +100,15 @@ public class GenerationLifeService {
                     } else {
                         parentLifePart = lifePartList.get(this.rnd.nextInt(lifePartList.size()));
                     }
-                    childLifePart = this.createChildLifePart(parentLifePart);
+                    childLifePart = this.birthLifeService.createChildLifePart(parentLifePart,
+                            MainConfig.PoolChildMutationRate,
+                            this.rnd.nextDouble(MainConfig.InitialLifePartEnergy / 2.0D, MainConfig.InitialLifePartEnergy));
                 }
                 if (Objects.nonNull(childLifePart)) {
                     lifePartList.add(childLifePart);
                 }
             }
         }
-    }
-
-    private LifePart createLifePartByBrain(final Brain brain, final double energy) {
-        final GridNode gridNode = this.hexGridService.searchRandomEmptyGridNode(false);
-
-        final Part part = new Part(Part.PartType.Life, this.hexGridService.getFieldType(HexGridService.FieldTypeEnum.Part), energy, true, 8);
-
-        gridNode.addPart(this.hexGridService.getActCellArrPos(), part);
-
-        return new LifePart(brain, gridNode, part);
-    }
-
-    @NotNull
-    private LifePart createChildLifePart(final LifePart parentLifePart) {
-        final Brain youngLifePartBrain = parentLifePart.getBrain();
-        final Genom genom = youngLifePartBrain.getGenom();
-        final Genom newGenom = this.genomService.createMutatedGenom(genom, 0.25D);
-
-        final Brain childBrain = this.brainService.createBrain(newGenom);
-        final LifePart childLifePart = this.createLifePartByBrain(childBrain, this.rnd.nextDouble(MainConfig.InitialLifePartEnergy / 2.0D, MainConfig.InitialLifePartEnergy));
-        return childLifePart;
     }
 
     public boolean runDeath(final LifePart lifePart) {

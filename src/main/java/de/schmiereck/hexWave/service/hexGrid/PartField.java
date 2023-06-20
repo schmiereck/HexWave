@@ -5,19 +5,22 @@ public class PartField {
     private final PartField parentPartField;
     private final FieldType fieldType;
     private final int parentAreaDistance;
+    private final double value;
 
-    public PartField(final Part part, final FieldType fieldType) {
+    public PartField(final Part part, final FieldType fieldType, final double value) {
         this.part = part;
         this.fieldType = fieldType;
         this.parentPartField = null;
         this.parentAreaDistance = 1;
+        this.value = value;
     }
 
-    public PartField(final PartField parentPartField, final FieldType fieldType, final int parentAreaDistance) {
+    public PartField(final PartField parentPartField, final FieldType fieldType, final int parentAreaDistance, final double value) {
         this.part = parentPartField.part;
         this.fieldType = fieldType;
         this.parentPartField = parentPartField;
         this.parentAreaDistance = parentAreaDistance;
+        this.value = value;
     }
 
     public Part getPart() {
@@ -36,4 +39,7 @@ public class PartField {
         return this.fieldType;
     }
 
+    public double getValue() {
+        return this.value;
+    }
 }

@@ -8,11 +8,13 @@ import de.schmiereck.hexWave.service.hexGrid.GridNode;
 import de.schmiereck.hexWave.service.hexGrid.Part;
 
 public class LifePart {
+    public final PartIdentity partIdentity;
     private final Brain brain;
     private final Part part;
     private GridNode gridNode;
 
-    public LifePart(final Brain brain, final GridNode gridNode, final Part part) {
+    public LifePart(final PartIdentity partIdentity, final Brain brain, final GridNode gridNode, final Part part) {
+        this.partIdentity = partIdentity;
         this.brain = brain;
         this.gridNode = gridNode;
         this.part = part;

@@ -25,8 +25,20 @@ public class GridModel {
         this.gridCellArr[posX][posY].setShape(shape);
     }
 
-    public void setShape2(final int posX, final int posY, final Circle shape2) {
-        this.gridCellArr[posX][posY].setShape2(shape2);
+    public void setShape2(final int posX, final int posY, final Circle shape) {
+        this.gridCellArr[posX][posY].setShape2(shape);
+    }
+
+    public void setShape3(final int posX, final int posY, final Circle shape) {
+        this.gridCellArr[posX][posY].setShape3(shape);
+    }
+
+    public void setShape4(final int posX, final int posY, final Circle shape) {
+        this.gridCellArr[posX][posY].setShape4(shape);
+    }
+
+    public void setShape5(final int posX, final int posY, final Circle shape) {
+        this.gridCellArr[posX][posY].setShape5(shape);
     }
 
     public static final double StepX = 16.0D;

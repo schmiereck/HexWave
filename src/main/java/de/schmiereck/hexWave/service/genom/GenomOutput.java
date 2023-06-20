@@ -20,6 +20,9 @@ public class GenomOutput {
         ComFieldA,
         ComFieldB,
         ComFieldC,
+        BirthA,
+        BirthB,
+        BirthC,
     }
     public final int outputId;
     public final int genomInputId;

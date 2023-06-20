@@ -14,30 +14,18 @@ public class Part {
     }
 
     private final PartType partType;
-    private final FieldType fieldType;
-    private final PartField partField;
     private final HexParticle hexParticle;
 
     private double energy;
 
-    public Part(final PartType partType, final FieldType fieldType, final double energy, final boolean useField, final int mass) {
+    public Part(final PartType partType, final double energy, final int mass) {
         this.partType = partType;
-        this.fieldType = fieldType;
         this.energy = energy;
-        this.partField = useField ? new PartField(this, fieldType) : null;
         this.hexParticle = new HexParticle(mass);
     }
 
     public PartType getPartType() {
         return this.partType;
-    }
-
-    public PartField getPartField() {
-        return this.partField;
-    }
-
-    public FieldType getFieldType() {
-        return this.fieldType;
     }
 
     public double getEnergy() {

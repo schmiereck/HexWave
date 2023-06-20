@@ -16,8 +16,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class BrainService {
-    private final Random rnd = new Random();
-
     public Brain createBrain(final Genom genom) {
         final Brain brain = new Brain(genom);
 
@@ -71,22 +69,6 @@ public class BrainService {
     }
 
     public void calcBrain(final Brain brain) {
-        // Sensor Inputs.
-        Arrays.stream(brain.brainSensorArr).forEach(brainSensor -> {
-            switch (brainSensor.genomSensor.inputName) {
-                case Positive -> brainSensor.inValue = 1.0D;
-                case Negative -> brainSensor.inValue = -1.0D;
-                case Random -> brainSensor.inValue = (this.rnd.nextDouble() - 0.5D) * 2.0D;
-                case NeigbourPartTypeAP -> brainSensor.inValue = calcNeigbourPartTypeValue(brain.getNeigbourPartType(Cell.Dir.AP));
-                case NeigbourPartTypeAN -> brainSensor.inValue = calcNeigbourPartTypeValue(brain.getNeigbourPartType(Cell.Dir.AN));
-                case NeigbourPartTypeBP -> brainSensor.inValue = calcNeigbourPartTypeValue(brain.getNeigbourPartType(Cell.Dir.BP));
-                case NeigbourPartTypeBN -> brainSensor.inValue = calcNeigbourPartTypeValue(brain.getNeigbourPartType(Cell.Dir.BN));
-                case NeigbourPartTypeCP -> brainSensor.inValue = calcNeigbourPartTypeValue(brain.getNeigbourPartType(Cell.Dir.CP));
-                case NeigbourPartTypeCN -> brainSensor.inValue = calcNeigbourPartTypeValue(brain.getNeigbourPartType(Cell.Dir.CN));
-                default -> throw new RuntimeException(String.format("Unexpected inputName \"%s\".", brainSensor.genomSensor.inputName));
-            }
-        });
-
         // Move Input-Values to Connectors.
         Arrays.stream(brain.brainNeuronArr).forEach(brainNeuron -> {
             Arrays.stream(brainNeuron.brainConnectorArr).forEach(brainConnector -> {
@@ -109,15 +91,5 @@ public class BrainService {
         Arrays.stream(brain.brainOutputArr).forEach(brainOutput -> {
             brainOutput.outValue = brainOutput.brainInput.getOutValue();
         });
-    }
-
-    private double calcNeigbourPartTypeValue(final Part.PartType neigbourPartType) {
-        final double value;
-        if (Objects.nonNull(neigbourPartType)) {
-            value = (neigbourPartType.ordinal() + 1) / (double)(Part.PartType.values().length + 1);
-        } else {
-            value = 0.0D;
-        }
-        return value;
     }
 }

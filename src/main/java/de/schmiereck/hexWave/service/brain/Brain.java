@@ -13,7 +13,6 @@ public class Brain {
     public BrainNeuron[] brainNeuronArr;
     public BrainOutput[] brainOutputArr;
     public BrainOutput[] brainOutputMapArr = new BrainOutput[GenomOutput.OutputName.values().length];
-    private Part.PartType neigbourPartTypeArr[] = new Part.PartType[Cell.Dir.values().length];
 
     public Brain(final Genom genom) {
         this.genom = genom;
@@ -32,14 +31,6 @@ public class Brain {
 
     public Genom getGenom() {
         return this.genom;
-    }
-
-    public void setNeigbourPartTypeInput(final Cell.Dir dir, final Part.PartType partType) {
-        this.neigbourPartTypeArr[dir.ordinal()] = partType;
-    }
-
-    public Part.PartType getNeigbourPartType(final Cell.Dir dir) {
-        return this.neigbourPartTypeArr[dir.ordinal()];
     }
 
     private static GenomOutput.OutputName EatNeighbourDirArr[] = new GenomOutput.OutputName[Cell.Dir.values().length];

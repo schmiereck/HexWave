@@ -6,22 +6,13 @@ import de.schmiereck.hexWave.service.brain.Brain;
 import de.schmiereck.hexWave.service.brain.BrainService;
 import de.schmiereck.hexWave.service.genom.Genom;
 import de.schmiereck.hexWave.service.genom.GenomService;
-import de.schmiereck.hexWave.service.hexGrid.Cell;
-import de.schmiereck.hexWave.service.hexGrid.FieldType;
 import de.schmiereck.hexWave.service.hexGrid.GridNode;
-import de.schmiereck.hexWave.service.hexGrid.GridNodeArea;
-import de.schmiereck.hexWave.service.hexGrid.GridNodeAreaRef;
 import de.schmiereck.hexWave.service.hexGrid.HexGridService;
 import de.schmiereck.hexWave.service.hexGrid.Part;
-import de.schmiereck.hexWave.utils.HexMathUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Random;
-import java.util.stream.Collectors;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -52,12 +43,16 @@ public class LifeService {
     @Autowired
     private AccelerationLifeService accelerationLifeService;
 
+    @Autowired
+    private BirthLifeService birthLifeService;
+
     private int lifePartCount;
     private List<LifePart> lifePartList = new ArrayList<>();
     private List<LifePart> sunPartList = new ArrayList<>();
-    private final Random rnd = new Random();
+    private List<LifePart> wallPartList = new ArrayList<>();
     private int sunPartCount;
     private Genom sunGenom;
+    private PartIdentity sunPartIdentity;
 
     public LifeService() {
     }
@@ -65,31 +60,58 @@ public class LifeService {
     public void initialize(final int lifePartCount) {
         this.lifePartCount = lifePartCount;
 
-        this.sunPartCount = this.hexGridService.getNodeCountX() / 20;
+        this.sunPartCount = this.hexGridService.getNodeCountX() / 28;
         this.sunGenom = this.genomService.createSunGenom();
+        this.sunPartIdentity = this.birthLifeService.createPartIdentity();
 
         this.generationLifeService.initializeLifePartList(this.lifePartList, this.lifePartCount);
     }
 
-    public void initializeBall() {
+    public void initializeBall(final boolean useBouncingBall) {
         final Genom lifePartGenom = this.genomService.createInitialGenom();
 
         final Brain brain = this.brainService.createBrain(lifePartGenom);
 
-        final GridNode gridNode = this.hexGridService.getGridNode(this.hexGridService.getNodeCountX() / 2, 36);
+        final int xPos, yPos;
 
-        final Part part = new Part(Part.PartType.Life, this.hexGridService.getFieldType(HexGridService.FieldTypeEnum.Part), MainConfig.InitialLifePartEnergy, false, 8);
+        if (useBouncingBall) {
+            xPos = (this.hexGridService.getNodeCountX() / 3) * 2;
+            yPos = 30;
+        } else {
+            xPos = this.hexGridService.getNodeCountX() / 2;
+            yPos = 36;
+        }
+        final GridNode gridNode = this.hexGridService.getGridNode(xPos, yPos);
+
+        final Part part = new Part(Part.PartType.Life, MainConfig.InitialLifePartEnergy, 8);
 
         gridNode.addPart(this.hexGridService.getActCellArrPos(), part);
 
-        this.lifePartList.add(new LifePart(brain, gridNode, part));
+        final PartIdentity partIdentity = this.birthLifeService.createPartIdentity();
+
+        final LifePart lifePart = new LifePart(partIdentity, brain, gridNode, part);
+
+        if (useBouncingBall) {
+            part.getHexParticle().getVelocityHexVector().a = 32;
+        }
+
+        this.lifePartList.add(lifePart);
     }
 
     public void addSunshine() {
-        for (int sunPartPos = 0; sunPartPos < this.hexGridService.getNodeCountX() / 28; sunPartPos++) {
+        for (int sunPartPos = 0; sunPartPos < this.sunPartCount; sunPartPos++) {
             final Brain sunBrain = this.brainService.createBrain(this.sunGenom);
             this.sunPartList.add(this.createSunPartByBrain(sunBrain, MainConfig.InitialSunPartEnergy));
         }
+    }
+
+    public void runSensorInputs() {
+        this.lifePartList.stream().forEach(lifePart -> {
+            this.inputLiveService.calcSensorInputs(lifePart);
+        });
+        this.sunPartList.stream().forEach(lifePart -> {
+            this.inputLiveService.calcSensorInputs(lifePart);
+        });
     }
 
     public void runBrain() {
@@ -101,22 +123,20 @@ public class LifeService {
         });
     }
 
-    public void runSensorInputs() {
-        this.lifePartList.stream().forEach(lifePart -> {
-            this.inputLiveService.runNeighbourSensors(lifePart);
-        });
-    }
-
     public void runOutputActionResults() {
         this.lifePartList.stream().forEach(lifePart -> {
             this.outputLifeService.runEatNeighbour(lifePart);
         });
+
+        final List<LifePart> newChildLifePartList = new ArrayList<>();
         this.lifePartList.stream().forEach(lifePart -> {
-            this.outputLifeService.runMoveAcceleration(lifePart);
-            this.outputLifeService.runOutputFields(lifePart);
+            this.outputLifeService.runOutputMoveAcceleration(lifePart);
+            this.outputLifeService.runOutputFields(newChildLifePartList, lifePart);
         });
+        this.lifePartList.addAll(newChildLifePartList);
+
         this.sunPartList.stream().forEach(lifePart -> {
-            this.outputLifeService.runMoveAcceleration(lifePart);
+            this.outputLifeService.runOutputMoveAcceleration(lifePart);
         });
     }
 
@@ -149,7 +169,9 @@ public class LifeService {
 
     private void runBrain(final LifePart lifePart) {
         final Brain brain = lifePart.getBrain();
-        brainService.calcBrain(brain);
+
+        this.brainService.calcBrain(brain);
+
         if (MainConfig.useEnergy) lifePart.getPart().addEnergy(-0.01);
     }
 
@@ -164,14 +186,52 @@ public class LifeService {
     private LifePart createSunPartByBrain(final Brain brain, final double energy) {
         final GridNode gridNode = this.hexGridService.searchRandomEmptyGridNode(true);
 
-        final Part part = new Part(Part.PartType.Sun, this.hexGridService.getFieldType(HexGridService.FieldTypeEnum.Sun), energy, false, 1);
+        final Part part = new Part(Part.PartType.Sun, energy, 1);
 
-        gridNode.addPart(this.hexGridService.getActCellArrPos(), part);
+        this.hexGridService.addPart(gridNode, part);
 
-        return new LifePart(brain, gridNode, part);
+        return new LifePart(this.sunPartIdentity, brain, gridNode, part);
     }
 
     public void calcGenPoolWinners() {
         this.lifePartList = this.generationLifeService.calcGenPoolWinners(this.lifePartList, this.lifePartCount);
+    }
+
+    public void initializeWalls() {
+
+        // Left-/ Right-Walls.
+        for (int posY = 0; posY < this.hexGridService.getNodeCountY(); posY++) {
+            final GridNode leftGridNode = this.hexGridService.getGridNode(0, posY);
+            final Part leftPart = new Part(Part.PartType.Wall, MainConfig.InitialWallPartEnergy, 0);
+            final LifePart leftLifePart = new LifePart(null, null, leftGridNode, leftPart);
+            leftGridNode.addPart(0, new Part(Part.PartType.Wall, MainConfig.InitialWallPartEnergy, 0));
+            this.wallPartList.add(leftLifePart);
+
+            final GridNode rightGridNode = this.hexGridService.getGridNode(this.hexGridService.getNodeCountX() - 1, posY);
+            final Part rightPart = new Part(Part.PartType.Wall, MainConfig.InitialWallPartEnergy, 0);
+            final LifePart rightLifePart = new LifePart(null, null, rightGridNode, rightPart);
+            rightGridNode.addPart(0, new Part(Part.PartType.Wall, MainConfig.InitialWallPartEnergy, 0));
+            this.wallPartList.add(rightLifePart);
+        }
+        // Bottom-Wall.
+        for (int posX = 0; posX < this.hexGridService.getNodeCountX(); posX++) {
+            final GridNode leftGridNode = this.hexGridService.getGridNode(posX, this.hexGridService.getNodeCountY() - 1);
+            final Part part = new Part(Part.PartType.Wall, MainConfig.InitialWallPartEnergy, 0);
+            final LifePart bottomLifePart = new LifePart(null, null, leftGridNode, part);
+            leftGridNode.addPart(0, part);
+            this.wallPartList.add(bottomLifePart);
+        }
+    }
+
+    public List<LifePart> getWallPartList() {
+        return this.wallPartList;
+    }
+
+    public List<LifePart> getSunPartList() {
+        return this.sunPartList;
+    }
+
+    public List<LifePart> getLifePartList() {
+        return this.lifePartList;
     }
 }

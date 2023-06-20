@@ -3,9 +3,11 @@ package de.schmiereck.hexWave.view;
 import de.schmiereck.hexWave.MainConfig;
 import de.schmiereck.hexWave.service.hexGrid.GridNode;
 import de.schmiereck.hexWave.service.hexGrid.Part;
+import de.schmiereck.hexWave.service.life.LifePart;
 import de.schmiereck.hexWave.service.life.LifeService;
 import de.schmiereck.hexWave.service.hexGrid.HexGrid;
 import de.schmiereck.hexWave.service.hexGrid.HexGridService;
+import de.schmiereck.hexWave.utils.MathUtils;
 import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -22,6 +24,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -53,12 +56,17 @@ public class HexWaveController implements Initializable
 
     @Override
     public void initialize(final URL url, final ResourceBundle resourceBundle) {
+        MainConfig.initConfig(MainConfig.ConfigEnum.LifeEnvironment);
+        //MainConfig.initConfig(MainConfig.ConfigEnum.JumpingBall);
+        //MainConfig.initConfig(MainConfig.ConfigEnum.BouncingBall);
+
         this.mainPane.setStyle("-fx-background-color: black;");
 
         //this.hexGridService.initialize(2, 1);
         this.hexGridService.initialize(10, 3);
+        this.lifeService.initializeWalls();
         this.lifeService.initialize(MainConfig.useLifeParts ? MainConfig.lifePartsCount : 0);
-        if (MainConfig.useBall) this.lifeService.initializeBall();
+        if (MainConfig.useBall) this.lifeService.initializeBall(MainConfig.config == MainConfig.ConfigEnum.BouncingBall);
 
         final HexGrid hexGrid = this.hexGridService.getHexGrid();
 
@@ -67,16 +75,10 @@ public class HexWaveController implements Initializable
         for (int posY = 0; posY < this.gridModel.getNodeCountY(); posY++) {
             for (int posX = 0; posX < this.gridModel.getNodeCountX(); posX++) {
                 final GridCellModel gridCellModel = this.gridModel.getGridCellModel(posX, posY);
-                final Circle gridNodeCircle2 = new Circle(4.0D, Color.TRANSPARENT);
-                gridNodeCircle2.setCenterX(gridCellModel.getScreenPosX());
-                gridNodeCircle2.setCenterY(gridCellModel.getScreenPosY());
-                gridNodeCircle2.setStroke(Color.RED);
-                gridNodeCircle2.setStrokeWidth(2.0D);
-                gridNodeCircle2.setVisible(false);
-                //gridNodeCircle.relocate(gridNode.getScreenPosX(), gridNode.getScreenPosY());
-                this.mainPane.getChildren().add(gridNodeCircle2);
-
-                this.gridModel.setShape2(posX, posY, gridNodeCircle2);
+                this.gridModel.setShape2(posX, posY, this.createCircleShape(gridCellModel));
+                this.gridModel.setShape3(posX, posY, this.createCircleShape(gridCellModel));
+                this.gridModel.setShape4(posX, posY, this.createCircleShape(gridCellModel));
+                this.gridModel.setShape5(posX, posY, this.createCircleShape(gridCellModel));
             }
         }
 
@@ -96,6 +98,19 @@ public class HexWaveController implements Initializable
         this.updateView();
     }
 
+    @NotNull
+    private Circle createCircleShape(GridCellModel gridCellModel) {
+        final Circle gridNodeCircle2 = new Circle(4.0D, Color.TRANSPARENT);
+        gridNodeCircle2.setCenterX(gridCellModel.getScreenPosX());
+        gridNodeCircle2.setCenterY(gridCellModel.getScreenPosY());
+        gridNodeCircle2.setStroke(Color.RED);
+        gridNodeCircle2.setStrokeWidth(2.0D);
+        gridNodeCircle2.setVisible(false);
+        //gridNodeCircle.relocate(gridNode.getScreenPosX(), gridNode.getScreenPosY());
+        this.mainPane.getChildren().add(gridNodeCircle2);
+        return gridNodeCircle2;
+    }
+
     @FXML
     protected void onNextButtonClick() {
         this.hexGridService.calcNext();
@@ -109,13 +124,13 @@ public class HexWaveController implements Initializable
     }
 
     @FXML
-    public void onNextGenerationButtonClick(ActionEvent actionEvent) {
+    public void onNextGenerationButtonClick(final ActionEvent actionEvent) {
         this.lifeService.calcGenPoolWinners();
         this.updateView();
     }
 
     @FXML
-    public void onStartRunButtonClick(ActionEvent actionEvent) {
+    public void onStartRunButtonClick(final ActionEvent actionEvent) {
         if (Objects.isNull(this.animationTimer)) {
             this.animationTimer = new AnimationTimer() {
                 @Override
@@ -124,6 +139,14 @@ public class HexWaveController implements Initializable
                 }
             };
             this.animationTimer.start();
+        }
+    }
+
+    @FXML
+    public void onStopRunButtonClick(final ActionEvent actionEvent) {
+        if (Objects.nonNull(this.animationTimer)) {
+            this.animationTimer.stop();
+            this.animationTimer = null;
         }
     }
 
@@ -148,14 +171,6 @@ public class HexWaveController implements Initializable
         this.updateView();
     }
 
-    @FXML
-    public void onStopRunButtonClick(ActionEvent actionEvent) {
-        if (Objects.nonNull(this.animationTimer)) {
-            this.animationTimer.stop();
-            this.animationTimer = null;
-        }
-    }
-
     public void updateView() {
         this.counterText.setText(String.format("Step: %d (Part-Steps: %,d)", this.hexGridService.retrieveStepCount(), this.hexGridService.retrievePartCount()));
 
@@ -163,73 +178,96 @@ public class HexWaveController implements Initializable
             for (int posX = 0; posX < this.gridModel.getNodeCountX(); posX++) {
                 final GridCellModel gridCellModel = this.gridModel.getGridCellModel(posX, posY);
 
-                final GridNode gridNode = this.hexGridService.retrieveGridNode(posX, posY);
-                final List<Part> gridNodePartList = gridNode.getPartList(0);
+                this.drawNothing(gridCellModel);
 
-                final Optional<Part> optionalPart = gridNodePartList.stream().findFirst();
-                if (optionalPart.isPresent()) {
-                    final Part part = optionalPart.get();
-                    switch (part.getPartType()) {
-                        case Nothing -> this.drawNothing(gridCellModel);
-                        case Life -> this.drawLife(gridCellModel);
-                        case Wall -> this.drawWall(gridCellModel);
-                        case Sun -> this.drawSun(gridCellModel);
-                    }
-                } else {
-                    this.drawNothing(gridCellModel);
-                }
-
-                final double partFieldValue = this.hexGridService.retrieveActGridNodePartFieldValue(posX, posY,
-                        this.hexGridService.getFieldType(HexGridService.FieldTypeEnum.Part));
+                //final double part1FieldValue = this.hexGridService.retrieveActGridNodePartFieldValue(posX, posY,
+                //        this.hexGridService.getFieldType(HexGridService.FieldTypeEnum.Part1));
+                //final double part2FieldValue = this.hexGridService.retrieveActGridNodePartFieldValue(posX, posY,
+                //        this.hexGridService.getFieldType(HexGridService.FieldTypeEnum.Part2));
+                //final double part3FieldValue = this.hexGridService.retrieveActGridNodePartFieldValue(posX, posY,
+                //        this.hexGridService.getFieldType(HexGridService.FieldTypeEnum.Part3));
                 final double partPushFieldValue = this.hexGridService.retrieveActGridNodePartFieldValue(posX, posY,
                         this.hexGridService.getFieldType(HexGridService.FieldTypeEnum.PartPush));
                 final double partPullFieldValue = this.hexGridService.retrieveActGridNodePartFieldValue(posX, posY,
                         this.hexGridService.getFieldType(HexGridService.FieldTypeEnum.PartPull));
+                final double comFieldValue = this.hexGridService.retrieveActGridNodePartFieldValue(posX, posY,
+                        this.hexGridService.getFieldType(HexGridService.FieldTypeEnum.Com));
 
-                final double fieldValue = partPushFieldValue;
+                //showCircleShape(gridCellModel.getShape2(), partFieldValue, Color.WHITE, Color.WHITE);
+                showCircleShape(gridCellModel.getShape3(), partPushFieldValue, Color.RED, Color.BLUE);
+                showCircleShape(gridCellModel.getShape4(), partPullFieldValue, Color.ORANGE, Color.AQUAMARINE);
+                showCircleShape(gridCellModel.getShape4(), comFieldValue, Color.TURQUOISE, Color.CORAL);
+            }
+        }
 
-                final Circle gridNodeCircle2 = gridCellModel.getShape2();
+        this.lifeService.getWallPartList().stream().forEach(lifePart -> {
+            drawLifePart(lifePart);
+        });
+        this.lifeService.getSunPartList().stream().forEach(lifePart -> {
+            drawLifePart(lifePart);
+        });
+        this.lifeService.getLifePartList().stream().forEach(lifePart -> {
+            drawLifePart(lifePart);
+        });
+    }
 
-                if (fieldValue > 0.0D) {
-                    gridNodeCircle2.setRadius(Math.min(fieldValue * 4.0D, 12.0D));
-                    gridNodeCircle2.setVisible(true);
-                    gridNodeCircle2.setStroke(Color.RED);
-                } else {
-                    if (fieldValue < 0.0D) {
-                        gridNodeCircle2.setRadius(Math.min(-fieldValue * 4.0D, 12.0D));
-                        gridNodeCircle2.setVisible(true);
-                        gridNodeCircle2.setStroke(Color.BLUE);
-                    } else {
+    private void drawLifePart(final LifePart lifePart) {
+        final GridNode gridNode = lifePart.getGridNode();
+        final Part part = lifePart.getPart();
+        final GridCellModel gridCellModel = this.gridModel.getGridCellModel(gridNode.getPosX(), gridNode.getPosY());
 
-                        gridNodeCircle2.setVisible(false);
-                    }
-                }
+        switch (part.getPartType()) {
+            case Nothing -> this.drawNothing(gridCellModel);
+            case Life -> this.drawLife(gridCellModel, lifePart);
+            case Wall -> this.drawWall(gridCellModel);
+            case Sun -> this.drawSun(gridCellModel);
+        }
+    }
+
+    private static void showCircleShape(final Circle gridNodeCircle2, final double fieldValue, final Color pColor, final Color nColor) {
+        if (fieldValue > 0.0D) {
+            gridNodeCircle2.setRadius(Math.min(fieldValue * 4.0D, 12.0D));
+            gridNodeCircle2.setVisible(true);
+            gridNodeCircle2.setStroke(pColor.interpolate(nColor, MathUtils.sigmoid(fieldValue)));
+        } else {
+            if (fieldValue < 0.0D) {
+                gridNodeCircle2.setRadius(Math.min(-fieldValue * 4.0D, 12.0D));
+                gridNodeCircle2.setVisible(true);
+                gridNodeCircle2.setStroke(nColor.interpolate(pColor, MathUtils.sigmoid(-fieldValue)));
+            } else {
+
+                gridNodeCircle2.setVisible(false);
             }
         }
     }
 
-    private void drawNothing(GridCellModel gridCellModel) {
+    private void drawNothing(final GridCellModel gridCellModel) {
         final Circle gridNodeCircle = gridCellModel.getShape();
 
         gridNodeCircle.setRadius(1.0D);
         gridNodeCircle.setFill(Color.DARKGRAY);
     }
 
-    private void drawLife(GridCellModel gridCellModel) {
+    private void drawLife(final GridCellModel gridCellModel, final LifePart lifePart) {
         final Circle gridNodeCircle = gridCellModel.getShape();
+        final Part part = lifePart.getPart();
 
-        gridNodeCircle.setRadius(9.0D);
-        gridNodeCircle.setFill(Color.WHITE);
+        gridNodeCircle.setRadius(4.0D + (MathUtils.sigmoid(part.getEnergy() * 5.0D)));
+        gridNodeCircle.setFill(Color.color(
+                Math.abs(MathUtils.sigmoid(lifePart.partIdentity.partIdentity[0])),
+                Math.abs(MathUtils.sigmoid(lifePart.partIdentity.partIdentity[1])),
+                Math.abs(MathUtils.sigmoid(lifePart.partIdentity.partIdentity[2]))
+                ));
     }
 
-    private void drawWall(GridCellModel gridCellModel) {
+    private void drawWall(final GridCellModel gridCellModel) {
         final Circle gridNodeCircle = gridCellModel.getShape();
 
         gridNodeCircle.setRadius(8.0D);
         gridNodeCircle.setFill(Color.GRAY);
     }
 
-    private void drawSun(GridCellModel gridCellModel) {
+    private void drawSun(final GridCellModel gridCellModel) {
         final Circle gridNodeCircle = gridCellModel.getShape();
 
         gridNodeCircle.setRadius(2.0D);
