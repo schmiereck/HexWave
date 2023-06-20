@@ -11,6 +11,15 @@ public class GenomOutput {
         EatNeighbourBN,
         EatNeighbourCP,
         EatNeighbourCN,
+        PushFieldA,
+        PushFieldB,
+        PushFieldC,
+        PullFieldA,
+        PullFieldB,
+        PullFieldC,
+        ComFieldA,
+        ComFieldB,
+        ComFieldC,
     }
     public final int outputId;
     public final int genomInputId;

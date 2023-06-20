@@ -2,12 +2,14 @@ package de.schmiereck.hexWave.service.hexGrid;
 
 import static de.schmiereck.hexWave.utils.DirUtils.calcOppositeDir;
 
+import de.schmiereck.hexWave.MainConfig;
 import de.schmiereck.hexWave.math.NumService;
 import de.schmiereck.hexWave.service.life.LifeService;
 import de.schmiereck.hexWave.utils.DirUtils;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
@@ -105,7 +107,7 @@ public class HexGridService {
     private FieldType[] fieldTypeArr = new FieldType[FieldTypeEnum.values().length];
     private final int maxAreaDistance;
 
-    public static boolean useWallPushField = false;
+    private final Random rnd = new Random();
 
     public HexGridService() {
         this.fieldTypeArr[FieldTypeEnum.Part.no] = new FieldType(5, true);    // Part
@@ -129,15 +131,15 @@ public class HexGridService {
         // Left-/ Right-Walls.
         for (int posY = 0; posY < this.hexGrid.getNodeCountY(); posY++) {
             final GridNode leftGridNode = this.getGridNode(0, posY);
-            leftGridNode.addPart(0, new Part(Part.PartType.Wall, this.getFieldType(FieldTypeEnum.Part), LifeService.InitialWallPartEnergy, false));
+            leftGridNode.addPart(0, new Part(Part.PartType.Wall, this.getFieldType(FieldTypeEnum.Part), MainConfig.InitialWallPartEnergy, false, 0));
 
             final GridNode rightGridNode = this.getGridNode(this.hexGrid.getNodeCountX() - 1, posY);
-            rightGridNode.addPart(0, new Part(Part.PartType.Wall, this.getFieldType(FieldTypeEnum.Part), LifeService.InitialWallPartEnergy, false));
+            rightGridNode.addPart(0, new Part(Part.PartType.Wall, this.getFieldType(FieldTypeEnum.Part), MainConfig.InitialWallPartEnergy, false, 0));
         }
         // Bottom-Wall.
         for (int posX = 0; posX < this.hexGrid.getNodeCountX(); posX++) {
             final GridNode leftGridNode = this.getGridNode(posX, this.hexGrid.getNodeCountY() - 1);
-            leftGridNode.addPart(0, new Part(Part.PartType.Wall, this.getFieldType(FieldTypeEnum.Part), LifeService.InitialWallPartEnergy, false));
+            leftGridNode.addPart(0, new Part(Part.PartType.Wall, this.getFieldType(FieldTypeEnum.Part), MainConfig.InitialWallPartEnergy, false, 0));
         }
 
         for (int posY = 0; posY < this.hexGrid.getNodeCountY(); posY++) {
@@ -213,6 +215,7 @@ public class HexGridService {
         for (int posY = 0; posY < this.hexGrid.getNodeCountY(); posY++) {
             for (int posX = 0; posX < this.hexGrid.getNodeCountX(); posX++) {
                 final GridNode gridNode = this.getGridNode(posX, posY);
+                final int finalPosX = posX;
 
                 //for (final FieldTypeEnum fieldTypeEnum : FieldTypeEnum.values()) {
                 //    final FieldType fieldType = this.getFieldType(fieldTypeEnum);
@@ -226,7 +229,7 @@ public class HexGridService {
 
                     // TODO Wenn Pull-Field output gesetzt, dann Feld aussenden.
 
-                    if (useWallPushField)
+                    if (MainConfig.useWallPushField)// && finalPosX == 32)
                     if (part.getPartType() == Part.PartType.Wall) {
                         final PartField pushPartField = new PartField(part, this.fieldTypeArr[FieldTypeEnum.PartPush.no]);
                         {
@@ -542,5 +545,23 @@ public class HexGridService {
 
     public void addPart(final GridNode gridNode, final Part part) {
         gridNode.addPart(this.getActCellArrPos(), part);
+    }
+
+    public GridNode searchRandomEmptyGridNode(final boolean onTop) {
+        GridNode gridNode;
+
+        do {
+            final int posX = this.rnd.nextInt(this.getNodeCountX() - 2) + 1;
+            final int posY;
+            if (onTop) {
+                posY = 0;
+            } else {
+                posY = this.rnd.nextInt(this.getNodeCountY() - 2) + 1;
+            }
+            gridNode = this.getGridNode(posX, posY);
+        }
+        while (!gridNode.getPartList(0).isEmpty());
+
+        return gridNode;
     }
 }

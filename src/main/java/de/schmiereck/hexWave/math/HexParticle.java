@@ -5,10 +5,10 @@ public class HexParticle {
     public final MoveHexVector moveHexVector;
     public final int mass;
 
-    public HexParticle() {
+    public HexParticle(final int mass) {
         this.velocityHexVector = new HexVector();
         this.moveHexVector = new MoveHexVector();
-        this.mass = 8;
+        this.mass = mass;
     }
 
     public HexVector getVelocityHexVector() {

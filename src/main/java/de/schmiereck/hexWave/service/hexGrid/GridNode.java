@@ -91,12 +91,14 @@ public class GridNode {
 
         //final double posValue = (MAX_AREA_DISTANCE / ((gridNodePos / 2.0D) + 1.0D)) / MAX_AREA_DISTANCE;
         //final double posValue = ((MAX_AREA_DISTANCE - (gridNodePos / 2))) / (double)MAX_AREA_DISTANCE;
-        final double posValue = ((areaNodeCount - (gridNodePos / 2))) / (double)areaNodeCount;
+        final double posValue = (((areaNodeCount) - (gridNodePos / 2))) / (double)(areaNodeCount);
+        //final double posValue = (((areaNodeCount / 2) - (gridNodePos / 2))) / (double)(areaNodeCount / 2);
 
         //final double value = 1.0D;
         //final double value = distanceValue * posValue;
         //final double value = areaDistanceValue;
         final double value = areaDistanceValue * distanceValue * posValue;
+        //System.out.printf("value:%f\n", value);
 
         gridNode.addGridNodeAreaRef(new GridNodeAreaRef(gridNodeArea, value));
     }

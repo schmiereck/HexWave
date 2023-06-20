@@ -20,12 +20,12 @@ public class Part {
 
     private double energy;
 
-    public Part(final PartType partType, final FieldType fieldType, final double energy, final boolean useField) {
+    public Part(final PartType partType, final FieldType fieldType, final double energy, final boolean useField, final int mass) {
         this.partType = partType;
         this.fieldType = fieldType;
         this.energy = energy;
         this.partField = useField ? new PartField(this, fieldType) : null;
-        this.hexParticle = new HexParticle();
+        this.hexParticle = new HexParticle(mass);
     }
 
     public PartType getPartType() {

@@ -1,5 +1,6 @@
 package de.schmiereck.hexWave.view;
 
+import de.schmiereck.hexWave.MainConfig;
 import de.schmiereck.hexWave.service.hexGrid.GridNode;
 import de.schmiereck.hexWave.service.hexGrid.Part;
 import de.schmiereck.hexWave.service.life.LifeService;
@@ -46,10 +47,6 @@ public class HexWaveController implements Initializable
 
     private AnimationTimer animationTimer;
 
-    public static boolean useSunshine = false;
-    public static boolean useLifeParts = false;
-    public static boolean useBall = true;
-
     @FXML
     public void initialize() {
     }
@@ -60,8 +57,8 @@ public class HexWaveController implements Initializable
 
         //this.hexGridService.initialize(2, 1);
         this.hexGridService.initialize(10, 3);
-        this.lifeService.initialize(useLifeParts ? 130 : 0);
-        if (useBall) this.lifeService.initializeBall();
+        this.lifeService.initialize(MainConfig.useLifeParts ? MainConfig.lifePartsCount : 0);
+        if (MainConfig.useBall) this.lifeService.initializeBall();
 
         final HexGrid hexGrid = this.hexGridService.getHexGrid();
 
@@ -139,9 +136,12 @@ public class HexWaveController implements Initializable
 
         // Output Results.
 
-        if (useSunshine) this.lifeService.addSunshine();
+        if (MainConfig.useSunshine) this.lifeService.addSunshine();
         this.lifeService.runOutputActionResults();
-        this.lifeService.runCollisions();
+
+        this.lifeService.calcAcceleration();
+
+        this.lifeService.runMoveOrCollisions();
 
         this.lifeService.calcNext();
 

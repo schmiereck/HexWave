@@ -130,14 +130,38 @@ public class HexMathUtils {
         cn  bp
      *
      */
-    public static void calcNextMove(final Cell.Dir moveDir, final MoveHexVector moveHexVector) {
+    public static void calcNextMove(final Cell.Dir moveDir, final MoveHexVector moveHexVector, final HexVector velocityHexVector) {
         switch (moveDir) {
-            case BP -> moveHexVector.b -= MaxMoveValue;
-            case CN -> moveHexVector.c += MaxMoveValue;
-            case AN -> moveHexVector.a += MaxMoveValue;
-            case BN -> moveHexVector.b += MaxMoveValue;
-            case CP -> moveHexVector.c -= MaxMoveValue;
-            case AP -> moveHexVector.a -= MaxMoveValue;
+            case AN -> moveHexVector.a += (MaxMoveValue);
+            case AP -> moveHexVector.a -= (MaxMoveValue);
+            case BN -> moveHexVector.b += (MaxMoveValue);
+            case BP -> moveHexVector.b -= (MaxMoveValue);
+            case CN -> moveHexVector.c += (MaxMoveValue);
+            case CP -> moveHexVector.c -= (MaxMoveValue);
+            default -> throw new IllegalStateException("Unexpected dir value: " + moveDir);
+        }
+    }
+
+    public static void calcNextMove2(final Cell.Dir moveDir, final MoveHexVector moveHexVector, final HexVector velocityHexVector) {
+        switch (moveDir) {
+            case AN -> moveHexVector.a += (MaxMoveValue + (MaxMoveValue - velocityHexVector.a));
+            case AP -> moveHexVector.a -= (MaxMoveValue + (MaxMoveValue - velocityHexVector.a));
+            case BN -> moveHexVector.b += (MaxMoveValue + (MaxMoveValue - velocityHexVector.b));
+            case BP -> moveHexVector.b -= (MaxMoveValue + (MaxMoveValue - velocityHexVector.b));
+            case CN -> moveHexVector.c += (MaxMoveValue + (MaxMoveValue - velocityHexVector.c));
+            case CP -> moveHexVector.c -= (MaxMoveValue + (MaxMoveValue - velocityHexVector.c));
+            default -> throw new IllegalStateException("Unexpected dir value: " + moveDir);
+        }
+    }
+
+    public static void calcNextMove3(final Cell.Dir moveDir, final MoveHexVector moveHexVector, final HexVector velocityHexVector) {
+        switch (moveDir) {
+            case AN -> moveHexVector.a += (MaxMoveValue + (MaxMoveValue));
+            case AP -> moveHexVector.a -= (MaxMoveValue + (MaxMoveValue));
+            case BN -> moveHexVector.b += (MaxMoveValue + (MaxMoveValue));
+            case BP -> moveHexVector.b -= (MaxMoveValue + (MaxMoveValue));
+            case CN -> moveHexVector.c += (MaxMoveValue + (MaxMoveValue));
+            case CP -> moveHexVector.c -= (MaxMoveValue + (MaxMoveValue));
             default -> throw new IllegalStateException("Unexpected dir value: " + moveDir);
         }
     }
@@ -178,6 +202,14 @@ public class HexMathUtils {
         calcSetMove(a1HexParticle, moveDir,  -m1);
     }
 
+    public static void calcElasticCollisionWithSolidWall2(final HexParticle a1HexParticle, final Cell.Dir moveDir) {
+        final int v1 = calcGetVelocity(a1HexParticle, moveDir);
+        //final int m1 = calcGetMove(a1HexParticle, moveDir);
+
+        calcSetVelocity(a1HexParticle, moveDir,  -v1);
+        //calcSetMove(a1HexParticle, moveDir,  -m1);
+    }
+
     private static int calcGetVelocity(final HexParticle hexParticle, final Cell.Dir moveDir) {
         final int velocity;
         switch (moveDir) {
@@ -205,14 +237,14 @@ public class HexMathUtils {
         return velocity;
     }
 
-    private static int calcAddVelocity(final HexParticle hexParticle, final Cell.Dir moveDir, final int velocity) {
+    public static int calcAddVelocity(final HexParticle hexParticle, final Cell.Dir moveDir, final int velocity) {
         switch (moveDir) {
-            case BP -> hexParticle.getVelocityHexVector().b += velocity;
-            case CN -> hexParticle.getVelocityHexVector().c += velocity;
-            case AN -> hexParticle.getVelocityHexVector().a += velocity;
-            case BN -> hexParticle.getVelocityHexVector().b += velocity;
-            case CP -> hexParticle.getVelocityHexVector().c += velocity;
             case AP -> hexParticle.getVelocityHexVector().a += velocity;
+            case AN -> hexParticle.getVelocityHexVector().a -= velocity;
+            case BP -> hexParticle.getVelocityHexVector().b += velocity;
+            case BN -> hexParticle.getVelocityHexVector().b -= velocity;
+            case CP -> hexParticle.getVelocityHexVector().c += velocity;
+            case CN -> hexParticle.getVelocityHexVector().c -= velocity;
             default -> throw new IllegalStateException("Unexpected dir value: " + moveDir);
         }
         return velocity;
