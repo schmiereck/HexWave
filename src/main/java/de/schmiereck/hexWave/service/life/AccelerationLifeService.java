@@ -16,6 +16,9 @@ public class AccelerationLifeService {
     @Autowired
     private HexGridService hexGridService;
 
+    @Autowired
+    private FieldTypeService fieldTypeService;
+
     public void calcGravitationalAcceleration(final LifePart lifePart) {
         final HexParticle hexParticle = lifePart.getPart().getHexParticle();
         hexParticle.velocityHexVector.c -= 1;
@@ -23,7 +26,7 @@ public class AccelerationLifeService {
     }
 
     public void calcFieldAcceleration(final LifePart lifePart) {
-        final FieldType partPushFieldType = this.hexGridService.getFieldType(HexGridService.FieldTypeEnum.PartPush);
+        final FieldType partPushFieldType = this.fieldTypeService.getFieldType(FieldTypeService.FieldTypeEnum.PartPush);
         final int maxAreaDistance = this.hexGridService.getMaxAreaDistance();
         final GridNode gridNode = lifePart.getGridNode();
         /*

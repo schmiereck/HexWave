@@ -48,12 +48,22 @@ public class GridNodeArea {
     }
 
     /**
-     * @return 0:2, 1:3, 2:4, 3:5...
+     * @return 0:1, 1:2, 2:3, 3:4, ...
+     */
+    public static int calcGridNodeArrSizeForMaxAreaDistance(final int maxAreaDistance) {
+        return maxAreaDistance + 1;
+    }
+
+    /**
+     * @return 0:2, 1:3, 2:4, 3:5, ...
      */
     public static int calcGridNodeSizeForAreaDistance(final int areaDistance) {
         return areaDistance + 2;
     }
 
+    /**
+     * @return 0:1, 1:3, 2:5, 3:7, ...
+     */
     public static int calcGridNodeSizeForAreaDistancePos(final int areaDistancePos) {
         return ((areaDistancePos + 1) * 2) - 1;
     }
@@ -132,7 +142,7 @@ public class GridNodeArea {
         void forEarch(final GridNode gridNode);
     }
 
-    public void forEarchGridNode(ForEarchGridNodeInterface forEarchGridNode) {
+    public void forEarchGridNode(final ForEarchGridNodeInterface forEarchGridNode) {
         //final int startAreaDistancePos = 0;
         final int startAreaDistancePos = this.gridNodeArr.length - 1;
 

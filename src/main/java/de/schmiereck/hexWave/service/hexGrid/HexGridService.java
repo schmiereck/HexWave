@@ -91,47 +91,16 @@ public class HexGridService {
 
     private int cellArrPos = 0;
     private int stepCount = 0;
-
-    public enum FieldTypeEnum {
-        Part1(0),
-        Part2(1),
-        Part3(2),
-        Com(3),
-        PartPull(4),
-        PartPush(5),
-        Sun(6);
-
-        public int no;
-
-        FieldTypeEnum(final int no) {
-            this.no = no;
-        }
-    }
-    private FieldType[] fieldTypeArr = new FieldType[FieldTypeEnum.values().length];
-    private final int maxAreaDistance;
+    private int maxAreaDistance;
 
     private final Random rnd = new Random();
 
     public HexGridService() {
-        this.fieldTypeArr[FieldTypeEnum.Part1.no] = new FieldType(5, true);    // Part
-        this.fieldTypeArr[FieldTypeEnum.Part2.no] = new FieldType(5, true);    // Part
-        this.fieldTypeArr[FieldTypeEnum.Part3.no] = new FieldType(5, true);    // Part
-        this.fieldTypeArr[FieldTypeEnum.Com.no] = new FieldType(5, true);    // Part
-        this.fieldTypeArr[FieldTypeEnum.PartPull.no] = new FieldType(3, false);
-        this.fieldTypeArr[FieldTypeEnum.PartPush.no] = new FieldType(5, false);
-        this.fieldTypeArr[FieldTypeEnum.Sun.no] = new FieldType(0, true);    // Sun
-        this.maxAreaDistance = this.fieldTypeArr[FieldTypeEnum.Part1.no].getMaxAreaDistance();
     }
 
-    public FieldType getFieldType(final FieldTypeEnum fieldTypeEnum) {
-        return this.fieldTypeArr[fieldTypeEnum.no];
-    }
+    public void initialize(final int sizeX, final int sizeY, final int maxAreaDistance) {
+        this.maxAreaDistance = maxAreaDistance;
 
-    public int getMaxAreaDistance() {
-        return this.maxAreaDistance;
-    }
-
-    public void initialize(final int sizeX, final int sizeY) {
         this.hexGrid = new HexGrid(sizeX, sizeY, this.getMaxAreaDistance());
 
         for (int posY = 0; posY < this.hexGrid.getNodeCountY(); posY++) {
@@ -143,30 +112,55 @@ public class HexGridService {
                     final Cell.Dir rightDir = DirUtils.calcDirByRotOffset(dir, 2);
 
                     // Iterator all Areas.
-                    for (int areaDistance = 0; areaDistance < getMaxAreaDistance(); areaDistance++) {
-                        //final GridNode neighbourGridNode = this.getNeighbourGridNode(posX, posY, dir, areaDistance);
-                        final GridNode neighbourGridNode = this.getGridNode(posX, posY);
+                    for (int areaDistance = 0; areaDistance < GridNodeArea.calcGridNodeArrSizeForMaxAreaDistance(this.getMaxAreaDistance()); areaDistance++) {
 
                         //final int startAreaDistancePos = 0;
-                        final int startAreaDistancePos = areaDistance + 1;
-                        for (int areaDistancePos = startAreaDistancePos; areaDistancePos <= (areaDistance + 1); areaDistancePos++) {
-                            //DirUtils.calcOppositeDir(dir)
-                            final GridNode neighbourareaDistanceGridNode = this.getNeighbourGridNode(neighbourGridNode, dir, areaDistancePos);
-                            gridNode.setGridNodeAreaArr(dir, areaDistance, areaDistancePos, 0, neighbourareaDistanceGridNode, this.getMaxAreaDistance());
+                        final int startAreaDistancePos = areaDistance;
+                        for (int areaDistancePos = startAreaDistancePos; areaDistancePos <= (areaDistance); areaDistancePos++) {
+                            final GridNode neighbourareaDistanceGridNode = this.getNeighbourGridNode(gridNode, dir, areaDistancePos);
 
+                            // Set Middle Node.
+                            gridNode.setGridNodeAreaArr(dir, areaDistance, areaDistancePos, 0, neighbourareaDistanceGridNode,
+                                    calcGridNodeAreaRefValue(areaDistance, areaDistancePos, 0, this.getMaxAreaDistance()));
+
+                            // Set Left&Right Nodes.
                             for (int gridNodePos = 1; gridNodePos <= areaDistancePos; gridNodePos++) {
                                 final GridNode leftNeighbourGridNode = this.getNeighbourGridNode(neighbourareaDistanceGridNode, leftDir, gridNodePos);
                                 final GridNode rightNeighbourGridNode = this.getNeighbourGridNode(neighbourareaDistanceGridNode, rightDir, gridNodePos);
 
                                 // 1: (1, 2), 2: (3, 4), 3: (5, 6), ...
-                                gridNode.setGridNodeAreaArr(dir, areaDistance, areaDistancePos, gridNodePos * 2 - 1, leftNeighbourGridNode, this.getMaxAreaDistance());
-                                gridNode.setGridNodeAreaArr(dir, areaDistance, areaDistancePos, gridNodePos * 2, rightNeighbourGridNode, this.getMaxAreaDistance());
+                                gridNode.setGridNodeAreaArr(dir, areaDistance, areaDistancePos, gridNodePos * 2 - 1, leftNeighbourGridNode,
+                                        calcGridNodeAreaRefValue(areaDistance, areaDistancePos, gridNodePos, this.getMaxAreaDistance()));
+                                gridNode.setGridNodeAreaArr(dir, areaDistance, areaDistancePos, gridNodePos * 2, rightNeighbourGridNode,
+                                        calcGridNodeAreaRefValue(areaDistance, areaDistancePos, gridNodePos, this.getMaxAreaDistance()));
                             }
                         }
                     }
                 }
             }
         }
+    }
+
+    public static double calcGridNodeAreaRefValue(final int areaDistance, final int areaDistancePos, final int gridNodePos, final int maxAreaDistance) {
+        final int areaNodeCount = GridNodeArea.calcGridNodeSizeForAreaDistance(areaDistance);
+
+        final double areaDistanceValue = (((maxAreaDistance + 1) - areaDistance) / (double)maxAreaDistance);
+
+        //final double distanceValue = (areaDistancePos / (double)MAX_AREA_DISTANCE);
+        //final double distanceValue = (areaDistancePos / (double)areaNodeCount);
+        final double distanceValue = ((areaDistancePos + 1) / (double)areaDistance);
+
+        //final double posValue = (MAX_AREA_DISTANCE / ((gridNodePos / 2.0D) + 1.0D)) / MAX_AREA_DISTANCE;
+        //final double posValue = ((MAX_AREA_DISTANCE - (gridNodePos / 2))) / (double)MAX_AREA_DISTANCE;
+        final double posValue = (((areaDistancePos + 1) - (gridNodePos))) / (double)(areaDistancePos);
+        //final double posValue = (((areaNodeCount / 2) - (gridNodePos / 2))) / (double)(areaNodeCount / 2);
+
+        //final double value = 1.0D;
+        //final double value = distanceValue * posValue;
+        //final double value = areaDistanceValue;
+        final double value = areaDistanceValue * distanceValue * posValue;
+        //System.out.printf("value:%f\n", value);
+        return value;
     }
 
     public GridNode getGridNode(int posX, int posY) {
@@ -215,23 +209,6 @@ public class HexGridService {
 
                 populatePartFieldToHigherAreas(gridNode, fieldCalcType, this.getMaxAreaDistance());
                 populateAntiPartFieldToHigherAreas(gridNode, fieldCalcType, this.getMaxAreaDistance());
-
-                gridNode.getPartList(this.getActCellArrPos()).stream().forEach(part -> {
-                    // TODO Wenn Pull-Field output gesetzt, dann Feld aussenden.
-
-                    if (MainConfig.useWallPushField)// && finalPosX == 32)
-                    if (part.getPartType() == Part.PartType.Wall) {
-                        final PartField pushPartField = new PartField(part, this.getFieldType(FieldTypeEnum.PartPush), 1.0D);
-                        {
-                            final GridNodeArea gridNodeArea = gridNode.getGridNodeArea(Cell.Dir.BN, 0);
-                            gridNodeArea.addPartField(pushPartField);
-                        }
-                        {
-                            final GridNodeArea gridNodeArea = gridNode.getGridNodeArea(Cell.Dir.CP, 0);
-                            gridNodeArea.addPartField(pushPartField);
-                        }
-                    }
-                });
             }
         }
 
@@ -272,7 +249,7 @@ public class HexGridService {
 
     private static void populatePartFieldToHigherAreas(final GridNode gridNode, final FieldCalcType fieldCalcType, final int maxAreaDistance) {
         for (final Cell.Dir dir : Cell.Dir.values()) {
-            final GridNodeArea lastGridNodeArea = gridNode.getGridNodeArea(dir, maxAreaDistance - 1);
+            final GridNodeArea lastGridNodeArea = gridNode.getGridNodeArea(dir, maxAreaDistance);
 
             // Clear the highest Part-Field-List and use it as a new lowest Part-Field-List.
 
@@ -281,12 +258,12 @@ public class HexGridService {
 
             // Populate the Part-Field to higher areas (and higher distances).
 
-            for (int areaDistance = 0; areaDistance < maxAreaDistance; areaDistance++) {
+            for (int areaDistance = 0; areaDistance < GridNodeArea.calcGridNodeArrSizeForMaxAreaDistance(maxAreaDistance); areaDistance++) {
                 final GridNodeArea gridNodeArea = gridNode.getGridNodeArea(dir, areaDistance);
                 final int finalAreaDistance = areaDistance;
 
                 lastPartFieldList = lastPartFieldList.stream().
-                        filter(partField -> (partField.getParentAreaDistance() + finalAreaDistance) < partField.getFieldType().getMaxAreaDistance()).
+                        filter(partField -> (partField.getParentAreaDistance() + finalAreaDistance) <= partField.getFieldType().getMaxAreaDistance()).
                         collect(Collectors.toList());
 
                 switch (fieldCalcType) {
@@ -304,7 +281,7 @@ public class HexGridService {
 
     private static void populateAntiPartFieldToHigherAreas(final GridNode gridNode, final FieldCalcType fieldCalcType, final int maxAreaDistance) {
         for (final Cell.Dir dir : Cell.Dir.values()) {
-            final GridNodeArea lastGridNodeArea = gridNode.getGridNodeArea(dir, maxAreaDistance - 1);
+            final GridNodeArea lastGridNodeArea = gridNode.getGridNodeArea(dir, maxAreaDistance);
 
             // Clear the highest Part-Field-List and use it as a new lowest Part-Field-List.
 
@@ -313,12 +290,12 @@ public class HexGridService {
 
             // Populate the Part-Field to higher areas (and higher distances).
 
-            for (int areaDistance = 0; areaDistance < maxAreaDistance; areaDistance++) {
+            for (int areaDistance = 0; areaDistance < GridNodeArea.calcGridNodeArrSizeForMaxAreaDistance(maxAreaDistance); areaDistance++) {
                 final GridNodeArea gridNodeArea = gridNode.getGridNodeArea(dir, areaDistance);
                 final int finalAreaDistance = areaDistance;
 
                 lastPartFieldList = lastPartFieldList.stream().
-                        filter(partField -> (partField.getParentAreaDistance() + finalAreaDistance) < partField.getFieldType().getMaxAreaDistance()).
+                        filter(partField -> (partField.getParentAreaDistance() + finalAreaDistance) <= partField.getFieldType().getMaxAreaDistance()).
                         collect(Collectors.toList());
 
                 lastPartFieldList = gridNodeArea.setAntiPartFieldList(lastPartFieldList);
@@ -361,7 +338,7 @@ public class HexGridService {
 
         final List<PartField> filteredLastPartFieldList = lastPartFieldList.stream().
                 filter(lastPartField ->
-                    (lastPartField.getParentAreaDistance() + areaDistance) < lastPartField.getFieldType().getMaxAreaDistance()
+                    (lastPartField.getParentAreaDistance() + areaDistance) <= lastPartField.getFieldType().getMaxAreaDistance()
                 ).collect(Collectors.toList());
 
         return filteredLastPartFieldList;
@@ -498,8 +475,10 @@ public class HexGridService {
             final GridNodeArea gridNodeArea = gridNodeAreaRef.getGridNodeArea();
             final double refValue = gridNodeAreaRef.getValue();
             for (final PartField gridNodeAreaPartField : gridNodeArea.getPartFieldList()) {
+                final int parentAreaDistance = gridNodeAreaPartField.getParentAreaDistance() + 1;
                 if (gridNodeAreaPartField.getFieldType() == filterFieldType) {
-                    value += refValue / gridNodeAreaPartField.getParentAreaDistance();
+                    value += (refValue / parentAreaDistance);
+                    //value += 1;//refValue / gridNodeAreaPartField.getParentAreaDistance();
                 }
             }
             for (final PartField antiPartField : gridNodeArea.getAntiPartFieldList()) {
@@ -544,5 +523,9 @@ public class HexGridService {
         while ((!gridNode.getPartList(0).isEmpty()) && (searchCnt > 0));
 
         return gridNode;
+    }
+
+    public int getMaxAreaDistance() {
+        return this.maxAreaDistance;
     }
 }

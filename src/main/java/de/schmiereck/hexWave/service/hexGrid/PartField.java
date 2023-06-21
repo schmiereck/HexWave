@@ -11,7 +11,7 @@ public class PartField {
         this.part = part;
         this.fieldType = fieldType;
         this.parentPartField = null;
-        this.parentAreaDistance = 1;
+        this.parentAreaDistance = 0;
         this.value = value;
     }
 

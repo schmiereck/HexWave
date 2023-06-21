@@ -25,6 +25,9 @@ public class OutputLifeService {
     private HexGridService hexGridService;
 
     @Autowired
+    private FieldTypeService fieldTypeService;
+
+    @Autowired
     private BirthLifeService birthLifeService;
 
     public void runEatNeighbour(final LifePart lifePart) {
@@ -55,45 +58,45 @@ public class OutputLifeService {
         final Part part = lifePart.getPart();
         final GridNode gridNode = lifePart.getGridNode();
 
-        this.runOutputField(part, gridNode, HexGridService.FieldTypeEnum.Part1, lifePart.partIdentity.partIdentity[0], Cell.Dir.AP);
-        this.runOutputField(part, gridNode, HexGridService.FieldTypeEnum.Part1, lifePart.partIdentity.partIdentity[0], Cell.Dir.AN);
-        this.runOutputField(part, gridNode, HexGridService.FieldTypeEnum.Part1, lifePart.partIdentity.partIdentity[0], Cell.Dir.BP);
-        this.runOutputField(part, gridNode, HexGridService.FieldTypeEnum.Part1, lifePart.partIdentity.partIdentity[0], Cell.Dir.BN);
-        this.runOutputField(part, gridNode, HexGridService.FieldTypeEnum.Part1, lifePart.partIdentity.partIdentity[0], Cell.Dir.CP);
-        this.runOutputField(part, gridNode, HexGridService.FieldTypeEnum.Part1, lifePart.partIdentity.partIdentity[0], Cell.Dir.CN);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.Part1, lifePart.partIdentity.partIdentity[0], Cell.Dir.AP);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.Part1, lifePart.partIdentity.partIdentity[0], Cell.Dir.AN);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.Part1, lifePart.partIdentity.partIdentity[0], Cell.Dir.BP);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.Part1, lifePart.partIdentity.partIdentity[0], Cell.Dir.BN);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.Part1, lifePart.partIdentity.partIdentity[0], Cell.Dir.CP);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.Part1, lifePart.partIdentity.partIdentity[0], Cell.Dir.CN);
 
-        this.runOutputField(part, gridNode, HexGridService.FieldTypeEnum.Part2, lifePart.partIdentity.partIdentity[1], Cell.Dir.AP);
-        this.runOutputField(part, gridNode, HexGridService.FieldTypeEnum.Part2, lifePart.partIdentity.partIdentity[1], Cell.Dir.AN);
-        this.runOutputField(part, gridNode, HexGridService.FieldTypeEnum.Part2, lifePart.partIdentity.partIdentity[1], Cell.Dir.BP);
-        this.runOutputField(part, gridNode, HexGridService.FieldTypeEnum.Part2, lifePart.partIdentity.partIdentity[1], Cell.Dir.BN);
-        this.runOutputField(part, gridNode, HexGridService.FieldTypeEnum.Part2, lifePart.partIdentity.partIdentity[1], Cell.Dir.CP);
-        this.runOutputField(part, gridNode, HexGridService.FieldTypeEnum.Part2, lifePart.partIdentity.partIdentity[1], Cell.Dir.CN);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.Part2, lifePart.partIdentity.partIdentity[1], Cell.Dir.AP);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.Part2, lifePart.partIdentity.partIdentity[1], Cell.Dir.AN);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.Part2, lifePart.partIdentity.partIdentity[1], Cell.Dir.BP);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.Part2, lifePart.partIdentity.partIdentity[1], Cell.Dir.BN);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.Part2, lifePart.partIdentity.partIdentity[1], Cell.Dir.CP);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.Part2, lifePart.partIdentity.partIdentity[1], Cell.Dir.CN);
 
-        this.runOutputField(part, gridNode, HexGridService.FieldTypeEnum.Part3, lifePart.partIdentity.partIdentity[2], Cell.Dir.AP);
-        this.runOutputField(part, gridNode, HexGridService.FieldTypeEnum.Part3, lifePart.partIdentity.partIdentity[2], Cell.Dir.AN);
-        this.runOutputField(part, gridNode, HexGridService.FieldTypeEnum.Part3, lifePart.partIdentity.partIdentity[2], Cell.Dir.BP);
-        this.runOutputField(part, gridNode, HexGridService.FieldTypeEnum.Part3, lifePart.partIdentity.partIdentity[2], Cell.Dir.BN);
-        this.runOutputField(part, gridNode, HexGridService.FieldTypeEnum.Part3, lifePart.partIdentity.partIdentity[2], Cell.Dir.CP);
-        this.runOutputField(part, gridNode, HexGridService.FieldTypeEnum.Part3, lifePart.partIdentity.partIdentity[2], Cell.Dir.CN);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.Part3, lifePart.partIdentity.partIdentity[2], Cell.Dir.AP);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.Part3, lifePart.partIdentity.partIdentity[2], Cell.Dir.AN);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.Part3, lifePart.partIdentity.partIdentity[2], Cell.Dir.BP);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.Part3, lifePart.partIdentity.partIdentity[2], Cell.Dir.BN);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.Part3, lifePart.partIdentity.partIdentity[2], Cell.Dir.CP);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.Part3, lifePart.partIdentity.partIdentity[2], Cell.Dir.CN);
 
-        this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.ComFieldA), HexGridService.FieldTypeEnum.Com, Cell.Dir.AP, Cell.Dir.AN);
-        this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.ComFieldB), HexGridService.FieldTypeEnum.Com, Cell.Dir.BP, Cell.Dir.BN);
-        this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.ComFieldC), HexGridService.FieldTypeEnum.Com, Cell.Dir.CP, Cell.Dir.CN);
+        this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.ComFieldA), FieldTypeService.FieldTypeEnum.Com, Cell.Dir.AP, Cell.Dir.AN);
+        this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.ComFieldB), FieldTypeService.FieldTypeEnum.Com, Cell.Dir.BP, Cell.Dir.BN);
+        this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.ComFieldC), FieldTypeService.FieldTypeEnum.Com, Cell.Dir.CP, Cell.Dir.CN);
 
-        this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.PushFieldA), HexGridService.FieldTypeEnum.PartPush, Cell.Dir.AP, Cell.Dir.AN);
-        this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.PushFieldB), HexGridService.FieldTypeEnum.PartPush, Cell.Dir.BP, Cell.Dir.BN);
-        this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.PushFieldC), HexGridService.FieldTypeEnum.PartPush, Cell.Dir.CP, Cell.Dir.CN);
+        this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.PushFieldA), FieldTypeService.FieldTypeEnum.PartPush, Cell.Dir.AP, Cell.Dir.AN);
+        this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.PushFieldB), FieldTypeService.FieldTypeEnum.PartPush, Cell.Dir.BP, Cell.Dir.BN);
+        this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.PushFieldC), FieldTypeService.FieldTypeEnum.PartPush, Cell.Dir.CP, Cell.Dir.CN);
 
-        this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.PullFieldA), HexGridService.FieldTypeEnum.PartPull, Cell.Dir.AP, Cell.Dir.AN);
-        this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.PullFieldB), HexGridService.FieldTypeEnum.PartPull, Cell.Dir.BP, Cell.Dir.BN);
-        this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.PullFieldC), HexGridService.FieldTypeEnum.PartPull, Cell.Dir.CP, Cell.Dir.CN);
+        this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.PullFieldA), FieldTypeService.FieldTypeEnum.PartPull, Cell.Dir.AP, Cell.Dir.AN);
+        this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.PullFieldB), FieldTypeService.FieldTypeEnum.PartPull, Cell.Dir.BP, Cell.Dir.BN);
+        this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.PullFieldC), FieldTypeService.FieldTypeEnum.PartPull, Cell.Dir.CP, Cell.Dir.CN);
 
         this.runBirth(newChildLifePartList, lifePart, gridNode, brain.getOutput(GenomOutput.OutputName.BirthA), Cell.Dir.AP, Cell.Dir.AN);
         this.runBirth(newChildLifePartList, lifePart, gridNode, brain.getOutput(GenomOutput.OutputName.BirthB), Cell.Dir.BP, Cell.Dir.BN);
         this.runBirth(newChildLifePartList, lifePart, gridNode, brain.getOutput(GenomOutput.OutputName.BirthC), Cell.Dir.CP, Cell.Dir.CN);
     }
 
-    private void runOutputField(final Part part, final GridNode gridNode, final double field, final HexGridService.FieldTypeEnum fieldTypeEnum, final Cell.Dir pDir, final Cell.Dir nDir) {
+    private void runOutputField(final Part part, final GridNode gridNode, final double field, final FieldTypeService.FieldTypeEnum fieldTypeEnum, final Cell.Dir pDir, final Cell.Dir nDir) {
         if (field > 0.1D) {
             this.runOutputField(part, gridNode, fieldTypeEnum, field, pDir);
         } else {
@@ -103,9 +106,9 @@ public class OutputLifeService {
         }
     }
 
-    private void runOutputField(final Part part, final GridNode gridNode, final HexGridService.FieldTypeEnum fieldTypeEnum, final double fieldValue, final Cell.Dir dir) {
-        final PartField pushPartField = new PartField(part, this.hexGridService.getFieldType(fieldTypeEnum), fieldValue);
-        final GridNodeArea gridNodeArea = gridNode.getGridNodeArea(dir, 0);
+    private void runOutputField(final Part part, final GridNode gridNode, final FieldTypeService.FieldTypeEnum fieldTypeEnum, final double fieldValue, final Cell.Dir dir) {
+        final PartField pushPartField = new PartField(part, this.fieldTypeService.getFieldType(fieldTypeEnum), fieldValue);
+        final GridNodeArea gridNodeArea = gridNode.getGridNodeArea(dir, MainConfig.LifePartOutputFieldStartAreaDistance);
         gridNodeArea.addPartField(pushPartField);
     }
 

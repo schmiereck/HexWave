@@ -38,10 +38,10 @@ public class GridNode {
 
         this.gridNodeAreaArr = new GridNodeArea[Cell.Dir.values().length][];
         for (final Cell.Dir dir : Cell.Dir.values()) {
-            final GridNodeArea[] gridNodeAreaArr = new GridNodeArea[maxAreaDistance];
+            final GridNodeArea[] gridNodeAreaArr = new GridNodeArea[GridNodeArea.calcGridNodeArrSizeForMaxAreaDistance(maxAreaDistance)];
             this.gridNodeAreaArr[dir.ordinal()] = gridNodeAreaArr;
 
-            for (int areaDistance = 0; areaDistance < maxAreaDistance; areaDistance++) {
+            for (int areaDistance = 0; areaDistance < GridNodeArea.calcGridNodeArrSizeForMaxAreaDistance(maxAreaDistance); areaDistance++) {
                 gridNodeAreaArr[areaDistance] = new GridNodeArea(this, dir, areaDistance);
             }
         }
@@ -79,26 +79,10 @@ public class GridNode {
         return this.gridNodeAreaArr[dir.ordinal()][areaDistance];
     }
 
-    public void setGridNodeAreaArr(final Cell.Dir dir, final int areaDistance, final int areaDistancePos, final int gridNodePos, final GridNode gridNode, final int maxAreaDistance) {
+    public void setGridNodeAreaArr(final Cell.Dir dir, final int areaDistance, final int areaDistancePos, final int gridNodePos,
+                                   final GridNode gridNode, final double value) {
         final GridNodeArea gridNodeArea = this.gridNodeAreaArr[dir.ordinal()][areaDistance];
         gridNodeArea.setGridNodeAreaArr(areaDistancePos, gridNodePos, gridNode);
-        final int areaNodeCount = GridNodeArea.calcGridNodeSizeForAreaDistance(areaDistance);
-
-        final double areaDistanceValue = ((maxAreaDistance - areaDistance) / (double)maxAreaDistance);
-
-        //final double distanceValue = (areaDistancePos / (double)MAX_AREA_DISTANCE);
-        final double distanceValue = (areaDistancePos / (double)areaNodeCount);
-
-        //final double posValue = (MAX_AREA_DISTANCE / ((gridNodePos / 2.0D) + 1.0D)) / MAX_AREA_DISTANCE;
-        //final double posValue = ((MAX_AREA_DISTANCE - (gridNodePos / 2))) / (double)MAX_AREA_DISTANCE;
-        final double posValue = (((areaNodeCount) - (gridNodePos / 2))) / (double)(areaNodeCount);
-        //final double posValue = (((areaNodeCount / 2) - (gridNodePos / 2))) / (double)(areaNodeCount / 2);
-
-        //final double value = 1.0D;
-        //final double value = distanceValue * posValue;
-        //final double value = areaDistanceValue;
-        final double value = areaDistanceValue * distanceValue * posValue;
-        //System.out.printf("value:%f\n", value);
 
         gridNode.addGridNodeAreaRef(new GridNodeAreaRef(gridNodeArea, value));
     }
