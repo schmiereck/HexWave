@@ -11,6 +11,7 @@ import de.schmiereck.hexWave.service.hexGrid.HexGridService;
 import de.schmiereck.hexWave.service.hexGrid.Part;
 import de.schmiereck.hexWave.service.hexGrid.PartField;
 import de.schmiereck.hexWave.utils.HexMathUtils;
+import de.schmiereck.hexWave.utils.MathUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -30,25 +31,56 @@ public class OutputLifeService {
     @Autowired
     private BirthLifeService birthLifeService;
 
-    public void runEatNeighbour(final LifePart lifePart) {
+    public void runEatNeighbourEnergy(final LifePart lifePart) {
         // Output: Eat the Neighbour-Part or not.
         final GridNode gridNode = lifePart.getGridNode();
         final Brain brain = lifePart.getBrain();
         for (final Cell.Dir dir : Cell.Dir.values()) {
             final double brainOutput = brain.getEatNeighbourOutput(dir);
-            if (brainOutput > 0.5D) {
-                final GridNode neighbourGridNode = this.hexGridService.getNeighbourGridNode(gridNode, dir);
-                final List<Part> neighbourPartList = this.hexGridService.getPartList(neighbourGridNode);
-                if (!neighbourPartList.isEmpty()) {
-                    final Part neighbourPart = neighbourPartList.get(0);
-                    final double energy = neighbourPart.getEnergy();
-                    neighbourPart.setEnergy(0.0D);
-
-                    if (energy > 0.0D) {
-                        final Part part = lifePart.getPart();
-                        part.addEnergy(energy);
-                    }
+            if (brainOutput > 0.05D) {
+                this.calcEatEnergyFromNeighbour(lifePart, gridNode, dir, brainOutput);
+            } else {
+                if (brainOutput < -0.05D) {
+                    this.calcGiveEnergyToNeighbour(lifePart, gridNode, dir, -brainOutput);
                 }
+            }
+        }
+    }
+
+    private void calcEatEnergyFromNeighbour(LifePart lifePart, GridNode gridNode, Cell.Dir dir, double brainOutput) {
+        final GridNode neighbourGridNode = this.hexGridService.getNeighbourGridNode(gridNode, dir);
+        final List<Part> neighbourPartList = this.hexGridService.getPartList(neighbourGridNode);
+        if (!neighbourPartList.isEmpty()) {
+            final Part neighbourPart = neighbourPartList.get(0);
+            final double neighbourEnergy = neighbourPart.getEnergy();
+
+            final double eatPercent = MathUtils.sigmoid(brainOutput);
+            final double eatValue = neighbourEnergy * eatPercent;
+
+            if (eatValue > 0.0D) {
+                neighbourPart.subEnergy(eatValue);
+
+                final Part part = lifePart.getPart();
+                part.addEnergy(eatValue);
+            }
+        }
+    }
+
+    private void calcGiveEnergyToNeighbour(LifePart lifePart, GridNode gridNode, Cell.Dir dir, double brainOutput) {
+        final GridNode neighbourGridNode = this.hexGridService.getNeighbourGridNode(gridNode, dir);
+        final List<Part> neighbourPartList = this.hexGridService.getPartList(neighbourGridNode);
+        if (!neighbourPartList.isEmpty()) {
+            final Part neighbourPart = neighbourPartList.get(0);
+            final double energy = neighbourPart.getEnergy();
+
+            final double givePercent = MathUtils.sigmoid(brainOutput);
+            final double giveValue = energy * givePercent;
+
+            if (giveValue > 0.0D) {
+                neighbourPart.addEnergy(giveValue);
+
+                final Part part = lifePart.getPart();
+                part.subEnergy(giveValue);
             }
         }
     }

@@ -42,6 +42,10 @@ public class Part implements Serializable {
         this.energy += energy;
     }
 
+    public void subEnergy(final double energy) {
+        this.energy -= energy;
+    }
+
     public HexParticle getHexParticle() {
         return this.hexParticle;
     }

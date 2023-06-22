@@ -18,7 +18,11 @@ directions:
   * List<GridNodeAreaRef> gridNodeAreaRefList
 
 ## ToDo
-* eat energy from other Part (not the whole)
+* Tentacles/ Pull-/Push-Fields
+  * Move only push/pull to other parts (using Fields)
+    * remove direct acceleration
+  * Connect/ Release to other Parts
+* DONE eat energy from other Part (not the whole)
 * use Energie
     * DONE eat other parts
     * DONE death if low/ empty
@@ -34,9 +38,6 @@ directions:
   * DONE cloning if population shrinks
   * DONE asexual reproduction
   * sexual reproduction
-* Tentacles/ Pull-/Push-Fields
-    * Move with
-    * Connect/ Release to other Parts
 * more complex environment
   * Air, Water, Wallpaper, ...
   * DONE Gravitation

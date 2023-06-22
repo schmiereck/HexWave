@@ -126,7 +126,7 @@ public class HexWaveController implements Initializable
         gridNodeCircle2.setCenterX(gridCellModel.getScreenPosX());
         gridNodeCircle2.setCenterY(gridCellModel.getScreenPosY());
         gridNodeCircle2.setStroke(Color.RED);
-        gridNodeCircle2.setStrokeWidth(2.0D);
+        gridNodeCircle2.setStrokeWidth(1.0D);
         gridNodeCircle2.setVisible(false);
         //gridNodeCircle.relocate(gridNode.getScreenPosX(), gridNode.getScreenPosY());
         this.mainPane.getChildren().add(gridNodeCircle2);
@@ -255,8 +255,8 @@ public class HexWaveController implements Initializable
                 final double comFieldValue = this.hexGridService.retrieveActGridNodePartFieldValue(posX, posY,
                         this.fieldTypeService.getFieldType(FieldTypeService.FieldTypeEnum.Com));
 
-                final double extraValue = this.hexGridService.retrieveActGridNodeExtraValue(posX, posY);
-                showCircleShape(gridCellModel.getShape2(), extraValue, Color.WHITE, Color.WHITE);
+                //final double extraValue = this.hexGridService.retrieveActGridNodeExtraValue(posX, posY);
+                //showCircleShape(gridCellModel.getShape2(), extraValue, Color.WHITE, Color.WHITE);
 
                 showCircleShape(gridCellModel.getShape3(), partPushFieldValue, Color.RED, Color.ORANGE);
                 showCircleShape(gridCellModel.getShape4(), partPullFieldValue, Color.BLUE, Color.AQUA);

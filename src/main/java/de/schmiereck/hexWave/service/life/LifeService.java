@@ -216,7 +216,7 @@ public class LifeService {
     public void runOutputActionResults() {
         if (MainConfig.useEat)
         this.lifePartList.stream().forEach(lifePart -> {
-            this.outputLifeService.runEatNeighbour(lifePart);
+            this.outputLifeService.runEatNeighbourEnergy(lifePart);
         });
 
         final List<LifePart> newChildLifePartList = new ArrayList<>();
