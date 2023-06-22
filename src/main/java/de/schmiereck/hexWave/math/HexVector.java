@@ -1,5 +1,7 @@
 package de.schmiereck.hexWave.math;
 
-public class HexVector {
+import java.io.Serializable;
+
+public class HexVector implements Serializable {
     public int a, b, c;
 }

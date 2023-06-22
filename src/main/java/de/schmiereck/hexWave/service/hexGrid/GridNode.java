@@ -12,7 +12,7 @@ public class GridNode {
     private final int posX;
     private final int posY;
 
-    private final Cell[] cellArr;
+    private final Cell cellArr;
 
     /**
      * Is the Grid-Node-Area for this Node in the given Direction and the given Distance.
@@ -32,9 +32,7 @@ public class GridNode {
     public GridNode(final int posX, final int posY, final int maxAreaDistance) {
         this.posX = posX;
         this.posY = posY;
-        this.cellArr = new Cell[2];
-        this.cellArr[0] = new Cell();
-        this.cellArr[1] = new Cell();
+        this.cellArr = new Cell();
 
         this.gridNodeAreaArr = new GridNodeArea[Cell.Dir.values().length][];
         for (final Cell.Dir dir : Cell.Dir.values()) {
@@ -55,20 +53,20 @@ public class GridNode {
         return this.posY;
     }
 
-    public List<Part> getPartList(final int cellArrPos) {
-        return this.cellArr[cellArrPos].getPartList();
+    List<Part> getPartList() {
+        return this.cellArr.getPartList();
     }
 
-    public void addPart(final int cellArrPos, final Part part) {
-        this.cellArr[cellArrPos].addPart(part);
+    void addPart(final Part part) {
+        this.cellArr.addPart(part);
 
         this.gridNodeAreaRefList.stream().forEach(gridNodeAreaRef -> {
             gridNodeAreaRef.getGridNodeArea().addPart(part);
         });
     }
 
-    public void removePart(final int cellArrPos, final Part part) {
-        this.cellArr[cellArrPos].removePart(part);
+    void removePart(final Part part) {
+        this.cellArr.removePart(part);
 
         this.gridNodeAreaRefList.stream().forEach(gridNodeAreaRef -> {
             gridNodeAreaRef.getGridNodeArea().removePart(part);

@@ -22,6 +22,8 @@
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
             </padding>
 
+            <Button text="Load..." onAction="#onLoadButtonClick"/>
+            <Button text="Save..." onAction="#onSaveButtonClick"/>
             <Button text="Next" onAction="#onNextButtonClick"/>
             <Button text="Next&amp;Move" onAction="#onNextAndMoveButtonClick"/>
             <Button text="Next Generation" onAction="#onNextGenerationButtonClick"/>

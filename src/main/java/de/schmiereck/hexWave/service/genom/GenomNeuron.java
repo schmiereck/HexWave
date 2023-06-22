@@ -1,9 +1,14 @@
 package de.schmiereck.hexWave.service.genom;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GenomNeuron implements GenomInputInterface {
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "neuronId")
+public class GenomNeuron implements GenomInputInterface, Serializable {
     public final int neuronId;
 
     public List<GenomConnector> genomConnectorList = new ArrayList<>();

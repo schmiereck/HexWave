@@ -2,7 +2,9 @@ package de.schmiereck.hexWave.service.hexGrid;
 
 import de.schmiereck.hexWave.math.HexParticle;
 
-public class Part {
+import java.io.Serializable;
+
+public class Part implements Serializable {
     public enum PartType {
         Nothing,
         Air,

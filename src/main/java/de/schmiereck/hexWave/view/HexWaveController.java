@@ -1,6 +1,7 @@
 package de.schmiereck.hexWave.view;
 
 import de.schmiereck.hexWave.MainConfig;
+import de.schmiereck.hexWave.service.genom.Genom;
 import de.schmiereck.hexWave.service.hexGrid.FieldType;
 import de.schmiereck.hexWave.service.hexGrid.GridNode;
 import de.schmiereck.hexWave.service.hexGrid.Part;
@@ -20,15 +21,25 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class HexWaveController implements Initializable
@@ -65,6 +76,8 @@ public class HexWaveController implements Initializable
         //MainConfig.initConfig(MainConfig.ConfigEnum.JumpingBall);
         //MainConfig.initConfig(MainConfig.ConfigEnum.BouncingBall);
         //MainConfig.initConfig(MainConfig.ConfigEnum.ShowFields);
+        //MainConfig.initConfig(MainConfig.ConfigEnum.OnlySun);
+        //MainConfig.initConfig(MainConfig.ConfigEnum.NoMoves);
 
         this.mainPane.setStyle("-fx-background-color: black;");
 
@@ -118,6 +131,46 @@ public class HexWaveController implements Initializable
         //gridNodeCircle.relocate(gridNode.getScreenPosX(), gridNode.getScreenPosY());
         this.mainPane.getChildren().add(gridNodeCircle2);
         return gridNodeCircle2;
+    }
+
+    @FXML
+    protected void onLoadButtonClick() {
+        final List<Genom> genomList;
+        final File file = new File("demo1.hex.json");
+
+        var objectMapper = new ObjectMapper();
+        try {
+            genomList = objectMapper.readValue(file, List.class);
+        } catch (JsonMappingException e) {
+            throw new RuntimeException(e);
+        } catch (JsonParseException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        this.updateView();
+    }
+
+    @FXML
+    protected void onSaveButtonClick() {
+        final List<LifePart> lifePartList = this.lifeService.getLifePartList();
+        final List<Genom> genomList = lifePartList.stream().map(lifePart -> lifePart.getBrain().getGenom()).collect(Collectors.toList());
+
+        final File file = new File("demo1.hex.json");
+
+        var objectMapper = new ObjectMapper();
+        try {
+            // mapper.registerModule(new JavaTimeModule());
+            objectMapper.writeValue(file, genomList);
+        } catch (JsonMappingException e) {
+            throw new RuntimeException(e);
+        } catch (JsonGenerationException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @FXML
@@ -181,7 +234,7 @@ public class HexWaveController implements Initializable
     }
 
     public void updateView() {
-        this.counterText.setText(String.format("Step: %d (Part-Steps: %,d)", this.hexGridService.retrieveStepCount(), this.hexGridService.retrievePartCount()));
+        this.counterText.setText(String.format("Step: %d (Parts: %,d)", this.hexGridService.retrieveStepCount(), this.lifeService.retrievePartCount()));
 
         for (int posY = 0; posY < this.gridModel.getNodeCountY(); posY++) {
             for (int posX = 0; posX < this.gridModel.getNodeCountX(); posX++) {
@@ -202,10 +255,12 @@ public class HexWaveController implements Initializable
                 final double comFieldValue = this.hexGridService.retrieveActGridNodePartFieldValue(posX, posY,
                         this.fieldTypeService.getFieldType(FieldTypeService.FieldTypeEnum.Com));
 
-                //showCircleShape(gridCellModel.getShape2(), partFieldValue, Color.WHITE, Color.WHITE);
-                showCircleShape(gridCellModel.getShape3(), partPushFieldValue, Color.RED, Color.BLUE);
-                showCircleShape(gridCellModel.getShape4(), partPullFieldValue, Color.ORANGE, Color.AQUAMARINE);
-                showCircleShape(gridCellModel.getShape4(), comFieldValue, Color.TURQUOISE, Color.CORAL);
+                final double extraValue = this.hexGridService.retrieveActGridNodeExtraValue(posX, posY);
+                showCircleShape(gridCellModel.getShape2(), extraValue, Color.WHITE, Color.WHITE);
+
+                showCircleShape(gridCellModel.getShape3(), partPushFieldValue, Color.RED, Color.ORANGE);
+                showCircleShape(gridCellModel.getShape4(), partPullFieldValue, Color.BLUE, Color.AQUA);
+                showCircleShape(gridCellModel.getShape5(), comFieldValue, Color.TURQUOISE, Color.CORAL);
             }
         }
 
@@ -235,12 +290,12 @@ public class HexWaveController implements Initializable
 
     private static void showCircleShape(final Circle gridNodeCircle2, final double fieldValue, final Color pColor, final Color nColor) {
         if (fieldValue > 0.0D) {
-            gridNodeCircle2.setRadius(Math.min(fieldValue * 4.0D, 12.0D));
+            gridNodeCircle2.setRadius(Math.min(fieldValue * 2.0D, 12.0D));
             gridNodeCircle2.setVisible(true);
             gridNodeCircle2.setStroke(pColor.interpolate(nColor, MathUtils.sigmoid(fieldValue)));
         } else {
             if (fieldValue < 0.0D) {
-                gridNodeCircle2.setRadius(Math.min(-fieldValue * 4.0D, 12.0D));
+                gridNodeCircle2.setRadius(Math.min(-fieldValue * 2.0D, 12.0D));
                 gridNodeCircle2.setVisible(true);
                 gridNodeCircle2.setStroke(nColor.interpolate(pColor, MathUtils.sigmoid(-fieldValue)));
             } else {

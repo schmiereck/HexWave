@@ -2,7 +2,9 @@ package de.schmiereck.hexWave.service.brain;
 
 import de.schmiereck.hexWave.service.genom.GenomConnector;
 
-public class BrainConnector {
+import java.io.Serializable;
+
+public class BrainConnector implements Serializable {
     public final GenomConnector genomConnector;
     public final BrainInputInterface brainInput;
     public double inValue;

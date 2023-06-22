@@ -1,6 +1,12 @@
 package de.schmiereck.hexWave.service.genom;
 
-public class GenomOutput {
+import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "outputId")
+public class GenomOutput implements Serializable {
     public enum OutputName {
         MoveA,
         MoveB,

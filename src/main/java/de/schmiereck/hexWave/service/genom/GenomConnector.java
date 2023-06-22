@@ -1,6 +1,8 @@
 package de.schmiereck.hexWave.service.genom;
 
-public class GenomConnector {
+import java.io.Serializable;
+
+public class GenomConnector implements Serializable {
     public final int genomInputId;
     public final double weight;
     public final double bias;

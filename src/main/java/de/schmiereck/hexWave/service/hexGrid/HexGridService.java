@@ -89,7 +89,6 @@ public class HexGridService {
 
     private HexGrid hexGrid;
 
-    private int cellArrPos = 0;
     private int stepCount = 0;
     private int maxAreaDistance;
 
@@ -168,9 +167,9 @@ public class HexGridService {
     }
 
     public GridNode movePart(final GridNode gridNode, final Part part, final Cell.Dir dir) {
-        gridNode.removePart(this.getActCellArrPos(), part);
+        gridNode.removePart(part);
         final GridNode newGridNode = this.getNeighbourGridNode(gridNode, dir);
-        newGridNode.addPart(this.getActCellArrPos(), part);
+        newGridNode.addPart(part);
         return newGridNode;
     }
 
@@ -192,7 +191,7 @@ public class HexGridService {
                     final GridNode sourceGridNode = this.getNeighbourGridNode(posX, posY, dir);
 
                     final Cell.Dir sourceDir = calcOppositeDir(dir);
-                    sourceGridNode.getPartList(this.getActCellArrPos()).stream().forEach(sourcePart -> {
+                    sourceGridNode.getPartList().stream().forEach(sourcePart -> {
                     });
                 }
             }
@@ -225,7 +224,7 @@ public class HexGridService {
                                 gridNodeArea.getPartFieldList().stream().
                                         forEach(partField -> {
                                             if (partField.getFieldType().getUseRefection()) {
-                                                gridNode.getPartList(this.getActCellArrPos()).stream().
+                                                gridNode.getPartList().stream().
                                                         filter(part -> partField.getPart() != part).
                                                         forEach(part -> {
                                                             sendAntiPartField(gridNode, gridNodeAreaRef, gridNodeArea, partField, partField.getPart());
@@ -408,7 +407,7 @@ public class HexGridService {
         for (int posY = 0; posY < this.hexGrid.getNodeCountY(); posY++) {
             for (int posX = 0; posX < this.hexGrid.getNodeCountX(); posX++) {
                 final GridNode gridNode = this.getGridNode(posX, posY);
-                gridNode.getPartList(this.getNextCellArrPos()).clear();
+                gridNode.getPartList().clear();
             }
         }
     }
@@ -421,36 +420,8 @@ public class HexGridService {
         return this.getGridNode(posX, posY);
     }
 
-    public int getActCellArrPos() {
-        return this.cellArrPos;
-    }
-
-    private int getNextCellArrPos() {
-        return this.cellArrPos == 0 ? 1 : 0;
-    }
-
-    private void calcNextCellArrPos() {
-        this.cellArrPos = this.getNextCellArrPos();
-    }
-
     public int retrieveStepCount() {
         return this.stepCount;
-    }
-
-    /** fiona
-     *  0   1   2   3   4   5   6   7       8       9       10      11      12      13
-     *  1   3   9   27  81  243 729 2.187   6.561   19.683  59.049  177.147 53.441  1.594.323
-     *  1   3   6   17  27  54  105 186     316     511     808     1.254   1.884   2.741
-     */
-    public long retrievePartCount() {
-        long partCount = 0;
-        for (int posY = 0; posY < this.hexGrid.getNodeCountY(); posY++) {
-            for (int posX = 0; posX < this.hexGrid.getNodeCountX(); posX++) {
-                final GridNode gridNode = this.getGridNode(posX, posY);
-                partCount += gridNode.getPartList(this.getActCellArrPos()).size();
-            }
-        }
-        return partCount;
     }
 
     public GridNodeArea retrieveActGridNodeArea(final int posX, final int posY, final Cell.Dir dir, final int areaDistance) {
@@ -461,7 +432,7 @@ public class HexGridService {
         double value = 0.0D;
         final GridNode gridNode = this.getGridNode(posX, posY);
 
-        for (final Part part : gridNode.getPartList(this.getActCellArrPos())) {
+        for (final Part part : gridNode.getPartList()) {
             value += 1.0D;
         }
         return value;
@@ -490,6 +461,13 @@ public class HexGridService {
         return value;
     }
 
+    public double retrieveActGridNodeExtraValue(final int posX, final int posY) {
+        double value = 0.0D;
+        final GridNode gridNode = this.getGridNode(posX, posY);
+
+        return this.getPartList(gridNode).size();
+    }
+
     public int getNodeCountX() {
         return this.hexGrid.getNodeCountX();
     }
@@ -499,11 +477,11 @@ public class HexGridService {
     }
 
     public void removePart(final GridNode gridNode, final Part part) {
-        gridNode.removePart(this.getActCellArrPos(), part);
+        gridNode.removePart(part);
     }
 
     public void addPart(final GridNode gridNode, final Part part) {
-        gridNode.addPart(this.getActCellArrPos(), part);
+        gridNode.addPart(part);
     }
 
     public GridNode searchRandomEmptyGridNode(final boolean onTop) {
@@ -520,7 +498,7 @@ public class HexGridService {
             gridNode = this.getGridNode(posX, posY);
             searchCnt--;
         }
-        while ((!gridNode.getPartList(0).isEmpty()) && (searchCnt > 0));
+        while ((!gridNode.getPartList().isEmpty()) && (searchCnt > 0));
 
         return gridNode;
     }
@@ -528,4 +506,9 @@ public class HexGridService {
     public int getMaxAreaDistance() {
         return this.maxAreaDistance;
     }
+
+    public List<Part> getPartList(GridNode gridNode) {
+        return gridNode.getPartList();
+    }
+
 }

@@ -5,9 +5,10 @@ import de.schmiereck.hexWave.service.genom.GenomOutput;
 import de.schmiereck.hexWave.service.hexGrid.Cell;
 import de.schmiereck.hexWave.service.hexGrid.Part;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Brain {
+public class Brain implements Serializable {
     private final Genom genom;
     public BrainSensor[] brainSensorArr;
     public BrainNeuron[] brainNeuronArr;

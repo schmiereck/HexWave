@@ -2,7 +2,9 @@ package de.schmiereck.hexWave.service.brain;
 
 import de.schmiereck.hexWave.service.genom.GenomOutput;
 
-public class BrainOutput {
+import java.io.Serializable;
+
+public class BrainOutput implements Serializable {
     public final GenomOutput genomOutput;
 
     public final BrainInputInterface brainInput;

@@ -5,7 +5,9 @@ public class MainConfig {
         LifeEnvironment,
         JumpingBall,
         BouncingBall,
-        ShowFields
+        ShowFields,
+        OnlySun,
+        NoMoves
     };
 
     public static ConfigEnum config;
@@ -14,6 +16,11 @@ public class MainConfig {
     public static boolean useGravitation = true;
     public static boolean useSunshine = true;
     public static boolean useLifeParts = true;
+    public static boolean useBirth = true;
+    public static boolean useBirthOutput = true;
+    public static boolean useMoveLifePart = true;
+    public static boolean useMoveSunPart = true;
+    public static boolean useEat = true;
     //public static int lifePartsCount = 80;
     public static int lifePartsCount = 160;
     public static boolean useBall = false;
@@ -34,7 +41,8 @@ public class MainConfig {
         config = configEnum;
         switch (configEnum) {
             case LifeEnvironment -> {
-
+                // Defaults.
+                //useBirthOutput = false;
             }
             case JumpingBall -> {
                 useBall = true;
@@ -54,6 +62,16 @@ public class MainConfig {
                 useLifeParts = false;
                 useEnergy = false;
                 useGravitation = false;
+            }
+            case OnlySun -> {
+                useLifeParts = false;
+            }
+            case NoMoves -> {
+                useBirthOutput = false;
+                useSunshine = false;
+                useMoveLifePart = false;
+                useMoveSunPart = false;
+                useEat = false;
             }
         }
     }

@@ -9,7 +9,6 @@ import de.schmiereck.hexWave.service.genom.GenomOutput;
 import de.schmiereck.hexWave.service.genom.GenomSensor;
 import de.schmiereck.hexWave.service.genom.GenomService;
 import de.schmiereck.hexWave.service.hexGrid.Cell;
-import de.schmiereck.hexWave.service.hexGrid.FieldType;
 import de.schmiereck.hexWave.service.hexGrid.GridNode;
 import de.schmiereck.hexWave.service.hexGrid.GridNodeArea;
 import de.schmiereck.hexWave.service.hexGrid.HexGridService;
@@ -18,6 +17,7 @@ import de.schmiereck.hexWave.service.hexGrid.PartField;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,21 +85,21 @@ public class LifeService {
             final GridNode leftGridNode = this.hexGridService.getGridNode(0, posY);
             final Part leftPart = new Part(Part.PartType.Wall, MainConfig.InitialWallPartEnergy, 0);
             final LifePart leftLifePart = new LifePart(null, null, leftGridNode, leftPart);
-            leftGridNode.addPart(0, new Part(Part.PartType.Wall, MainConfig.InitialWallPartEnergy, 0));
+            this.hexGridService.addPart(leftGridNode, new Part(Part.PartType.Wall, MainConfig.InitialWallPartEnergy, 0));
             this.wallPartList.add(leftLifePart);
 
             final GridNode rightGridNode = this.hexGridService.getGridNode(this.hexGridService.getNodeCountX() - 1, posY);
             final Part rightPart = new Part(Part.PartType.Wall, MainConfig.InitialWallPartEnergy, 0);
             final LifePart rightLifePart = new LifePart(null, null, rightGridNode, rightPart);
-            rightGridNode.addPart(0, new Part(Part.PartType.Wall, MainConfig.InitialWallPartEnergy, 0));
+            this.hexGridService.addPart(rightGridNode, new Part(Part.PartType.Wall, MainConfig.InitialWallPartEnergy, 0));
             this.wallPartList.add(rightLifePart);
         }
         // Bottom-Wall.
         for (int posX = 0; posX < this.hexGridService.getNodeCountX(); posX++) {
-            final GridNode leftGridNode = this.hexGridService.getGridNode(posX, this.hexGridService.getNodeCountY() - 1);
-            final Part part = new Part(Part.PartType.Wall, MainConfig.InitialWallPartEnergy, 0);
-            final LifePart bottomLifePart = new LifePart(null, null, leftGridNode, part);
-            leftGridNode.addPart(0, part);
+            final GridNode bottomGridNode = this.hexGridService.getGridNode(posX, this.hexGridService.getNodeCountY() - 1);
+            final Part bottomPart = new Part(Part.PartType.Wall, MainConfig.InitialWallPartEnergy, 0);
+            final LifePart bottomLifePart = new LifePart(null, null, bottomGridNode, bottomPart);
+            this.hexGridService.addPart(bottomGridNode, bottomPart);
             this.wallPartList.add(bottomLifePart);
         }
     }
@@ -122,7 +122,7 @@ public class LifeService {
 
         final Part part = new Part(Part.PartType.Life, MainConfig.InitialLifePartEnergy, 8);
 
-        gridNode.addPart(this.hexGridService.getActCellArrPos(), part);
+        this.hexGridService.addPart(gridNode, part);
 
         final PartIdentity partIdentity = this.birthLifeService.createPartIdentity();
         final LifePart lifePart = new LifePart(partIdentity, brain, gridNode, part);
@@ -181,7 +181,7 @@ public class LifeService {
 
         final Part part = new Part(Part.PartType.Life, MainConfig.InitialLifePartEnergy, 8);
 
-        gridNode.addPart(this.hexGridService.getActCellArrPos(), part);
+        this.hexGridService.addPart(gridNode, part);
 
         final PartIdentity partIdentity = this.birthLifeService.createPartIdentity();
         final LifePart lifePart = new LifePart(partIdentity, brain, gridNode, part);
@@ -214,6 +214,7 @@ public class LifeService {
     }
 
     public void runOutputActionResults() {
+        if (MainConfig.useEat)
         this.lifePartList.stream().forEach(lifePart -> {
             this.outputLifeService.runEatNeighbour(lifePart);
         });
@@ -237,11 +238,13 @@ public class LifeService {
     }
 
     public void runMoveOrCollisions() {
+        if (MainConfig.useMoveLifePart)
         this.lifePartList.stream().forEach(lifePart -> {
             if (MainConfig.useBall) printDebug(lifePart);
             //TODO this.runCollisionWithSingleDir(lifePart);
             this.moveLiveService.runMoveOrCollisionWithDirList(lifePart);
         });
+        if (MainConfig.useMoveSunPart)
         this.sunPartList.stream().forEach(lifePart -> {
             this.moveLiveService.runMoveOrCollisionWithDirList(lifePart);
         });
@@ -256,10 +259,12 @@ public class LifeService {
     }
 
     public void calcNext() {
-        this.lifePartList.removeIf(lifePart -> this.generationLifeService.runDeath(lifePart));
-        this.sunPartList.removeIf(lifePart -> this.generationLifeService.runDeath(lifePart));
+        //this.lifePartList.removeIf(lifePart -> this.generationLifeService.runDeath(lifePart));
+        this.lifePartList = this.lifePartList.stream().filter(lifePart -> !this.generationLifeService.runDeath(lifePart)).collect(Collectors.toList());
+        //this.sunPartList.removeIf(lifePart -> this.generationLifeService.runDeath(lifePart));
+        this.sunPartList = this.sunPartList.stream().filter(lifePart -> !this.generationLifeService.runDeath(lifePart)).collect(Collectors.toList());
 
-        this.generationLifeService.runBirth(this.lifePartList, this.lifePartCount, true);
+        if (MainConfig.useBirth) this.generationLifeService.runBirth(this.lifePartList, this.lifePartCount, true);
 
         this.hexGridService.calcNext();
     }
@@ -322,4 +327,7 @@ public class LifeService {
         return this.lifePartList;
     }
 
+    public long retrievePartCount() {
+        return this.lifePartList.size();
+    }
 }

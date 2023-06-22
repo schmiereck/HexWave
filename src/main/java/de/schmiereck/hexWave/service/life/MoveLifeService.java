@@ -80,14 +80,14 @@ public class MoveLifeService {
         final Part blockingPart;
         final GridNode gridNode = lifePart.getGridNode();
         final GridNode newGridNode = this.hexGridService.getNeighbourGridNode(gridNode, dir);
-        if (newGridNode.getPartList(this.hexGridService.getActCellArrPos()).isEmpty()) {
+        if (this.hexGridService.getPartList(newGridNode).isEmpty()) {
             final Part part = lifePart.getPart();
             this.hexGridService.removePart(gridNode, part);
             this.hexGridService.addPart(newGridNode, part);
             lifePart.setGridNode(newGridNode);
             blockingPart = null;
         } else {
-            blockingPart = newGridNode.getPartList(this.hexGridService.getActCellArrPos()).get(0);
+            blockingPart = this.hexGridService.getPartList(newGridNode).get(0);
         }
         return blockingPart;
     }
@@ -96,10 +96,10 @@ public class MoveLifeService {
         final Part blockingPart;
         final GridNode gridNode = lifePart.getGridNode();
         final GridNode newGridNode = this.hexGridService.getNeighbourGridNode(gridNode, dir);
-        if (newGridNode.getPartList(this.hexGridService.getActCellArrPos()).isEmpty()) {
+        if (this.hexGridService.getPartList(newGridNode).isEmpty()) {
             blockingPart = null;
         } else {
-            blockingPart = newGridNode.getPartList(this.hexGridService.getActCellArrPos()).get(0);
+            blockingPart = this.hexGridService.getPartList(newGridNode).get(0);
         }
         return blockingPart;
     }

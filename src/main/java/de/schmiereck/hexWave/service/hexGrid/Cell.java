@@ -19,15 +19,15 @@ public class Cell {
 
     private final List<Part> partList = new ArrayList<>();
 
-    public List<Part> getPartList() {
+    List<Part> getPartList() {
         return this.partList;
     }
 
-    public void addPart(final Part part) {
+    void addPart(final Part part) {
         this.partList.add(part);
     }
 
-    public void removePart(final Part part) {
+    void removePart(final Part part) {
         this.partList.remove(part);
     }
 }

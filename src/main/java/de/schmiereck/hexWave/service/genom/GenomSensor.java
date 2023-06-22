@@ -1,6 +1,12 @@
 package de.schmiereck.hexWave.service.genom;
 
-public class GenomSensor implements GenomInputInterface {
+import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "sensorId")
+public class GenomSensor implements GenomInputInterface, Serializable {
     public enum InputName {
         /**
          * Used for Bias.

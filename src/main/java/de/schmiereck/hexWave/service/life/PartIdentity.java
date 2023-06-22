@@ -1,6 +1,8 @@
 package de.schmiereck.hexWave.service.life;
 
-public class PartIdentity {
+import java.io.Serializable;
+
+public class PartIdentity implements Serializable {
     public final double[] partIdentity = new double[3];
 
     public PartIdentity(final double partIdentity1, final double partIdentity2, final double partIdentity3) {

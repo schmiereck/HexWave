@@ -7,11 +7,13 @@ import de.schmiereck.hexWave.service.brain.Brain;
 import de.schmiereck.hexWave.service.hexGrid.GridNode;
 import de.schmiereck.hexWave.service.hexGrid.Part;
 
-public class LifePart {
+import java.io.Serializable;
+
+public class LifePart implements Serializable {
     public final PartIdentity partIdentity;
     private final Brain brain;
     private final Part part;
-    private GridNode gridNode;
+    private transient GridNode gridNode;
 
     public LifePart(final PartIdentity partIdentity, final Brain brain, final GridNode gridNode, final Part part) {
         this.partIdentity = partIdentity;

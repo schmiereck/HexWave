@@ -47,7 +47,7 @@ public class GenerationLifeService {
     }
 
     public List<LifePart> calcGenPoolWinners(final List<LifePart> lifePartList, final int lifePartCount) {
-        lifePartList.stream().forEach(lifePart -> lifePart.getGridNode().removePart(this.hexGridService.getActCellArrPos(), lifePart.getPart()));
+        lifePartList.stream().forEach(lifePart -> this.hexGridService.removePart(lifePart.getGridNode(), lifePart.getPart()));
 
         final int maxPosX = this.hexGridService.getNodeCountX() / 2;
         final List<LifePart> winnerLifePartList = lifePartList.stream().filter(lifePart -> lifePart.getGridNode().getPosX() > maxPosX).collect(Collectors.toList());
@@ -59,7 +59,7 @@ public class GenerationLifeService {
 
         youngLifePartList.stream().forEach(lifePart -> {
             final GridNode gridNode = this.hexGridService.searchRandomEmptyGridNode(false);
-            gridNode.addPart(this.hexGridService.getActCellArrPos(), lifePart.getPart());
+            this.hexGridService.addPart(gridNode, lifePart.getPart());
             lifePart.setGridNode(gridNode);
         });
 

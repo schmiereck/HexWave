@@ -38,7 +38,7 @@ public class OutputLifeService {
             final double brainOutput = brain.getEatNeighbourOutput(dir);
             if (brainOutput > 0.5D) {
                 final GridNode neighbourGridNode = this.hexGridService.getNeighbourGridNode(gridNode, dir);
-                final List<Part> neighbourPartList = neighbourGridNode.getPartList(this.hexGridService.getActCellArrPos());
+                final List<Part> neighbourPartList = this.hexGridService.getPartList(neighbourGridNode);
                 if (!neighbourPartList.isEmpty()) {
                     final Part neighbourPart = neighbourPartList.get(0);
                     final double energy = neighbourPart.getEnergy();
@@ -91,9 +91,11 @@ public class OutputLifeService {
         this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.PullFieldB), FieldTypeService.FieldTypeEnum.PartPull, Cell.Dir.BP, Cell.Dir.BN);
         this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.PullFieldC), FieldTypeService.FieldTypeEnum.PartPull, Cell.Dir.CP, Cell.Dir.CN);
 
-        this.runBirth(newChildLifePartList, lifePart, gridNode, brain.getOutput(GenomOutput.OutputName.BirthA), Cell.Dir.AP, Cell.Dir.AN);
-        this.runBirth(newChildLifePartList, lifePart, gridNode, brain.getOutput(GenomOutput.OutputName.BirthB), Cell.Dir.BP, Cell.Dir.BN);
-        this.runBirth(newChildLifePartList, lifePart, gridNode, brain.getOutput(GenomOutput.OutputName.BirthC), Cell.Dir.CP, Cell.Dir.CN);
+        if (MainConfig.useBirthOutput) {
+            this.runBirth(newChildLifePartList, lifePart, gridNode, brain.getOutput(GenomOutput.OutputName.BirthA), Cell.Dir.AP, Cell.Dir.AN);
+            this.runBirth(newChildLifePartList, lifePart, gridNode, brain.getOutput(GenomOutput.OutputName.BirthB), Cell.Dir.BP, Cell.Dir.BN);
+            this.runBirth(newChildLifePartList, lifePart, gridNode, brain.getOutput(GenomOutput.OutputName.BirthC), Cell.Dir.CP, Cell.Dir.CN);
+        }
     }
 
     private void runOutputField(final Part part, final GridNode gridNode, final double field, final FieldTypeService.FieldTypeEnum fieldTypeEnum, final Cell.Dir pDir, final Cell.Dir nDir) {
@@ -144,8 +146,6 @@ public class OutputLifeService {
 
         childLifePart = this.birthLifeService.createChildLifePart(parentLifePart, MainConfig.BirthChildMutationRate, childPartEnergy);
 
-        this.hexGridService.addPart(neighbourGridNode, childLifePart.getPart());
-
         return childLifePart;
     }
 
@@ -155,20 +155,25 @@ public class OutputLifeService {
         final double moveA = brain.getOutput(GenomOutput.OutputName.MoveA);
         final double moveB = brain.getOutput(GenomOutput.OutputName.MoveB);
         final double moveC = brain.getOutput(GenomOutput.OutputName.MoveC);
+        final double moveVelocity;
 
         final Cell.Dir dir;
 
         if (Math.abs(moveA) > Math.abs(moveB)) {
             if (Math.abs(moveA) > Math.abs(moveC)) {
                 dir = this.calcMoveDir(moveA, Cell.Dir.AP, Cell.Dir.AN);
+                moveVelocity = moveA;
             } else {
                 dir = this.calcMoveDir(moveC, Cell.Dir.CP, Cell.Dir.CN);
+                moveVelocity = moveC;
             }
         } else {
             if (Math.abs(moveB) > Math.abs(moveC)) {
                 dir = this.calcMoveDir(moveB, Cell.Dir.BP, Cell.Dir.BN);
+                moveVelocity = moveB;
             } else {
                 dir = this.calcMoveDir(moveC, Cell.Dir.CP, Cell.Dir.CN);
+                moveVelocity = moveC;
             }
         }
         if (Objects.nonNull(dir)) {
@@ -176,7 +181,7 @@ public class OutputLifeService {
             final Part part = lifePart.getPart();
             final HexParticle hexParticle = part.getHexParticle();
 
-            HexMathUtils.calcAddVelocity(hexParticle, dir, 32);
+            HexMathUtils.calcAddVelocity(hexParticle, dir, Math.abs((int)(moveVelocity * 32.0D)));
 
             if (MainConfig.useEnergy) lifePart.getPart().addEnergy(-0.01);
         }

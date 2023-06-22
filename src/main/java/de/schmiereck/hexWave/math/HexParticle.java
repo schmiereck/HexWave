@@ -1,6 +1,8 @@
 package de.schmiereck.hexWave.math;
 
-public class HexParticle {
+import java.io.Serializable;
+
+public class HexParticle implements Serializable {
     public final HexVector velocityHexVector;
     public final MoveHexVector moveHexVector;
     public final int mass;

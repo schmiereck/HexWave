@@ -122,7 +122,7 @@ public class InputLifeService {
     @Nullable
     private Part.PartType calcNeigbourPartType(final GridNode gridNode, final Cell.Dir dir) {
         final GridNode neighbourGridNode = this.hexGridService.getNeighbourGridNode(gridNode, dir);
-        final List<Part> neighbourPartList = neighbourGridNode.getPartList(this.hexGridService.getActCellArrPos());
+        final List<Part> neighbourPartList = this.hexGridService.getPartList(neighbourGridNode);
         final Part.PartType neigbourPartType;
         if (!neighbourPartList.isEmpty()) {
             final Part neighbourPart = neighbourPartList.get(0);
