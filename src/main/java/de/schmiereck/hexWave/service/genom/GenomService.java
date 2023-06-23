@@ -376,7 +376,7 @@ public class GenomService {
         return this.rnd.nextDouble() - 0.5D;
     }
 
-    private int calcNextId(final Genom genom) {
+    public int calcNextId(final Genom genom) {
         final int id = genom.nextId;
         genom.nextId = id + 1;
         return id;

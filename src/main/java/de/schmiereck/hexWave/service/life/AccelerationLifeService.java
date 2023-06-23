@@ -1,6 +1,8 @@
 package de.schmiereck.hexWave.service.life;
 
+import de.schmiereck.hexWave.MainConfig;
 import de.schmiereck.hexWave.math.HexParticle;
+import de.schmiereck.hexWave.service.hexGrid.Cell;
 import de.schmiereck.hexWave.service.hexGrid.FieldType;
 import de.schmiereck.hexWave.service.hexGrid.GridNode;
 import de.schmiereck.hexWave.service.hexGrid.GridNodeArea;
@@ -29,42 +31,28 @@ public class AccelerationLifeService {
         final FieldType partPushFieldType = this.fieldTypeService.getFieldType(FieldTypeService.FieldTypeEnum.PartPush);
         final int maxAreaDistance = this.hexGridService.getMaxAreaDistance();
         final GridNode gridNode = lifePart.getGridNode();
-        /*
-        for (final Cell.Dir dir : Cell.Dir.values()) {
-            for (int areaDistance = 0; areaDistance < maxAreaDistance; areaDistance++) {
-                final int finalAreaDistance = areaDistance;
-                final GridNodeArea gridNodeArea = gridNode.getGridNodeArea(dir, finalAreaDistance);
-                gridNodeArea.getPartFieldList().stream().forEach(gridNodeAreaPartField -> {
-                    if (gridNodeAreaPartField.getPart() != lifePart.getPart()) {
-                        if (gridNodeAreaPartField.getFieldType() == partPushFieldType) {
-                            final int fieldTypeMaxAreaDistance = partPushFieldType.getMaxAreaDistance();
-                            final int velocityDiff = (fieldTypeMaxAreaDistance - finalAreaDistance) * 16;
-                            final HexParticle hexParticle = lifePart.getPart().getHexParticle();
-                            switch (gridNodeArea.getDir()) {
-                                case AP -> hexParticle.velocityHexVector.a += velocityDiff;
-                                case AN -> hexParticle.velocityHexVector.a -= velocityDiff;
-                                case BP -> hexParticle.velocityHexVector.b += velocityDiff;
-                                case BN -> hexParticle.velocityHexVector.b -= velocityDiff;
-                                case CP -> hexParticle.velocityHexVector.c += velocityDiff;
-                                case CN -> hexParticle.velocityHexVector.c -= velocityDiff;
-                            }
-                        }
-                    }
-                });
-            }
-        }
-        */
+
         final Part part = lifePart.getPart();
-        final HexParticle hexParticle = part.getHexParticle();
-        final double velArr[] = new double[3];
-        final int cntArr[] = new int[3];
+        final HexParticle partHexParticle = part.getHexParticle();
 
         for (final GridNodeAreaRef gridNodeAreaRef : gridNode.getGridNodeAreaRefList()) {
             final GridNodeArea gridNodeArea = gridNodeAreaRef.getGridNodeArea();
             final double refValue = gridNodeAreaRef.getValue();
             gridNodeArea.getPartFieldList().stream().forEach(gridNodeAreaPartField -> {
-                if (gridNodeAreaPartField.getPart() != part) {
+                final Part otherPart = gridNodeAreaPartField.getPart();
+                if (otherPart != part) {
+                    final int fieldDirection;
                     if (gridNodeAreaPartField.getFieldType() == partPushFieldType) {
+                        fieldDirection = 1;
+                    } else {
+                        if (gridNodeAreaPartField.getFieldType() == partPushFieldType) {
+                            fieldDirection = -1;
+                        } else {
+                            fieldDirection = 0;
+                        }
+                    }
+                    if (fieldDirection != 0) {
+                        final HexParticle otherPartHexParticle = otherPart.getHexParticle();
                         final int fieldTypeMaxAreaDistance = partPushFieldType.getMaxAreaDistance();
                         final int finalAreaDistance = gridNodeArea.getAreaDistance();
                         //final int velocityDiff = (int)((fieldTypeMaxAreaDistance - finalAreaDistance) * (refValue * finalAreaDistance));
@@ -72,30 +60,26 @@ public class AccelerationLifeService {
                         //final int velocityDiff = (int)((refValue * fieldTypeMaxAreaDistance));
                         //final int velocityDiff = (int)((refValue));
                         final double velocityDiff = ((refValue));
-                        /*
-                        switch (gridNodeArea.getDir()) {
-                            case AP -> hexParticle.velocityHexVector.a += velocityDiff;
-                            case AN -> hexParticle.velocityHexVector.a -= velocityDiff;
-                            case BP -> hexParticle.velocityHexVector.b += velocityDiff;
-                            case BN -> hexParticle.velocityHexVector.b -= velocityDiff;
-                            case CP -> hexParticle.velocityHexVector.c += velocityDiff;
-                            case CN -> hexParticle.velocityHexVector.c -= velocityDiff;
-                        }*/
-                        switch (gridNodeArea.getDir()) {
-                            case AP -> { velArr[0] += velocityDiff; cntArr[0]++; }
-                            case AN -> { velArr[0] -= velocityDiff; cntArr[0]++; }
-                            case BP -> { velArr[1] += velocityDiff; cntArr[1]++; }
-                            case BN -> { velArr[1] -= velocityDiff; cntArr[1]++; }
-                            case CP -> { velArr[2] += velocityDiff; cntArr[2]++; }
-                            case CN -> { velArr[2] -= velocityDiff; cntArr[2]++; }
-                        }
+                        final long velocityDiffValue = Math.round(velocityDiff * MainConfig.FieldVelocityDiffFactor) * fieldDirection;
 
+                        final Cell.Dir gridNodeAreaDir = gridNodeArea.getDir();
+
+                        addVelocityDiffValue(gridNodeAreaDir, partHexParticle, velocityDiffValue);
+                        addVelocityDiffValue(gridNodeAreaDir, otherPartHexParticle, -velocityDiffValue);
                     }
                 }
             });
         }
-        if (cntArr[0] > 0) hexParticle.velocityHexVector.a += Math.round(velArr[0] * 10.0D) / cntArr[0];
-        if (cntArr[1] > 0) hexParticle.velocityHexVector.b += Math.round(velArr[1] * 10.0D) / cntArr[1];
-        if (cntArr[2] > 0) hexParticle.velocityHexVector.c += Math.round(velArr[2] * 10.0D) / cntArr[2];
+    }
+
+    private static void addVelocityDiffValue(final Cell.Dir gridNodeAreaDir, final HexParticle partHexParticle, final long velocityDiffValue) {
+        switch (gridNodeAreaDir) {
+            case AP -> { partHexParticle.velocityHexVector.a += velocityDiffValue; }
+            case AN -> { partHexParticle.velocityHexVector.a -= velocityDiffValue; }
+            case BP -> { partHexParticle.velocityHexVector.b += velocityDiffValue; }
+            case BN -> { partHexParticle.velocityHexVector.b -= velocityDiffValue; }
+            case CP -> { partHexParticle.velocityHexVector.c += velocityDiffValue; }
+            case CN -> { partHexParticle.velocityHexVector.c -= velocityDiffValue; }
+        }
     }
 }

@@ -25,12 +25,15 @@ public class MainConfig {
     public static int lifePartsCount = 160;
     public static boolean useBall = false;
     public static boolean useShowFields = false;
+    public static boolean useOutputMoveAcceleration = true;
 
     public static final double InitialLifePartEnergy = 2.0D;
     public static final double InitialSunPartEnergy = 1.0D;
     public static final double InitialWallPartEnergy = 0.0D;
     public static double PoolChildMutationRate = 0.25D;
     public static double BirthChildMutationRate = 0.1D;
+    public static double FieldVelocityDiffFactor = 10.0D;
+
 
     public static int LifePartOutputFieldStartAreaDistance = 0;
 
@@ -43,6 +46,7 @@ public class MainConfig {
             case LifeEnvironment -> {
                 // Defaults.
                 //useBirthOutput = false;
+                useOutputMoveAcceleration = false;
             }
             case JumpingBall -> {
                 useBall = true;

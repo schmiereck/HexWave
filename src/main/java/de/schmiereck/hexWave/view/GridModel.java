@@ -3,6 +3,12 @@ package de.schmiereck.hexWave.view;
 import javafx.scene.shape.Circle;
 
 public class GridModel {
+
+    public static final double StepX = 16.0D;
+    public static final double StepHalfX = StepX / 2.0D;
+    public static final double StepY = Math.sqrt(Math.pow(StepX, 2.0D) - Math.pow(StepHalfX, 2.0D));
+    public static final double BorderSpaceX = StepX;
+    public static final double BorderSpaceY = StepY;
     private int nodeCountX;
     private int nodeCountY;
     private GridCellModel[][] gridCellArr;
@@ -41,16 +47,12 @@ public class GridModel {
         this.gridCellArr[posX][posY].setShape5(shape);
     }
 
-    public static final double StepX = 16.0D;
-    public static final double StepHalfX = StepX / 2.0D;
-    public static final double StepY = Math.sqrt(Math.pow(StepX, 2.0D) - Math.pow(StepHalfX, 2.0D));
-
     private static double calcScreenPosX(final int posX, final int posY) {
-        return (posX * StepX) + ((posY % 2) * StepHalfX);
+        return BorderSpaceX + (posX * StepX) + ((posY % 2) * StepHalfX);
     }
 
     private static double calcScreenPosY(final int posX, final int posY) {
-        return (posY * StepY);
+        return BorderSpaceY + (posY * StepY);
     }
 
     public GridCellModel getGridCellModel(final int posX, final int posY) {

@@ -1,0 +1,113 @@
+[
+  {
+    "genomSensorList": [
+      {
+        "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+        "sensorId": 4,
+        "inputName": "Part2FieldAN"
+      },
+      {
+        "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+        "sensorId": 26,
+        "inputName": "ComFieldCP"
+      },
+      {
+        "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+        "sensorId": 32,
+        "inputName": "Part3FieldCN"
+      },
+      {
+        "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+        "sensorId": 35,
+        "inputName": "Part2FieldBP"
+      },
+      {
+        "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+        "sensorId": 38,
+        "inputName": "ComFieldCN"
+      }
+    ],
+    "genomInputMap": {
+      "32": 32,
+      "35": 35,
+      "4": 4,
+      "38": 38,
+      "25": {
+        "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+        "neuronId": 25,
+        "genomConnectorList": []
+      },
+      "26": 26,
+      "29": {
+        "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+        "neuronId": 29,
+        "genomConnectorList": []
+      },
+      "14": {
+        "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+        "neuronId": 14,
+        "genomConnectorList": []
+      },
+      "31": {
+        "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+        "neuronId": 31,
+        "genomConnectorList": [
+          {
+            "genomInputId": 26,
+            "weight": 0.12229682207933457,
+            "bias": -0.20886310864919444
+          }
+        ]
+      }
+    },
+    "genomNeuronList": [
+      14,
+      25,
+      29,
+      31
+    ],
+    "genomOutputList": [
+      {
+        "outputId": 5,
+        "genomInputId": 4,
+        "outputName": "BirthB"
+      },
+      {
+        "outputId": 7,
+        "genomInputId": 4,
+        "outputName": "EatNeighbourBP"
+      },
+      {
+        "outputId": 9,
+        "genomInputId": 26,
+        "outputName": "EatNeighbourBN"
+      },
+      {
+        "outputId": 13,
+        "genomInputId": 26,
+        "outputName": "EatNeighbourAP"
+      },
+      {
+        "outputId": 23,
+        "genomInputId": 25,
+        "outputName": "EatNeighbourCN"
+      },
+      {
+        "outputId": 28,
+        "genomInputId": 14,
+        "outputName": "PushFieldB"
+      },
+      {
+        "outputId": 33,
+        "genomInputId": 4,
+        "outputName": "PushFieldA"
+      },
+      {
+        "outputId": 39,
+        "genomInputId": 29,
+        "outputName": "EatNeighbourAN"
+      }
+    ],
+    "nextId": 40
+  }
+]

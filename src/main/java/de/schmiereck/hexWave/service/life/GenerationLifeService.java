@@ -45,6 +45,19 @@ public class GenerationLifeService {
             lifePartList.add(this.birthLifeService.createLifePartByBrain(partIdentity, brain, this.rnd.nextDouble(MainConfig.InitialLifePartEnergy / 2.0D, MainConfig.InitialLifePartEnergy)));
         }
     }
+    
+    public void initializeByGenomList(List<LifePart> lifePartList, List<Genom> genomList) {
+        lifePartList.stream().forEach(lifePart -> this.hexGridService.removePart(lifePart.getGridNode(), lifePart.getPart()));
+        lifePartList.clear();
+        
+        for (int genomPos = 0; genomPos < genomList.size(); genomPos++) {
+            final Genom lifePartGenom = genomList.get(0);
+            final Brain brain = this.brainService.createBrain(lifePartGenom);
+            final PartIdentity partIdentity = this.birthLifeService.createPartIdentity();
+
+            lifePartList.add(this.birthLifeService.createLifePartByBrain(partIdentity, brain, this.rnd.nextDouble(MainConfig.InitialLifePartEnergy / 2.0D, MainConfig.InitialLifePartEnergy)));
+        }
+    }
 
     public List<LifePart> calcGenPoolWinners(final List<LifePart> lifePartList, final int lifePartCount) {
         lifePartList.stream().forEach(lifePart -> this.hexGridService.removePart(lifePart.getGridNode(), lifePart.getPart()));
@@ -124,4 +137,5 @@ public class GenerationLifeService {
         }
         return removed;
     }
+
 }

@@ -493,7 +493,7 @@ public class HexGridService {
             if (onTop) {
                 posY = 0;
             } else {
-                posY = this.rnd.nextInt(this.getNodeCountY() - 2) + 1;
+                posY = this.rnd.nextInt((this.getNodeCountY() - 2) / 4) + 1 + ((this.getNodeCountY() / 4) * 3);
             }
             gridNode = this.getGridNode(posX, posY);
             searchCnt--;

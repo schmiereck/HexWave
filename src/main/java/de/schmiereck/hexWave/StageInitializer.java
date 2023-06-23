@@ -51,8 +51,8 @@ public class StageInitializer implements ApplicationListener<StageReadyEvent> {
 
             //final double initialSceneWidth = 640; //hexGrid.getNodeCountX() * GridModel.StepX;
             //final double initialSceneHeight = 460; //(hexGrid.getNodeCountY()) * GridModel.StepY;
-            final double initialSceneWidth = hexGrid.getNodeCountX() * GridModel.StepX;
-            final double initialSceneHeight = hexGrid.getNodeCountY() * GridModel.StepY;
+            final double initialSceneWidth = hexGrid.getNodeCountX() * GridModel.StepX + (GridModel.BorderSpaceX * 2);
+            final double initialSceneHeight = hexGrid.getNodeCountY() * GridModel.StepY + (GridModel.BorderSpaceY * 2);
 
             final Scene scene = new Scene(parent, initialSceneWidth, initialSceneHeight);
 
@@ -62,7 +62,7 @@ public class StageInitializer implements ApplicationListener<StageReadyEvent> {
 
             //final BorderPane borderPane = (BorderPane) scene.lookup("#mainBoderPane");
 
-            final Pane mainPane = (Pane) scene.lookup("#mainPane");
+            // WORKS !!! final Pane mainPane = (Pane) scene.lookup("#mainPane");
             //mainPane.setPrefSize(240, 200);
 
             //final Circle circle = new Circle(50, Color.BLUE);

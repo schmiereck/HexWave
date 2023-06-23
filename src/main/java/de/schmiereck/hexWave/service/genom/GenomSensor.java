@@ -2,10 +2,15 @@ package de.schmiereck.hexWave.service.genom;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "sensorId")
+//@JsonIdentityInfo(scope = GenomSensor.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "sensorId")
+@JsonTypeName("GenomSensor")
 public class GenomSensor implements GenomInputInterface, Serializable {
     public enum InputName {
         /**
@@ -36,15 +41,25 @@ public class GenomSensor implements GenomInputInterface, Serializable {
         ComFieldCP,ComFieldCN,
     }
 
-    public final int sensorId;
+    //public final int sensorId;
+    public int sensorId;
 
     public final InputName inputName;
 
-    public GenomSensor(final int sensorId, final InputName inputName) {
+
+    public GenomSensor() {
+        this.sensorId = -1;
+        this.inputName = null;
+    }
+
+
+    @JsonCreator
+    public GenomSensor(@JsonProperty("sensorId") final int sensorId, @JsonProperty("inputName") final InputName inputName) {
         this.sensorId = sensorId;
         this.inputName = inputName;
     }
 
+    @JsonIgnore
     @Override
     public int getInputId() {
         return this.sensorId;

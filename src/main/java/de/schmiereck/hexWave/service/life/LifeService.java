@@ -78,6 +78,10 @@ public class LifeService {
         this.generationLifeService.initializeLifePartList(this.lifePartList, this.lifePartCount);
     }
 
+    public void initializeByGenomList(List<Genom> genomList) {
+        this.generationLifeService.initializeByGenomList(this.lifePartList, genomList);
+    }
+
     public void initializeWalls() {
 
         // Left-/ Right-Walls.
@@ -144,31 +148,31 @@ public class LifeService {
 
         final Genom genom = this.genomService.createInitialGenom();
 
-        addGenomInputOutput(0, genom, GenomSensor.InputName.Positive, GenomOutput.OutputName.ComFieldA);
-        addGenomInputOutput(1, genom, GenomSensor.InputName.Positive, GenomOutput.OutputName.ComFieldB);
-        addGenomInputOutput(2, genom, GenomSensor.InputName.Negative, GenomOutput.OutputName.ComFieldC);
-        addGenomInputOutput(3, genom, GenomSensor.InputName.Negative, GenomOutput.OutputName.ComFieldA);
-        addGenomInputOutput(4, genom, GenomSensor.InputName.Negative, GenomOutput.OutputName.ComFieldB);
-        addGenomInputOutput(5, genom, GenomSensor.InputName.Positive, GenomOutput.OutputName.ComFieldC);
+        addGenomInputOutput(this.genomService.calcNextId(genom), genom, GenomSensor.InputName.Positive, GenomOutput.OutputName.ComFieldA);
+        addGenomInputOutput(this.genomService.calcNextId(genom), genom, GenomSensor.InputName.Positive, GenomOutput.OutputName.ComFieldB);
+        addGenomInputOutput(this.genomService.calcNextId(genom), genom, GenomSensor.InputName.Negative, GenomOutput.OutputName.ComFieldC);
+        addGenomInputOutput(this.genomService.calcNextId(genom), genom, GenomSensor.InputName.Negative, GenomOutput.OutputName.ComFieldA);
+        addGenomInputOutput(this.genomService.calcNextId(genom), genom, GenomSensor.InputName.Negative, GenomOutput.OutputName.ComFieldB);
+        addGenomInputOutput(this.genomService.calcNextId(genom), genom, GenomSensor.InputName.Positive, GenomOutput.OutputName.ComFieldC);
 
         this.lifePartList.add(this.creatShowField(30, 15, genom));
     }
 
-    private static void addGenomInputOutput(int sensorId, Genom genom, final GenomSensor.InputName inputName, final GenomOutput.OutputName outputName) {
-        genom.genomSensorList.add(new GenomSensor(sensorId, inputName));
+    private void addGenomInputOutput(int inputSensorId, Genom genom, final GenomSensor.InputName inputName, final GenomOutput.OutputName outputName) {
+        genom.genomSensorList.add(new GenomSensor(inputSensorId, inputName));
         //genom.genomOutputList.add(new GenomOutput(0, GenomOutput.OutputName.MoveA));
         //genom.genomOutputList.add(new GenomOutput(1, GenomOutput.OutputName.MoveB));
-        genom.genomOutputList.add(new GenomOutput(6 + sensorId, sensorId, outputName));
+        genom.genomOutputList.add(new GenomOutput(this.genomService.calcNextId(genom), inputSensorId, outputName));
     }
 
     public LifePart creatShowField(final int xPos, final int yPos, final GenomSensor.InputName inputName, final GenomOutput.OutputName outputName) {
         final Genom genom = this.genomService.createInitialGenom();
 
-        int sensorId = 0;
+        int sensorId = this.genomService.calcNextId(genom);
         genom.genomSensorList.add(new GenomSensor(sensorId, inputName));
         //genom.genomOutputList.add(new GenomOutput(0, GenomOutput.OutputName.MoveA));
         //genom.genomOutputList.add(new GenomOutput(1, GenomOutput.OutputName.MoveB));
-        genom.genomOutputList.add(new GenomOutput(1 + sensorId, sensorId, outputName));
+        genom.genomOutputList.add(new GenomOutput(this.genomService.calcNextId(genom), sensorId, outputName));
 
         return creatShowField(xPos, yPos, genom);
     }
@@ -221,7 +225,7 @@ public class LifeService {
 
         final List<LifePart> newChildLifePartList = new ArrayList<>();
         this.lifePartList.stream().forEach(lifePart -> {
-            this.outputLifeService.runOutputMoveAcceleration(lifePart);
+            if (MainConfig.useOutputMoveAcceleration) this.outputLifeService.runOutputMoveAcceleration(lifePart);
             this.outputLifeService.runOutputFields(newChildLifePartList, lifePart);
         });
         this.lifePartList.addAll(newChildLifePartList);
@@ -330,4 +334,5 @@ public class LifeService {
     public long retrievePartCount() {
         return this.lifePartList.size();
     }
+
 }

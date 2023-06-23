@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.ScrollPane?>
 <BorderPane
         id="mainBoderPane"
         xmlns:fx="http://javafx.com/fxml"
@@ -33,6 +34,9 @@
         </HBox>
     </top>
     <center>
+        <!--
         <Pane fx:id="mainPane"></Pane>
+        -->
+        <ScrollPane fx:id="mainPane"></ScrollPane>
     </center>
 </BorderPane>

@@ -28,12 +28,12 @@ public class FieldTypeService {
     public FieldTypeService() {
         this.fieldTypeArr = new FieldType[FieldTypeEnum.values().length];
 
-        this.fieldTypeArr[FieldTypeEnum.Part1.no] = new FieldType(3, true);    // Part
-        this.fieldTypeArr[FieldTypeEnum.Part2.no] = new FieldType(3, true);    // Part
-        this.fieldTypeArr[FieldTypeEnum.Part3.no] = new FieldType(3, true);    // Part
-        this.fieldTypeArr[FieldTypeEnum.Com.no] = new FieldType(3, true);    // Part
+        this.fieldTypeArr[FieldTypeEnum.Part1.no] = new FieldType(3, false);    // Part
+        this.fieldTypeArr[FieldTypeEnum.Part2.no] = new FieldType(3, false);    // Part
+        this.fieldTypeArr[FieldTypeEnum.Part3.no] = new FieldType(3, false);    // Part
+        this.fieldTypeArr[FieldTypeEnum.Com.no] = new FieldType(3, false);    // Part
         this.fieldTypeArr[FieldTypeEnum.PartPull.no] = new FieldType(3, false);
-        this.fieldTypeArr[FieldTypeEnum.PartPush.no] = new FieldType(3, false);
+        this.fieldTypeArr[FieldTypeEnum.PartPush.no] = new FieldType(1, false);
         this.fieldTypeArr[FieldTypeEnum.Sun.no] = new FieldType(0, true);    // Sun
     }
 

@@ -2,6 +2,7 @@ package de.schmiereck.hexWave.view;
 
 import de.schmiereck.hexWave.MainConfig;
 import de.schmiereck.hexWave.service.genom.Genom;
+import de.schmiereck.hexWave.service.genom.GenomDocument;
 import de.schmiereck.hexWave.service.hexGrid.FieldType;
 import de.schmiereck.hexWave.service.hexGrid.GridNode;
 import de.schmiereck.hexWave.service.hexGrid.Part;
@@ -12,20 +13,39 @@ import de.schmiereck.hexWave.service.hexGrid.HexGrid;
 import de.schmiereck.hexWave.service.hexGrid.HexGridService;
 import de.schmiereck.hexWave.utils.MathUtils;
 import javafx.animation.AnimationTimer;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -36,10 +56,14 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 @Component
 public class HexWaveController implements Initializable
@@ -51,7 +75,7 @@ public class HexWaveController implements Initializable
     private BorderPane mainBoderPane;
 
     @FXML
-    private Pane mainPane;
+    private ScrollPane mainPane;
 
     @Autowired
     private HexGridService hexGridService;
@@ -79,8 +103,27 @@ public class HexWaveController implements Initializable
         //MainConfig.initConfig(MainConfig.ConfigEnum.OnlySun);
         //MainConfig.initConfig(MainConfig.ConfigEnum.NoMoves);
 
-        this.mainPane.setStyle("-fx-background-color: black;");
+        this.mainPane.setStyle("-fx-background: black;");
+/*
+        this.mainPane.setOnScroll(new EventHandler<ScrollEvent>() {
+            final double SCALE_DELTA = 1.1;
+            @Override public void handle(ScrollEvent event) {
+                event.consume();
 
+                if (event.getDeltaY() == 0) {
+                    return;
+                }
+
+                double scaleFactor =
+                        (event.getDeltaY() > 0)
+                                ? SCALE_DELTA
+                                : 1/SCALE_DELTA;
+
+                mainPane.setScaleX(mainPane.getScaleX() * scaleFactor);
+                mainPane.setScaleY(mainPane.getScaleY() * scaleFactor);
+            }
+        });
+*/
         final int maxAreaDistance = this.fieldTypeService.getFieldType(FieldTypeService.FieldTypeEnum.Part1).getMaxAreaDistance();
 
         //this.hexGridService.initialize(2, 1);
@@ -94,6 +137,8 @@ public class HexWaveController implements Initializable
 
         this.gridModel.init(hexGrid.getNodeCountX(), hexGrid.getNodeCountY());
 
+        final Group mainGroup = new Group();
+
         for (int posY = 0; posY < this.gridModel.getNodeCountY(); posY++) {
             for (int posX = 0; posX < this.gridModel.getNodeCountX(); posX++) {
                 final GridCellModel gridCellModel = this.gridModel.getGridCellModel(posX, posY);
@@ -101,7 +146,7 @@ public class HexWaveController implements Initializable
                 gridNodeCircle.setCenterX(gridCellModel.getScreenPosX());
                 gridNodeCircle.setCenterY(gridCellModel.getScreenPosY());
                 //gridNodeCircle.relocate(gridNode.getScreenPosX(), gridNode.getScreenPosY());
-                this.mainPane.getChildren().add(gridNodeCircle);
+                mainGroup.getChildren().add(gridNodeCircle);
 
                 this.gridModel.setShape(posX, posY, gridNodeCircle);
             }
@@ -110,18 +155,28 @@ public class HexWaveController implements Initializable
         for (int posY = 0; posY < this.gridModel.getNodeCountY(); posY++) {
             for (int posX = 0; posX < this.gridModel.getNodeCountX(); posX++) {
                 final GridCellModel gridCellModel = this.gridModel.getGridCellModel(posX, posY);
-                this.gridModel.setShape2(posX, posY, this.createCircleShape(gridCellModel));
-                this.gridModel.setShape3(posX, posY, this.createCircleShape(gridCellModel));
-                this.gridModel.setShape4(posX, posY, this.createCircleShape(gridCellModel));
-                this.gridModel.setShape5(posX, posY, this.createCircleShape(gridCellModel));
+                this.gridModel.setShape2(posX, posY, this.createCircleShape(mainGroup, gridCellModel));
+                this.gridModel.setShape3(posX, posY, this.createCircleShape(mainGroup, gridCellModel));
+                this.gridModel.setShape4(posX, posY, this.createCircleShape(mainGroup, gridCellModel));
+                this.gridModel.setShape5(posX, posY, this.createCircleShape(mainGroup, gridCellModel));
             }
         }
+
+        //final Parent zoomPane = this.createZoomPane(mainGroup);
+
+        //VBox.setVgrow(zoomPane, Priority.ALWAYS);
+        //VBox.setVgrow(this.mainPane, Priority.ALWAYS);
+
+        //this.mainPane.getChildren().add(zoomPane);
+
+        //this.mainPane.setContent(mainGroup);
+        this.initZoomPane2(this.mainPane, mainGroup);
 
         this.updateView();
     }
 
     @NotNull
-    private Circle createCircleShape(GridCellModel gridCellModel) {
+    private Circle createCircleShape(final Group mainGroup, final GridCellModel gridCellModel) {
         final Circle gridNodeCircle2 = new Circle(4.0D, Color.TRANSPARENT);
         gridNodeCircle2.setCenterX(gridCellModel.getScreenPosX());
         gridNodeCircle2.setCenterY(gridCellModel.getScreenPosY());
@@ -129,47 +184,80 @@ public class HexWaveController implements Initializable
         gridNodeCircle2.setStrokeWidth(1.0D);
         gridNodeCircle2.setVisible(false);
         //gridNodeCircle.relocate(gridNode.getScreenPosX(), gridNode.getScreenPosY());
-        this.mainPane.getChildren().add(gridNodeCircle2);
+        mainGroup.getChildren().add(gridNodeCircle2);
         return gridNodeCircle2;
+    }
+
+    private final FileChooser fileChooser = new FileChooser();
+    private File lastFile = new File("demo1.hex.json");
+
+    @FXML
+    protected void onSaveButtonClick() {
+        final Window window = this.mainPane.getScene().getWindow();
+
+        this.fileChooser.setInitialDirectory(this.lastFile.getAbsoluteFile().getParentFile());
+        this.fileChooser.setInitialFileName(this.lastFile.getAbsoluteFile().getName());
+
+        final File file = this.fileChooser.showSaveDialog(window);
+        if (file != null) {
+            this.lastFile = file;
+            final List<LifePart> lifePartList = this.lifeService.getLifePartList();
+            final GenomDocument genomDocument = new GenomDocument();
+            genomDocument.genomList = lifePartList.stream().map(lifePart -> lifePart.getBrain().getGenom()).collect(Collectors.toList());
+
+
+            var objectMapper = new ObjectMapper();
+
+            //final SimpleModule module = new SimpleModule();
+            //module.addDeserializer(Genom.class, new GenomDeserializer());
+
+            //objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.OBJECT_AND_NON_CONCRETE, JsonTypeInfo.As.PROPERTY);
+            //objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_CONCRETE_AND_ARRAYS);
+            //objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_CONCRETE_AND_ARRAYS);
+            try {
+                // mapper.registerModule(new JavaTimeModule());
+                objectMapper.writeValue(file, genomDocument);
+            } catch (JsonMappingException e) {
+                throw new RuntimeException(e);
+            } catch (JsonGenerationException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @FXML
     protected void onLoadButtonClick() {
-        final List<Genom> genomList;
-        final File file = new File("demo1.hex.json");
+        final Window window = this.mainPane.getScene().getWindow();
 
-        var objectMapper = new ObjectMapper();
-        try {
-            genomList = objectMapper.readValue(file, List.class);
-        } catch (JsonMappingException e) {
-            throw new RuntimeException(e);
-        } catch (JsonParseException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        this.fileChooser.setInitialDirectory(this.lastFile.getAbsoluteFile().getParentFile());
+        this.fileChooser.setInitialFileName(this.lastFile.getAbsoluteFile().getName());
 
+        final File file = this.fileChooser.showOpenDialog(window);
+        if (file != null) {
+            this.lastFile = file;
+            final GenomDocument genomDocument;
 
-        this.updateView();
-    }
+            var objectMapper = new ObjectMapper();
+            //objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.OBJECT_AND_NON_CONCRETE);
+            //objectMapper.enable(MapperFeature.REQUIRE_TYPE_ID_FOR_SUBTYPES);
+            //objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.OBJECT_AND_NON_CONCRETE, JsonTypeInfo.As.PROPERTY);
+            //objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_CONCRETE_AND_ARRAYS);
+            try {
+                genomDocument = objectMapper.readValue(file, new TypeReference<GenomDocument>() {
+                });
+            } catch (JsonMappingException e) {
+                throw new RuntimeException(e);
+            } catch (JsonParseException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
-    @FXML
-    protected void onSaveButtonClick() {
-        final List<LifePart> lifePartList = this.lifeService.getLifePartList();
-        final List<Genom> genomList = lifePartList.stream().map(lifePart -> lifePart.getBrain().getGenom()).collect(Collectors.toList());
+            this.lifeService.initializeByGenomList(genomDocument.genomList);
 
-        final File file = new File("demo1.hex.json");
-
-        var objectMapper = new ObjectMapper();
-        try {
-            // mapper.registerModule(new JavaTimeModule());
-            objectMapper.writeValue(file, genomList);
-        } catch (JsonMappingException e) {
-            throw new RuntimeException(e);
-        } catch (JsonGenerationException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            this.updateView();
         }
     }
 
@@ -197,7 +285,7 @@ public class HexWaveController implements Initializable
             this.animationTimer = new AnimationTimer() {
                 @Override
                 public void handle(long now) {
-                    runLife();
+                    HexWaveController.this.runLife();
                 }
             };
             this.animationTimer.start();
@@ -316,7 +404,7 @@ public class HexWaveController implements Initializable
         final Circle gridNodeCircle = gridCellModel.getShape();
         final Part part = lifePart.getPart();
 
-        gridNodeCircle.setRadius(4.0D + (MathUtils.sigmoid(part.getEnergy() * 5.0D)));
+        gridNodeCircle.setRadius(2.0D + (MathUtils.sigmoid(part.getEnergy() * 8.0D)));
         gridNodeCircle.setFill(Color.color(
                 Math.abs(MathUtils.sigmoid(lifePart.partIdentity.partIdentity[0])),
                 Math.abs(MathUtils.sigmoid(lifePart.partIdentity.partIdentity[1])),
@@ -338,4 +426,113 @@ public class HexWaveController implements Initializable
         gridNodeCircle.setFill(Color.YELLOW);
     }
 
+    /**
+     * https://stackoverflow.com/questions/16680295/javafx-correct-scaling
+     */
+    private void initZoomPane2(final ScrollPane scrollPane, final Group group) {
+        final double SCALE_DELTA = 1.1;
+
+        final StackPane zoomPane = new StackPane();
+        zoomPane.getChildren().add(group);
+
+        final Group scrollContent = new Group(zoomPane);
+
+        scrollPane.setContent(scrollContent);
+
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        scrollPane.setFitToWidth(true);
+
+        scrollPane.viewportBoundsProperty().addListener(new ChangeListener<Bounds>() {
+            @Override
+            public void changed(ObservableValue<? extends Bounds> observable,
+                                Bounds oldValue, Bounds newValue) {
+                zoomPane.setMinSize(newValue.getWidth(), newValue.getHeight());
+            }
+        });
+
+        //scrollPane.setPrefViewportWidth(256);
+        //scrollPane.setPrefViewportHeight(256);
+
+        zoomPane.setOnScroll(new EventHandler<ScrollEvent>() {
+            @Override
+            public void handle(ScrollEvent event) {
+                event.consume();
+
+                if (event.getDeltaY() == 0) {
+                    return;
+                }
+
+                double scaleFactor = (event.getDeltaY() > 0) ? SCALE_DELTA
+                        : 1 / SCALE_DELTA;
+
+                // amount of scrolling in each direction in scrollContent coordinate units
+                Point2D scrollOffset = figureScrollOffset(scrollContent, scrollPane);
+
+                group.setScaleX(group.getScaleX() * scaleFactor);
+                group.setScaleY(group.getScaleY() * scaleFactor);
+
+                // move viewport so that old center remains in the center after the scaling
+                repositionScroller(scrollContent, scrollPane, scaleFactor, scrollOffset);
+
+            }
+        });
+
+        // Panning via drag....
+        final ObjectProperty<Point2D> lastMouseCoordinates = new SimpleObjectProperty<Point2D>();
+        scrollContent.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                lastMouseCoordinates.set(new Point2D(event.getX(), event.getY()));
+            }
+        });
+
+        scrollContent.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                double deltaX = event.getX() - lastMouseCoordinates.get().getX();
+                double extraWidth = scrollContent.getLayoutBounds().getWidth() - scrollPane.getViewportBounds().getWidth();
+                double deltaH = deltaX * (scrollPane.getHmax() - scrollPane.getHmin()) / extraWidth;
+                double desiredH = scrollPane.getHvalue() - deltaH;
+                scrollPane.setHvalue(Math.max(0, Math.min(scrollPane.getHmax(), desiredH)));
+
+                double deltaY = event.getY() - lastMouseCoordinates.get().getY();
+                double extraHeight = scrollContent.getLayoutBounds().getHeight() - scrollPane.getViewportBounds().getHeight();
+                double deltaV = deltaY * (scrollPane.getHmax() - scrollPane.getHmin()) / extraHeight;
+                double desiredV = scrollPane.getVvalue() - deltaV;
+                scrollPane.setVvalue(Math.max(0, Math.min(scrollPane.getVmax(), desiredV)));
+            }
+        });
+    }
+
+    private Point2D figureScrollOffset(Node scrollContent, ScrollPane scroller) {
+        double extraWidth = scrollContent.getLayoutBounds().getWidth() - scroller.getViewportBounds().getWidth();
+        double hScrollProportion = (scroller.getHvalue() - scroller.getHmin()) / (scroller.getHmax() - scroller.getHmin());
+        double scrollXOffset = hScrollProportion * Math.max(0, extraWidth);
+        double extraHeight = scrollContent.getLayoutBounds().getHeight() - scroller.getViewportBounds().getHeight();
+        double vScrollProportion = (scroller.getVvalue() - scroller.getVmin()) / (scroller.getVmax() - scroller.getVmin());
+        double scrollYOffset = vScrollProportion * Math.max(0, extraHeight);
+        return new Point2D(scrollXOffset, scrollYOffset);
+    }
+
+    private void repositionScroller(Node scrollContent, ScrollPane scroller, double scaleFactor, Point2D scrollOffset) {
+        double scrollXOffset = scrollOffset.getX();
+        double scrollYOffset = scrollOffset.getY();
+        double extraWidth = scrollContent.getLayoutBounds().getWidth() - scroller.getViewportBounds().getWidth();
+        if (extraWidth > 0) {
+            double halfWidth = scroller.getViewportBounds().getWidth() / 2;
+            double newScrollXOffset = (scaleFactor - 1) *  halfWidth + scaleFactor * scrollXOffset;
+            scroller.setHvalue(scroller.getHmin() + newScrollXOffset * (scroller.getHmax() - scroller.getHmin()) / extraWidth);
+        } else {
+            scroller.setHvalue(scroller.getHmin());
+        }
+        double extraHeight = scrollContent.getLayoutBounds().getHeight() - scroller.getViewportBounds().getHeight();
+        if (extraHeight > 0) {
+            double halfHeight = scroller.getViewportBounds().getHeight() / 2;
+            double newScrollYOffset = (scaleFactor - 1) * halfHeight + scaleFactor * scrollYOffset;
+            scroller.setVvalue(scroller.getVmin() + newScrollYOffset * (scroller.getVmax() - scroller.getVmin()) / extraHeight);
+        } else {
+            scroller.setHvalue(scroller.getHmin());
+        }
+    }
 }
