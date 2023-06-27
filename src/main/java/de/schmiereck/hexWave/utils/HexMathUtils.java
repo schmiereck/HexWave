@@ -183,58 +183,160 @@ public class HexMathUtils {
      * v1' = (m1 * v1 + m2 * (2 * v2 - v1)) / (m1 + m2)
      * v2' = (m2 * v2 + m1 * (2 * v1 - v2)) / (m1 + m2)
      */
-    public static void calcElasticCollision(final HexParticle a1HexParticle, final Cell.Dir moveDir, final HexParticle a2HexParticle) {
+    public static void calcVelocityElasticCollision(final HexParticle a1HexParticle, final Cell.Dir moveDir, final HexParticle a2HexParticle) {
         final int v1 = calcGetVelocity(a1HexParticle, moveDir);
         final int m1 = a1HexParticle.getMass();
         final int v2 = calcGetVelocity(a2HexParticle, moveDir);
         final int m2 = a2HexParticle.getMass();
 
-        calcSetVelocity(a1HexParticle, moveDir,  (m1 * v1 + m2 * (2 * v2 - v1)) / (m1 + m2));
-        calcSetVelocity(a2HexParticle, moveDir,  (m2 * v2 + m1 * (2 * v1 - v2)) / (m1 + m2));
+        calcSetVelocity(a1HexParticle, moveDir, calcCollision1to2(v1, m1, v2, m2));
+        calcSetVelocity(a2HexParticle, moveDir, calcCollision1to2(v2, m2, v1, m1));
         // TODO ??? calcSetMove(a1HexParticle, moveDir,  (m1 * mo1 + m2 * (2 * mo2 - mo1)) / (m1 + m2)); ...
     }
+/*
+    public static void calcAccelerationElasticCollision(final HexParticle a1HexParticle, final Cell.Dir moveDir, final HexParticle a2HexParticle) {
+        final int v1 = calcGetOutAcceleration(a1HexParticle, moveDir);
+        final int m1 = a1HexParticle.getMass();
+        final int v2 = calcGetOutAcceleration(a2HexParticle, moveDir);
+        final int m2 = a2HexParticle.getMass();
 
-    public static void calcElasticCollisionWithSolidWall(final HexParticle a1HexParticle, final Cell.Dir moveDir) {
-        final int v1 = calcGetVelocity(a1HexParticle, moveDir);
-        final int m1 = calcGetMove(a1HexParticle, moveDir);
+        calcAddInAcceleration(a1HexParticle, moveDir, calcCollision1to2(v1, m1, v2, m2));
+        calcAddInAcceleration(a2HexParticle, moveDir, calcCollision1to2(v2, m2, v1, m1));
+        // TODO ??? calcSetMove(a1HexParticle, moveDir,  (m1 * mo1 + m2 * (2 * mo2 - mo1)) / (m1 + m2)); ...
 
-        calcSetVelocity(a1HexParticle, moveDir,  -v1);
-        calcSetMove(a1HexParticle, moveDir,  -m1);
+        calcSetOutAcceleration(a1HexParticle, moveDir,  0);
+        calcSetOutAcceleration(a2HexParticle, moveDir,  0);
     }
 
-    public static void calcElasticCollisionWithSolidWall2(final HexParticle a1HexParticle, final Cell.Dir moveDir) {
-        final int v1 = calcGetVelocity(a1HexParticle, moveDir);
-        //final int m1 = calcGetMove(a1HexParticle, moveDir);
+ */
 
-        calcSetVelocity(a1HexParticle, moveDir,  -v1);
-        //calcSetMove(a1HexParticle, moveDir,  -m1);
+    private static int calcCollision1to2(int v1, int m1, int v2, int m2) {
+        return (m1 * v1 + m2 * (2 * v2 - v1)) / (m1 + m2);
     }
+
+    public static void calcElasticCollisionWithSolidWall(final HexParticle hexParticle, final Cell.Dir moveDir) {
+        final int v1 = calcGetVelocity(hexParticle, moveDir);
+        final int m1 = calcGetMove(hexParticle, moveDir);
+
+        calcSetVelocity(hexParticle, moveDir,  -v1);
+        calcSetMove(hexParticle, moveDir,  -m1);
+    }
+
+    public static void calcVelocityElasticCollisionWithSolidWall2(final HexParticle hexParticle, final Cell.Dir moveDir) {
+        final int v1 = calcGetVelocity(hexParticle, moveDir);
+        //final int m1 = calcGetMove(hexParticle, moveDir);
+
+        calcSetVelocity(hexParticle, moveDir,  -v1);
+        //calcSetMove(hexParticle, moveDir,  -m1);
+    }
+/*
+    public static void calcAccelerationElasticCollisionWithSolidWall2(final HexParticle hexParticle, final Cell.Dir moveDir) {
+        final int v1 = calcGetOutAcceleration(hexParticle, moveDir);
+        //final int m1 = calcGetMove(hexParticle, moveDir);
+
+        calcAddInAcceleration(hexParticle, moveDir,  -v1);
+        //calcSetMove(hexParticle, moveDir,  -m1);
+
+        calcSetOutAcceleration(hexParticle, moveDir,  0);
+    }
+
+ */
+/*
+    public static void runAccelerationAddInToOut(HexParticle hexParticle) {
+        hexParticle.getOutAccelerationHexVector().a += hexParticle.getInAccelerationHexVector().a;
+        hexParticle.getOutAccelerationHexVector().b += hexParticle.getInAccelerationHexVector().b;
+        hexParticle.getOutAccelerationHexVector().c += hexParticle.getInAccelerationHexVector().c;
+
+        calcClearHexVector(hexParticle.getInAccelerationHexVector());
+    }
+
+ */
+
+    private static void calcClearHexVector(final HexVector hexVector) {
+        hexVector.a = 0;
+        hexVector.b = 0;
+        hexVector.c = 0;
+    }
+/*
+    public static void calcOutAccelerationToVelocity(final HexParticle hexParticle) {
+        // TODO mass
+        hexParticle.getVelocityHexVector().a += hexParticle.getOutAccelerationHexVector().a;
+        hexParticle.getVelocityHexVector().b += hexParticle.getOutAccelerationHexVector().b;
+        hexParticle.getVelocityHexVector().c += hexParticle.getOutAccelerationHexVector().c;
+
+        calcClearHexVector(hexParticle.getOutAccelerationHexVector());
+    }
+
+ */
 
     private static int calcGetVelocity(final HexParticle hexParticle, final Cell.Dir moveDir) {
+        return calcGetHexVector(hexParticle.getVelocityHexVector(), moveDir);
+    }
+/*
+    private static int calcGetInAcceleration(final HexParticle hexParticle, final Cell.Dir moveDir) {
+        return calcGetHexVector(hexParticle.getInAccelerationHexVector(), moveDir);
+    }
+
+    private static int calcGetOutAcceleration(final HexParticle hexParticle, final Cell.Dir moveDir) {
+        return calcGetHexVector(hexParticle.getOutAccelerationHexVector(), moveDir);
+    }
+
+ */
+
+    private static int calcGetHexVector(final HexVector hexVector, final Cell.Dir moveDir) {
         final int velocity;
         switch (moveDir) {
-            case BP -> velocity = hexParticle.getVelocityHexVector().b;
-            case CN -> velocity = hexParticle.getVelocityHexVector().c;
-            case AN -> velocity = hexParticle.getVelocityHexVector().a;
-            case BN -> velocity = hexParticle.getVelocityHexVector().b;
-            case CP -> velocity = hexParticle.getVelocityHexVector().c;
-            case AP -> velocity = hexParticle.getVelocityHexVector().a;
+            case BP -> velocity = hexVector.b;
+            case CN -> velocity = hexVector.c;
+            case AN -> velocity = hexVector.a;
+            case BN -> velocity = hexVector.b;
+            case CP -> velocity = hexVector.c;
+            case AP -> velocity = hexVector.a;
             default -> throw new IllegalStateException("Unexpected dir value: " + moveDir);
         }
         return velocity;
     }
 
-    private static int calcSetVelocity(final HexParticle hexParticle, final Cell.Dir moveDir, final int velocity) {
+    private static void calcSetVelocity(final HexParticle hexParticle, final Cell.Dir moveDir, final int velocity) {
+        calcSetHexVector(hexParticle.getVelocityHexVector(), moveDir, velocity);
+    }
+/*
+    private static void calcSetInAcceleration(final HexParticle hexParticle, final Cell.Dir moveDir, final int inAcceleration) {
+        calcSetHexVector(hexParticle.getInAccelerationHexVector(), moveDir, inAcceleration);
+    }
+
+    private static void calcAddInAcceleration(final HexParticle hexParticle, final Cell.Dir moveDir, final int inAcceleration) {
+        calcAddHexVector(hexParticle.getInAccelerationHexVector(), moveDir, inAcceleration);
+    }
+
+    private static void calcSetOutAcceleration(final HexParticle hexParticle, final Cell.Dir moveDir, final int outAcceleration) {
+        calcSetHexVector(hexParticle.getOutAccelerationHexVector(), moveDir, outAcceleration);
+    }
+
+ */
+
+    private static void calcSetHexVector(final HexVector hexVector, final Cell.Dir moveDir, final int value) {
         switch (moveDir) {
-            case BP -> hexParticle.getVelocityHexVector().b = velocity;
-            case CN -> hexParticle.getVelocityHexVector().c = velocity;
-            case AN -> hexParticle.getVelocityHexVector().a = velocity;
-            case BN -> hexParticle.getVelocityHexVector().b = velocity;
-            case CP -> hexParticle.getVelocityHexVector().c = velocity;
-            case AP -> hexParticle.getVelocityHexVector().a = velocity;
+            case BP -> hexVector.b = value;
+            case CN -> hexVector.c = value;
+            case AN -> hexVector.a = value;
+            case BN -> hexVector.b = value;
+            case CP -> hexVector.c = value;
+            case AP -> hexVector.a = value;
             default -> throw new IllegalStateException("Unexpected dir value: " + moveDir);
         }
-        return velocity;
+    }
+
+    private static void calcAddHexVector(final HexVector hexVector, final Cell.Dir moveDir, final int value) {
+        switch (moveDir) {
+            case BP -> hexVector.b = value;
+            case CN -> hexVector.c = value;
+            case AN -> hexVector.a = value;
+            case BN -> hexVector.b = value;
+            case CP -> hexVector.c = value;
+            case AP -> hexVector.a = value;
+            default -> throw new IllegalStateException("Unexpected dir value: " + moveDir);
+        }
     }
 
     public static int calcAddVelocity(final HexParticle hexParticle, final Cell.Dir moveDir, final int velocity) {

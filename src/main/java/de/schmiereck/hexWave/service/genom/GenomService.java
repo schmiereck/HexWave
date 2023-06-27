@@ -29,10 +29,10 @@ public class GenomService {
     public Genom createSunGenom() {
         final Genom genom = new Genom();
 
-        genom.genomSensorList.add(new GenomSensor(0, GenomSensor.InputName.Negative));
+        //genom.genomSensorList.add(new GenomSensor(0, GenomSensor.InputName.Negative));
         //genom.genomOutputList.add(new GenomOutput(0, GenomOutput.OutputName.MoveA));
         //genom.genomOutputList.add(new GenomOutput(1, GenomOutput.OutputName.MoveB));
-        genom.genomOutputList.add(new GenomOutput(1, 0, GenomOutput.OutputName.MoveC));
+        //genom.genomOutputList.add(new GenomOutput(1, 0, GenomOutput.OutputName.MoveC));
 
         //final GenomNeuron genomNeuron = new GenomNeuron(3);
         //genomNeuron.genomConnectorList.add(new GenomConnector(4, 0.1D, 0.2D));

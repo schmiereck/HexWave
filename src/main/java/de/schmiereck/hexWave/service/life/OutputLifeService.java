@@ -184,9 +184,9 @@ public class OutputLifeService {
 
     public void runOutputMoveAcceleration(final LifePart lifePart) {
         final Brain brain = lifePart.getBrain();
-        final double moveA = brain.getOutput(GenomOutput.OutputName.MoveA);
-        final double moveB = brain.getOutput(GenomOutput.OutputName.MoveB);
-        final double moveC = brain.getOutput(GenomOutput.OutputName.MoveC);
+        final double moveA = 0.0D;
+        final double moveB = 1.0D;
+        final double moveC = -1.0D;
         final double moveVelocity;
 
         final Cell.Dir dir;

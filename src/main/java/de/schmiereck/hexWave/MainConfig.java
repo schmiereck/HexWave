@@ -1,10 +1,14 @@
 package de.schmiereck.hexWave;
 
 public class MainConfig {
+
     public enum ConfigEnum {
         LifeEnvironment,
         JumpingBall,
+        BlockedBall,
         BouncingBall,
+        MachineBalls,
+        CrashBalls,
         ShowFields,
         OnlySun,
         NoMoves
@@ -25,17 +29,21 @@ public class MainConfig {
     public static int lifePartsCount = 160;
     public static boolean useBall = false;
     public static boolean useShowFields = false;
-    public static boolean useOutputMoveAcceleration = true;
 
     public static final double InitialLifePartEnergy = 2.0D;
     public static final double InitialSunPartEnergy = 1.0D;
     public static final double InitialWallPartEnergy = 0.0D;
+    public static int InitialSunCVellocity = -10;
     public static double PoolChildMutationRate = 0.25D;
     public static double BirthChildMutationRate = 0.1D;
     public static double FieldVelocityDiffFactor = 10.0D;
 
 
     public static int LifePartOutputFieldStartAreaDistance = 0;
+
+    public static int[] BallStartXPos;
+    public static int[] BallStartYPos;
+    public static int[] BallStartVelocityA;
 
     private MainConfig() {
     }
@@ -45,20 +53,56 @@ public class MainConfig {
         switch (configEnum) {
             case LifeEnvironment -> {
                 // Defaults.
-                //useBirthOutput = false;
-                useOutputMoveAcceleration = false;
             }
             case JumpingBall -> {
                 useBall = true;
+                BallStartXPos = new int[] { 30 };
+                BallStartYPos = new int[] { 36 };
+                BallStartVelocityA = new int[] { 0 };
                 useSunshine = false;
                 useLifeParts = false;
                 useEnergy = false;
             }
             case BouncingBall -> {
                 useBall = true;
+                BallStartXPos = new int[] { 40 };
+                BallStartYPos = new int[] { 30 };
+                BallStartVelocityA = new int[] { 32 };
                 useSunshine = false;
                 useLifeParts = false;
                 useEnergy = false;
+            }
+            case BlockedBall -> {
+                useBall = true;
+                BallStartXPos = new int[] { 36 };
+                BallStartYPos = new int[] { 40 };
+                BallStartVelocityA = new int[] { 0 };
+                useSunshine = false;
+                useLifeParts = false;
+                useEnergy = false;
+            }
+            case MachineBalls -> {
+                useBall = true;
+                BallStartXPos = new int[] { 30, 36, 37, 38 };
+                BallStartYPos = new int[] { 30, 30, 30, 30 };
+                BallStartVelocityA = new int[] { 128, 0, 0, 0 };
+                useSunshine = false;
+                useLifeParts = false;
+                useEnergy = false;
+                useGravitation = false;
+            }
+            case CrashBalls -> {
+                useBall = true;
+                BallStartXPos = new int[] { 30, 38,
+                                            30, 38,};
+                BallStartYPos = new int[] { 20, 20,
+                                            25, 25 };
+                BallStartVelocityA = new int[] { 128, -128,
+                                                 128, -64 };
+                useSunshine = false;
+                useLifeParts = false;
+                useEnergy = false;
+                useGravitation = false;
             }
             case ShowFields -> {
                 useShowFields = true;
@@ -77,6 +121,15 @@ public class MainConfig {
                 useMoveSunPart = false;
                 useEat = false;
             }
+            /*
+            Neue Scenarien für Beschleunigung
+                    AccelerationGravitationFreeFall
+                    AccelerationGravitationCollisionOnePart
+                    AccelerationGravitationCollisionOnePartAndWall
+                    AccelerationGravitationCollisionRowOfParts
+                    AccelerationGravitationCollisionRowOfPartsAnWall
+                    NurAusgangsSpeed Ohne Grav...
+             */
         }
     }
 

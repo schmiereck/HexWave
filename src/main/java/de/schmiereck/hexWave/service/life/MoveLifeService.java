@@ -1,6 +1,5 @@
 package de.schmiereck.hexWave.service.life;
 
-import de.schmiereck.hexWave.MainConfig;
 import de.schmiereck.hexWave.math.HexParticle;
 import de.schmiereck.hexWave.service.hexGrid.Cell;
 import de.schmiereck.hexWave.service.hexGrid.GridNode;
@@ -33,15 +32,29 @@ public class MoveLifeService {
                 if (blockingPart.getPartType() == Part.PartType.Wall) {
                     HexMathUtils.calcElasticCollisionWithSolidWall(hexParticle, moveDir);
                 } else {
-                    HexMathUtils.calcElasticCollision(hexParticle, moveDir, blockingPart.getHexParticle());
+                    HexMathUtils.calcVelocityElasticCollision(hexParticle, moveDir, blockingPart.getHexParticle());
                 }
             }
         }
     }
+/*
+    public void runAccelerationAddInToOut(final LifePart lifePart) {
+        final HexParticle hexParticle = lifePart.getPart().getHexParticle();
+        HexMathUtils.runAccelerationAddInToOut(hexParticle);
+    }
+
+    public void runOutAccelerationToVelocity(final LifePart lifePart) {
+        final HexParticle hexParticle = lifePart.getPart().getHexParticle();
+        HexMathUtils.calcOutAccelerationToVelocity(hexParticle);
+    }
+
+ */
 
     public void runMoveOrCollisionWithDirList(final LifePart lifePart) {
         final HexParticle hexParticle = lifePart.getPart().getHexParticle();
+
         HexMathUtils.transferVelocityToMove(hexParticle.getVelocityHexVector(), hexParticle.getMoveHexVector());
+
         final List<Cell.Dir> moveDirList = HexMathUtils.determineNextMoveList(hexParticle.getMoveHexVector());
 
         if (!moveDirList.isEmpty()) {
@@ -52,9 +65,11 @@ public class MoveLifeService {
                     //HexMathUtils.calcNextMove(moveDir, hexParticle.getMoveHexVector()); // TODO ???
                     //HexMathUtils.calcNextMove3(moveDir, hexParticle.getMoveHexVector(), hexParticle.getVelocityHexVector()); // TODO ???
                     if (blockingPart.getPartType() == Part.PartType.Wall) {
-                        HexMathUtils.calcElasticCollisionWithSolidWall2(hexParticle, moveDir);
+                        HexMathUtils.calcVelocityElasticCollisionWithSolidWall2(hexParticle, moveDir);
+                        //HexMathUtils.calcAccelerationElasticCollisionWithSolidWall2(hexParticle, moveDir);
                     } else {
-                        HexMathUtils.calcElasticCollision(hexParticle, moveDir, blockingPart.getHexParticle());
+                        HexMathUtils.calcVelocityElasticCollision(hexParticle, moveDir, blockingPart.getHexParticle());
+                        //HexMathUtils.calcAccelerationElasticCollision(hexParticle, moveDir, blockingPart.getHexParticle());
                     }
                 } else {
                     if (Objects.isNull(nextMoveDir)) {
@@ -74,6 +89,7 @@ public class MoveLifeService {
                 }
             }
         }
+        //hexParticle.getOutAccelerationHexVector().reset();
     }
 
     private Part movePart(final LifePart lifePart, final Cell.Dir dir) {

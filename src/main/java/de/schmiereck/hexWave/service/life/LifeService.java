@@ -108,21 +108,12 @@ public class LifeService {
         }
     }
 
-    public void initializeBall(final boolean useBouncingBall) {
+    public void initializeBall(final int ballXPos, final int ballYPos, final int ballStartVelocityA) {
         final Genom lifePartGenom = this.genomService.createInitialGenom();
 
         final Brain brain = this.brainService.createBrain(lifePartGenom);
 
-        final int xPos, yPos;
-
-        if (useBouncingBall) {
-            xPos = (this.hexGridService.getNodeCountX() / 3) * 2;
-            yPos = 30;
-        } else {
-            xPos = this.hexGridService.getNodeCountX() / 2;
-            yPos = 36;
-        }
-        final GridNode gridNode = this.hexGridService.getGridNode(xPos, yPos);
+        final GridNode gridNode = this.hexGridService.getGridNode(ballXPos, ballYPos);
 
         final Part part = new Part(Part.PartType.Life, MainConfig.InitialLifePartEnergy, 8);
 
@@ -131,9 +122,7 @@ public class LifeService {
         final PartIdentity partIdentity = this.birthLifeService.createPartIdentity();
         final LifePart lifePart = new LifePart(partIdentity, brain, gridNode, part);
 
-        if (useBouncingBall) {
-            part.getHexParticle().getVelocityHexVector().a = 32;
-        }
+        part.getHexParticle().getVelocityHexVector().a = ballStartVelocityA;
 
         this.lifePartList.add(lifePart);
     }
@@ -225,7 +214,6 @@ public class LifeService {
 
         final List<LifePart> newChildLifePartList = new ArrayList<>();
         this.lifePartList.stream().forEach(lifePart -> {
-            if (MainConfig.useOutputMoveAcceleration) this.outputLifeService.runOutputMoveAcceleration(lifePart);
             this.outputLifeService.runOutputFields(newChildLifePartList, lifePart);
         });
         this.lifePartList.addAll(newChildLifePartList);
@@ -241,17 +229,48 @@ public class LifeService {
         });
     }
 
+    /**
+     * alle collisions
+     *      Acceleration: out +=> in, clear out
+     *
+     * alle
+     *      Acceleration: in +=> out, clear in
+     * alle move-collisions
+     *      Acceleration: out +=> in, clear out
+     * alle
+     *      Acceleration: in +=> out, clear in
+     * alle
+     *      Out-Acceleration -> Velocity, clear out
+     */
     public void runMoveOrCollisions() {
-        if (MainConfig.useMoveLifePart)
-        this.lifePartList.stream().forEach(lifePart -> {
-            if (MainConfig.useBall) printDebug(lifePart);
-            //TODO this.runCollisionWithSingleDir(lifePart);
-            this.moveLiveService.runMoveOrCollisionWithDirList(lifePart);
-        });
+
+        if (MainConfig.useMoveLifePart) {
+            this.lifePartList.stream().forEach(lifePart -> {
+                if (MainConfig.useBall) printDebug(lifePart);
+                //TODO this.runCollisionWithSingleDir(lifePart);
+                this.moveLiveService.runMoveOrCollisionWithDirList(lifePart);
+            });
+        }
         if (MainConfig.useMoveSunPart)
         this.sunPartList.stream().forEach(lifePart -> {
             this.moveLiveService.runMoveOrCollisionWithDirList(lifePart);
         });
+/*
+        this.lifePartList.stream().forEach(lifePart -> {
+            this.moveLiveService.runAccelerationAddInToOut(lifePart);
+        });
+        this.sunPartList.stream().forEach(lifePart -> {
+            this.moveLiveService.runAccelerationAddInToOut(lifePart);
+        });
+
+        this.lifePartList.stream().forEach(lifePart -> {
+            this.moveLiveService.runOutAccelerationToVelocity(lifePart);
+        });
+        this.sunPartList.stream().forEach(lifePart -> {
+            this.moveLiveService.runOutAccelerationToVelocity(lifePart);
+        });
+
+ */
     }
 
     public void calcAcceleration() {
@@ -301,6 +320,8 @@ public class LifeService {
         final HexParticle hexParticle = lifePart.getPart().getHexParticle();
         System.out.printf("p(x:%d y:%d) ", lifePart.getGridNode().getPosX(), lifePart.getGridNode().getPosY());
         System.out.printf("v(a:%d b:%d c:%d) ", hexParticle.getVelocityHexVector().a, hexParticle.getVelocityHexVector().b, hexParticle.getVelocityHexVector().c);
+        //System.out.printf("ia(a:%d b:%d c:%d) ", hexParticle.getInAccelerationHexVector().a, hexParticle.getInAccelerationHexVector().b, hexParticle.getInAccelerationHexVector().c);
+        //System.out.printf("oa(a:%d b:%d c:%d) ", hexParticle.getOutAccelerationHexVector().a, hexParticle.getOutAccelerationHexVector().b, hexParticle.getOutAccelerationHexVector().c);
         System.out.printf("m(a:%d b:%d c:%d) ", hexParticle.getMoveHexVector().a, hexParticle.getMoveHexVector().b, hexParticle.getMoveHexVector().c);
         System.out.println();
     }
@@ -309,6 +330,8 @@ public class LifeService {
         final GridNode gridNode = this.hexGridService.searchRandomEmptyGridNode(true);
 
         final Part part = new Part(Part.PartType.Sun, energy, 1);
+
+        part.getHexParticle().getVelocityHexVector().c = MainConfig.InitialSunCVellocity;
 
         this.hexGridService.addPart(gridNode, part);
 

@@ -99,6 +99,9 @@ public class HexWaveController implements Initializable
         MainConfig.initConfig(MainConfig.ConfigEnum.LifeEnvironment);
         //MainConfig.initConfig(MainConfig.ConfigEnum.JumpingBall);
         //MainConfig.initConfig(MainConfig.ConfigEnum.BouncingBall);
+        //MainConfig.initConfig(MainConfig.ConfigEnum.BlockedBall);
+        //MainConfig.initConfig(MainConfig.ConfigEnum.MachineBalls);
+        //MainConfig.initConfig(MainConfig.ConfigEnum.CrashBalls);
         //MainConfig.initConfig(MainConfig.ConfigEnum.ShowFields);
         //MainConfig.initConfig(MainConfig.ConfigEnum.OnlySun);
         //MainConfig.initConfig(MainConfig.ConfigEnum.NoMoves);
@@ -130,7 +133,11 @@ public class HexWaveController implements Initializable
         this.hexGridService.initialize(10, 3, maxAreaDistance);
         this.lifeService.initializeWalls();
         this.lifeService.initialize(MainConfig.useLifeParts ? MainConfig.lifePartsCount : 0);
-        if (MainConfig.useBall) this.lifeService.initializeBall(MainConfig.config == MainConfig.ConfigEnum.BouncingBall);
+        if (MainConfig.useBall) {
+            for (int pos = 0; pos < MainConfig.BallStartXPos.length; pos++) {
+                this.lifeService.initializeBall(MainConfig.BallStartXPos[pos], MainConfig.BallStartYPos[pos], MainConfig.BallStartVelocityA[pos]);
+            }
+        }
         if (MainConfig.useShowFields) this.lifeService.initializeShowFields();
 
         final HexGrid hexGrid = this.hexGridService.getHexGrid();

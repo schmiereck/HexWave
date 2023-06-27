@@ -11,9 +11,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 @JsonTypeName("GenomOutput")
 public class GenomOutput implements Serializable {
     public enum OutputName {
-        MoveA,
-        MoveB,
-        MoveC,
         EatNeighbourAP,
         EatNeighbourAN,
         EatNeighbourBP,
