@@ -24,6 +24,10 @@ public class GenomSensor implements GenomInputInterface, Serializable {
         NeigbourPartTypeBP, NeigbourPartTypeBN,
         NeigbourPartTypeCP, NeigbourPartTypeCN,
 
+        NeigbourEnergyAP, NeigbourEnergyAN,
+        NeigbourEnergyBP, NeigbourEnergyBN,
+        NeigbourEnergyCP, NeigbourEnergyCN,
+
         Part1FieldAP, Part1FieldAN,
         Part1FieldBP, Part1FieldBN,
         Part1FieldCP, Part1FieldCN,

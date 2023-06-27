@@ -31,7 +31,7 @@ public class OutputLifeService {
     @Autowired
     private BirthLifeService birthLifeService;
 
-    public void runEatNeighbourEnergy(final LifePart lifePart) {
+    public void runEatOrGiveNeighbourEnergy(final LifePart lifePart) {
         // Output: Eat the Neighbour-Part or not.
         final GridNode gridNode = lifePart.getGridNode();
         final Brain brain = lifePart.getBrain();
@@ -115,13 +115,19 @@ public class OutputLifeService {
         this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.ComFieldB), FieldTypeService.FieldTypeEnum.Com, Cell.Dir.BP, Cell.Dir.BN);
         this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.ComFieldC), FieldTypeService.FieldTypeEnum.Com, Cell.Dir.CP, Cell.Dir.CN);
 
-        this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.PushFieldA), FieldTypeService.FieldTypeEnum.PartPush, Cell.Dir.AP, Cell.Dir.AN);
-        this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.PushFieldB), FieldTypeService.FieldTypeEnum.PartPush, Cell.Dir.BP, Cell.Dir.BN);
-        this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.PushFieldC), FieldTypeService.FieldTypeEnum.PartPush, Cell.Dir.CP, Cell.Dir.CN);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPush, brain.getOutput(GenomOutput.OutputName.PushFieldAP), Cell.Dir.AP);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPush, brain.getOutput(GenomOutput.OutputName.PushFieldAN), Cell.Dir.AN);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPush, brain.getOutput(GenomOutput.OutputName.PushFieldBP), Cell.Dir.BP);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPush, brain.getOutput(GenomOutput.OutputName.PushFieldBN), Cell.Dir.BN);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPush, brain.getOutput(GenomOutput.OutputName.PushFieldCP), Cell.Dir.CP);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPush, brain.getOutput(GenomOutput.OutputName.PushFieldCN), Cell.Dir.CN);
 
-        this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.PullFieldA), FieldTypeService.FieldTypeEnum.PartPull, Cell.Dir.AP, Cell.Dir.AN);
-        this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.PullFieldB), FieldTypeService.FieldTypeEnum.PartPull, Cell.Dir.BP, Cell.Dir.BN);
-        this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.PullFieldC), FieldTypeService.FieldTypeEnum.PartPull, Cell.Dir.CP, Cell.Dir.CN);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPull, brain.getOutput(GenomOutput.OutputName.PullFieldAP), Cell.Dir.AP);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPull, brain.getOutput(GenomOutput.OutputName.PullFieldAN), Cell.Dir.AN);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPull, brain.getOutput(GenomOutput.OutputName.PullFieldBP), Cell.Dir.BP);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPull, brain.getOutput(GenomOutput.OutputName.PullFieldBN), Cell.Dir.BN);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPull, brain.getOutput(GenomOutput.OutputName.PullFieldCP), Cell.Dir.CP);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPull, brain.getOutput(GenomOutput.OutputName.PullFieldCN), Cell.Dir.CN);
 
         if (MainConfig.useBirthOutput) {
             this.runBirth(newChildLifePartList, lifePart, gridNode, brain.getOutput(GenomOutput.OutputName.BirthA), Cell.Dir.AP, Cell.Dir.AN);

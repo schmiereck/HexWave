@@ -69,6 +69,13 @@ public class InputLifeService {
                 case NeigbourPartTypeCP -> brainSensor.inValue = this.calcNeigbourPartTypeValue(this.calcNeigbourPartType(gridNode, Cell.Dir.CP));
                 case NeigbourPartTypeCN -> brainSensor.inValue = this.calcNeigbourPartTypeValue(this.calcNeigbourPartType(gridNode, Cell.Dir.CN));
 
+                case NeigbourEnergyAP -> brainSensor.inValue = this.calcNeigbourEnergyValue(gridNode, Cell.Dir.AP);
+                case NeigbourEnergyAN -> brainSensor.inValue = this.calcNeigbourEnergyValue(gridNode, Cell.Dir.AN);
+                case NeigbourEnergyBP -> brainSensor.inValue = this.calcNeigbourEnergyValue(gridNode, Cell.Dir.BP);
+                case NeigbourEnergyBN -> brainSensor.inValue = this.calcNeigbourEnergyValue(gridNode, Cell.Dir.BN);
+                case NeigbourEnergyCP -> brainSensor.inValue = this.calcNeigbourEnergyValue(gridNode, Cell.Dir.CP);
+                case NeigbourEnergyCN -> brainSensor.inValue = this.calcNeigbourEnergyValue(gridNode, Cell.Dir.CN);
+
                 case Part1FieldAP -> brainSensor.inValue = this.calcFieldValue(gridNode, part, Cell.Dir.AP, this.part1FieldType);
                 case Part1FieldAN -> brainSensor.inValue = this.calcFieldValue(gridNode, part, Cell.Dir.AN, this.part1FieldType);
                 case Part1FieldBP -> brainSensor.inValue = this.calcFieldValue(gridNode, part, Cell.Dir.BP, this.part1FieldType);
@@ -118,7 +125,6 @@ public class InputLifeService {
         return MathUtils.sigmoid(value);
     }
 
-
     @Nullable
     private Part.PartType calcNeigbourPartType(final GridNode gridNode, final Cell.Dir dir) {
         final GridNode neighbourGridNode = this.hexGridService.getNeighbourGridNode(gridNode, dir);
@@ -131,6 +137,20 @@ public class InputLifeService {
             neigbourPartType = null;
         }
         return neigbourPartType;
+    }
+
+    @Nullable
+    private double calcNeigbourEnergyValue(final GridNode gridNode, final Cell.Dir dir) {
+        final GridNode neighbourGridNode = this.hexGridService.getNeighbourGridNode(gridNode, dir);
+        final List<Part> neighbourPartList = this.hexGridService.getPartList(neighbourGridNode);
+        final double energy;
+        if (!neighbourPartList.isEmpty()) {
+            final Part neighbourPart = neighbourPartList.get(0);
+            energy = neighbourPart.getEnergy();
+        } else {
+            energy = 0.0D;
+        }
+        return energy;
     }
 
     private double calcNeigbourPartTypeValue(final Part.PartType neigbourPartType) {

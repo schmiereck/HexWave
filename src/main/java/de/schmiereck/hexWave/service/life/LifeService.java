@@ -108,6 +108,47 @@ public class LifeService {
         }
     }
 
+    public void initializeExtraWalls() {
+        final int middleXPos = this.hexGridService.getNodeCountX() / 2;
+        final int leftXPos = middleXPos - 20;
+        final int rightXPos = middleXPos + 20;
+        final int bottomYPos = this.hexGridService.getNodeCountY() - 15;
+        final int topYPos = bottomYPos - 25;
+
+        // Middle-Wall.
+        this.createWallY(middleXPos, bottomYPos, topYPos);
+        this.createWallX(middleXPos - 15, middleXPos - 1, bottomYPos - 10);
+        this.createWallX(middleXPos + 15, middleXPos + 1, bottomYPos - 10);
+        // Bottom-Wall.
+        this.createWallX(leftXPos, rightXPos, bottomYPos);
+    }
+
+    private void createWallY(final int middleXPos, final int aYPos, final int bYPos) {
+        final int bottomYPos = Math.max(aYPos, bYPos);
+        final int topYPos = Math.min(aYPos, bYPos);
+
+        for (int posY = topYPos; posY < bottomYPos; posY++) {
+            final GridNode leftGridNode = this.hexGridService.getGridNode(middleXPos, posY);
+            final Part leftPart = new Part(Part.PartType.Wall, MainConfig.InitialWallPartEnergy, 0);
+            final LifePart leftLifePart = new LifePart(null, null, leftGridNode, leftPart);
+            this.hexGridService.addPart(leftGridNode, new Part(Part.PartType.Wall, MainConfig.InitialWallPartEnergy, 0));
+            this.wallPartList.add(leftLifePart);
+        }
+    }
+
+    private void createWallX(final int aXPos, final int bXPos, final int bottomYPos) {
+        final int leftXPos = Math.min(aXPos, bXPos);
+        final int rightXPos = Math.max(aXPos, bXPos);
+
+        for (int posX = leftXPos; posX <= rightXPos; posX++) {
+            final GridNode bottomGridNode = this.hexGridService.getGridNode(posX, bottomYPos);
+            final Part bottomPart = new Part(Part.PartType.Wall, MainConfig.InitialWallPartEnergy, 0);
+            final LifePart bottomLifePart = new LifePart(null, null, bottomGridNode, bottomPart);
+            this.hexGridService.addPart(bottomGridNode, bottomPart);
+            this.wallPartList.add(bottomLifePart);
+        }
+    }
+
     public void initializeBall(final int ballXPos, final int ballYPos, final int ballStartVelocityA) {
         final Genom lifePartGenom = this.genomService.createInitialGenom();
 
@@ -209,7 +250,7 @@ public class LifeService {
     public void runOutputActionResults() {
         if (MainConfig.useEat)
         this.lifePartList.stream().forEach(lifePart -> {
-            this.outputLifeService.runEatNeighbourEnergy(lifePart);
+            this.outputLifeService.runEatOrGiveNeighbourEnergy(lifePart);
         });
 
         final List<LifePart> newChildLifePartList = new ArrayList<>();
@@ -287,7 +328,7 @@ public class LifeService {
         //this.sunPartList.removeIf(lifePart -> this.generationLifeService.runDeath(lifePart));
         this.sunPartList = this.sunPartList.stream().filter(lifePart -> !this.generationLifeService.runDeath(lifePart)).collect(Collectors.toList());
 
-        if (MainConfig.useBirth) this.generationLifeService.runBirth(this.lifePartList, this.lifePartCount, true);
+        if (MainConfig.useBirth) this.generationLifeService.runBirth(this.lifePartList, this.lifePartCount, MainConfig.MinLifePartCount, true);
 
         this.hexGridService.calcNext();
     }
@@ -331,7 +372,8 @@ public class LifeService {
 
         final Part part = new Part(Part.PartType.Sun, energy, 1);
 
-        part.getHexParticle().getVelocityHexVector().c = MainConfig.InitialSunCVellocity;
+        part.getHexParticle().getVelocityHexVector().b = MainConfig.InitialSunVellocityB;
+        part.getHexParticle().getVelocityHexVector().c = MainConfig.InitialSunVellocityC;
 
         this.hexGridService.addPart(gridNode, part);
 

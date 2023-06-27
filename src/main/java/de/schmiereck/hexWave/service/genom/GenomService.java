@@ -288,7 +288,7 @@ public class GenomService {
         final GenomSensor.InputName inputName;
 
         if (this.mutateRarely(mutationRate)) {
-            inputName = this.calcSensorName();
+            inputName = this.calcRandomSensorName();
         } else {
             inputName = genomSensor.inputName;
         }
@@ -297,7 +297,7 @@ public class GenomService {
         return newGenomSensor;
     }
 
-    private GenomSensor.InputName calcSensorName() {
+    private GenomSensor.InputName calcRandomSensorName() {
         final GenomSensor.InputName inputName = GenomSensor.InputName.values()[this.rnd.nextInt(GenomSensor.InputName.values().length)];
         return inputName;
     }
@@ -321,7 +321,7 @@ public class GenomService {
         final Optional<GenomSensor> newGenomSensor;
 
         //if (!genom.genomInputMap.isEmpty()) {
-            final GenomSensor.InputName inputName = this.calcSensorName();
+            final GenomSensor.InputName inputName = this.calcRandomSensorName();
 
             newGenomSensor = Optional.of(new GenomSensor(this.calcNextId(newGenom), inputName));
         //} else {

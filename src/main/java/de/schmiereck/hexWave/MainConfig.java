@@ -2,6 +2,8 @@ package de.schmiereck.hexWave;
 
 public class MainConfig {
 
+
+
     public enum ConfigEnum {
         LifeEnvironment,
         JumpingBall,
@@ -26,17 +28,21 @@ public class MainConfig {
     public static boolean useMoveSunPart = true;
     public static boolean useEat = true;
     //public static int lifePartsCount = 80;
-    public static int lifePartsCount = 160;
+    public static int LifePartsCount = 30+18;
+    public static int MinLifePartCount = 30+15;
     public static boolean useBall = false;
     public static boolean useShowFields = false;
 
-    public static final double InitialLifePartEnergy = 2.0D;
-    public static final double InitialSunPartEnergy = 1.0D;
+    public static final double InitialLifePartEnergy = 3.0D;
+    public static final double InitialSunPartEnergy = 2.0D;
     public static final double InitialWallPartEnergy = 0.0D;
-    public static int InitialSunCVellocity = -10;
+    public static int InitialSunVellocityB = 3;
+    public static int InitialSunVellocityC = -10;
     public static double PoolChildMutationRate = 0.25D;
     public static double BirthChildMutationRate = 0.1D;
     public static double FieldVelocityDiffFactor = 10.0D;
+    public static int GravitationalAccelerationC = 10;
+    public static int GravitationalAccelerationB = 10;
 
 
     public static int LifePartOutputFieldStartAreaDistance = 0;

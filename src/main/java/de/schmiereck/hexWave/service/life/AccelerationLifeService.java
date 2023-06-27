@@ -25,8 +25,8 @@ public class AccelerationLifeService {
         final HexParticle hexParticle = lifePart.getPart().getHexParticle();
         //hexParticle.inAccelerationHexVector.c -= 1;
         //hexParticle.inAccelerationHexVector.b += 1;
-        hexParticle.velocityHexVector.c -= 1;
-        hexParticle.velocityHexVector.b += 1;
+        hexParticle.velocityHexVector.c -= MainConfig.GravitationalAccelerationC;
+        hexParticle.velocityHexVector.b += MainConfig.GravitationalAccelerationB;
     }
 
     public void calcFieldAcceleration(final LifePart lifePart) {
@@ -40,7 +40,6 @@ public class AccelerationLifeService {
 
         for (final GridNodeAreaRef gridNodeAreaRef : gridNode.getGridNodeAreaRefList()) {
             final GridNodeArea gridNodeArea = gridNodeAreaRef.getGridNodeArea();
-            final double refValue = gridNodeAreaRef.getValue();
             gridNodeArea.getPartFieldList().stream().forEach(gridNodeAreaPartField -> {
                 final Part otherPart = gridNodeAreaPartField.getPart();
                 if (otherPart != part) {
@@ -56,13 +55,14 @@ public class AccelerationLifeService {
                     }
                     if (fieldDirection != 0) {
                         final HexParticle otherPartHexParticle = otherPart.getHexParticle();
+                        final double refValue = gridNodeAreaRef.getValue();
                         final int fieldTypeMaxAreaDistance = partPushFieldType.getMaxAreaDistance();
                         final int finalAreaDistance = gridNodeArea.getAreaDistance();
                         //final int velocityDiff = (int)((fieldTypeMaxAreaDistance - finalAreaDistance) * (refValue * finalAreaDistance));
                         //final int velocityDiff = (int)((refValue * finalAreaDistance));
                         //final int velocityDiff = (int)((refValue * fieldTypeMaxAreaDistance));
                         //final int velocityDiff = (int)((refValue));
-                        final double velocityDiff = ((refValue));
+                        final double velocityDiff = ((refValue) * gridNodeAreaPartField.getValue());
                         final long velocityDiffValue = Math.round(velocityDiff * MainConfig.FieldVelocityDiffFactor) * fieldDirection;
 
                         final Cell.Dir gridNodeAreaDir = gridNodeArea.getDir();

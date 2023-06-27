@@ -448,7 +448,8 @@ public class HexGridService {
             for (final PartField gridNodeAreaPartField : gridNodeArea.getPartFieldList()) {
                 final int parentAreaDistance = gridNodeAreaPartField.getParentAreaDistance() + 1;
                 if (gridNodeAreaPartField.getFieldType() == filterFieldType) {
-                    value += (refValue / parentAreaDistance);
+                    //value += (refValue / parentAreaDistance);
+                    value += gridNodeAreaPartField.getValue();
                     //value += 1;//refValue / gridNodeAreaPartField.getParentAreaDistance();
                 }
             }

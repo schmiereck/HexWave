@@ -1,9 +1,7 @@
 package de.schmiereck.hexWave.view;
 
 import de.schmiereck.hexWave.MainConfig;
-import de.schmiereck.hexWave.service.genom.Genom;
 import de.schmiereck.hexWave.service.genom.GenomDocument;
-import de.schmiereck.hexWave.service.hexGrid.FieldType;
 import de.schmiereck.hexWave.service.hexGrid.GridNode;
 import de.schmiereck.hexWave.service.hexGrid.Part;
 import de.schmiereck.hexWave.service.life.FieldTypeService;
@@ -25,30 +23,22 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
@@ -56,14 +46,11 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 
 @Component
 public class HexWaveController implements Initializable
@@ -132,7 +119,8 @@ public class HexWaveController implements Initializable
         //this.hexGridService.initialize(2, 1);
         this.hexGridService.initialize(10, 3, maxAreaDistance);
         this.lifeService.initializeWalls();
-        this.lifeService.initialize(MainConfig.useLifeParts ? MainConfig.lifePartsCount : 0);
+        this.lifeService.initializeExtraWalls();
+        this.lifeService.initialize(MainConfig.useLifeParts ? MainConfig.LifePartsCount : 0);
         if (MainConfig.useBall) {
             for (int pos = 0; pos < MainConfig.BallStartXPos.length; pos++) {
                 this.lifeService.initializeBall(MainConfig.BallStartXPos[pos], MainConfig.BallStartYPos[pos], MainConfig.BallStartVelocityA[pos]);
@@ -353,9 +341,9 @@ public class HexWaveController implements Initializable
                 //final double extraValue = this.hexGridService.retrieveActGridNodeExtraValue(posX, posY);
                 //showCircleShape(gridCellModel.getShape2(), extraValue, Color.WHITE, Color.WHITE);
 
-                showCircleShape(gridCellModel.getShape3(), partPushFieldValue, Color.RED, Color.ORANGE);
-                showCircleShape(gridCellModel.getShape4(), partPullFieldValue, Color.BLUE, Color.AQUA);
-                showCircleShape(gridCellModel.getShape5(), comFieldValue, Color.TURQUOISE, Color.CORAL);
+                showCircleShape(gridCellModel.getShape3(), partPushFieldValue, Color.TRANSPARENT, Color.RED);//Color.ORANGE, Color.RED);
+                showCircleShape(gridCellModel.getShape4(), partPullFieldValue, Color.TRANSPARENT, Color.LIGHTBLUE);//Color.AQUA, Color.BLUE);
+                showCircleShape(gridCellModel.getShape5(), comFieldValue, Color.TRANSPARENT, Color.ANTIQUEWHITE);//Color.YELLOW, Color.ANTIQUEWHITE);
             }
         }
 
@@ -387,12 +375,12 @@ public class HexWaveController implements Initializable
         if (fieldValue > 0.0D) {
             gridNodeCircle2.setRadius(Math.min(fieldValue * 2.0D, 12.0D));
             gridNodeCircle2.setVisible(true);
-            gridNodeCircle2.setStroke(pColor.interpolate(nColor, MathUtils.sigmoid(fieldValue)));
+            gridNodeCircle2.setStroke(pColor.interpolate(nColor, MathUtils.sigmoid(fieldValue + 0.1D)));
         } else {
             if (fieldValue < 0.0D) {
                 gridNodeCircle2.setRadius(Math.min(-fieldValue * 2.0D, 12.0D));
                 gridNodeCircle2.setVisible(true);
-                gridNodeCircle2.setStroke(nColor.interpolate(pColor, MathUtils.sigmoid(-fieldValue)));
+                gridNodeCircle2.setStroke(nColor.interpolate(pColor, MathUtils.sigmoid(-fieldValue + 0.1D)));
             } else {
 
                 gridNodeCircle2.setVisible(false);
@@ -411,7 +399,7 @@ public class HexWaveController implements Initializable
         final Circle gridNodeCircle = gridCellModel.getShape();
         final Part part = lifePart.getPart();
 
-        gridNodeCircle.setRadius(2.0D + (MathUtils.sigmoid(part.getEnergy() * 8.0D)));
+        gridNodeCircle.setRadius(2.0D + Math.min(part.getEnergy() / 5.0D, 8.0D));
         gridNodeCircle.setFill(Color.color(
                 Math.abs(MathUtils.sigmoid(lifePart.partIdentity.partIdentity[0])),
                 Math.abs(MathUtils.sigmoid(lifePart.partIdentity.partIdentity[1])),

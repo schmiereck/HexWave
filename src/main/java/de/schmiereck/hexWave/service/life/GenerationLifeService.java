@@ -92,8 +92,8 @@ public class GenerationLifeService {
         return youngLifePartList;
     }
 
-    void runBirth(final List<LifePart> lifePartList, final int lifePartCount, final boolean onlyHighEnergy) {
-        if (lifePartList.size() < (lifePartCount - (lifePartCount / 4))) {
+    void runBirth(final List<LifePart> lifePartList, final int lifePartCount, final int minLifePartCount, final boolean onlyHighEnergy) {
+        if (lifePartList.size() < minLifePartCount) {
             while (lifePartList.size() < lifePartCount) {
                 final LifePart childLifePart;
                 if (lifePartList.size() == 0) {
