@@ -9,6 +9,7 @@ import de.schmiereck.hexWave.service.hexGrid.GridNodeArea;
 import de.schmiereck.hexWave.service.hexGrid.GridNodeAreaRef;
 import de.schmiereck.hexWave.service.hexGrid.HexGridService;
 import de.schmiereck.hexWave.service.hexGrid.Part;
+import de.schmiereck.hexWave.utils.DirUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -66,9 +67,10 @@ public class AccelerationLifeService {
                         final long velocityDiffValue = Math.round(velocityDiff * MainConfig.FieldVelocityDiffFactor) * fieldDirection;
 
                         final Cell.Dir gridNodeAreaDir = gridNodeArea.getDir();
-
+                        //final Cell.Dir oppositeGridNodeAreaDir = DirUtils.calcOppositeDir(gridNodeAreaDir);
                         addInAccellerationDiffValue(gridNodeAreaDir, partHexParticle, velocityDiffValue);
                         addInAccellerationDiffValue(gridNodeAreaDir, otherPartHexParticle, -velocityDiffValue);
+                        //addInAccellerationDiffValue(oppositeGridNodeAreaDir, otherPartHexParticle, velocityDiffValue);
                     }
                 }
             });

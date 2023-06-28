@@ -4,10 +4,12 @@ import de.schmiereck.hexWave.service.hexGrid.HexGridService;
 import de.schmiereck.hexWave.service.hexGrid.HexGrid;
 import de.schmiereck.hexWave.view.GridModel;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
@@ -49,10 +51,12 @@ public class StageInitializer implements ApplicationListener<StageReadyEvent> {
 
             final HexGrid hexGrid = this.hexGridService.getHexGrid();
 
+            final Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
+
             //final double initialSceneWidth = 640; //hexGrid.getNodeCountX() * GridModel.StepX;
             //final double initialSceneHeight = 460; //(hexGrid.getNodeCountY()) * GridModel.StepY;
-            final double initialSceneWidth = hexGrid.getNodeCountX() * GridModel.StepX + (GridModel.BorderSpaceX * 2);
-            final double initialSceneHeight = hexGrid.getNodeCountY() * GridModel.StepY + (GridModel.BorderSpaceY * 2);
+            final double initialSceneWidth = Math.min(hexGrid.getNodeCountX() * GridModel.StepX + (GridModel.BorderSpaceX * 2), primaryScreenBounds.getWidth() - 80);
+            final double initialSceneHeight = Math.min(hexGrid.getNodeCountY() * GridModel.StepY + (GridModel.BorderSpaceY * 2), primaryScreenBounds.getHeight() - 80);
 
             final Scene scene = new Scene(parent, initialSceneWidth, initialSceneHeight);
 

@@ -117,7 +117,7 @@ public class HexWaveController implements Initializable
         final int maxAreaDistance = this.fieldTypeService.getFieldType(FieldTypeService.FieldTypeEnum.Part1).getMaxAreaDistance();
 
         //this.hexGridService.initialize(2, 1);
-        this.hexGridService.initialize(10, 3, maxAreaDistance);
+        this.hexGridService.initialize(MainConfig.HexGridXSize, MainConfig.HexGridYSize, maxAreaDistance);
         this.lifeService.initializeWalls();
         this.lifeService.initializeExtraWalls();
         this.lifeService.initialize(MainConfig.useLifeParts ? MainConfig.LifePartsCount : 0);
@@ -137,7 +137,7 @@ public class HexWaveController implements Initializable
         for (int posY = 0; posY < this.gridModel.getNodeCountY(); posY++) {
             for (int posX = 0; posX < this.gridModel.getNodeCountX(); posX++) {
                 final GridCellModel gridCellModel = this.gridModel.getGridCellModel(posX, posY);
-                final Circle gridNodeCircle = new Circle(1.0D, Color.DARKGRAY);
+                final Circle gridNodeCircle = new Circle(1.0D, Color.DARKSLATEGRAY);
                 gridNodeCircle.setCenterX(gridCellModel.getScreenPosX());
                 gridNodeCircle.setCenterY(gridCellModel.getScreenPosY());
                 //gridNodeCircle.relocate(gridNode.getScreenPosX(), gridNode.getScreenPosY());
@@ -392,7 +392,7 @@ public class HexWaveController implements Initializable
         final Circle gridNodeCircle = gridCellModel.getShape();
 
         gridNodeCircle.setRadius(1.0D);
-        gridNodeCircle.setFill(Color.DARKGRAY);
+        gridNodeCircle.setFill(Color.DARKSLATEGRAY);
     }
 
     private void drawLife(final GridCellModel gridCellModel, final LifePart lifePart) {

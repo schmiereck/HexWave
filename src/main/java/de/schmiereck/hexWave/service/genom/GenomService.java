@@ -45,19 +45,18 @@ public class GenomService {
         final Genom newGenom = new Genom();
         newGenom.nextId = genom.nextId;
 
-        // Input
-
-        // Sensor
+        // Input-Sensor
         this.copyMutatedGenomSensorList(genom, newGenom, mutationRate);
-        this.addMutatedGenomSensor(genom, newGenom, mutationRate);
+        this.addRandomenomSensor(genom, newGenom, mutationRate);
 
-        // Neuron
+        // Neuron & Connector
         this.copyMutatedGenomNeuronList(genom, newGenom, mutationRate);
-        this.addMutatedGenomNeuron(genom, newGenom, mutationRate);
+        this.addRandomGenomNeuron(genom, newGenom, mutationRate);
+        this.addRandomGenomConnector(genom, newGenom, mutationRate);
 
         // Output
         this.copyMutatedGenomOutputList(genom, newGenom, mutationRate);
-        this.addMutatedGenomOutput(genom, newGenom, mutationRate);
+        this.addRandomGenomOutput(genom, newGenom, mutationRate);
 
         return newGenom;
     }
@@ -85,8 +84,8 @@ public class GenomService {
         newGenom.genomNeuronList.stream().forEach(newGenomNeuron -> {
             final GenomNeuron genomNeuron = (GenomNeuron) genom.genomInputMap.get(newGenomNeuron.getInputId());
 
-            // Mutate Neuron?
-            if (mutateRarely(mutationRate)) {
+            // Mutate Neuron-Connector?
+            if (mutateVeryOften(mutationRate)) {
                 this.copyMutatedGenomNeuronConnectorList(newGenom, genomNeuron, newGenomNeuron, mutationRate);
             } else {
                 this.copyGenomNeuronConnectorList(newGenom, genomNeuron, newGenomNeuron);
@@ -102,21 +101,32 @@ public class GenomService {
         //});
     }
 
-    private void addMutatedGenomNeuron(final Genom genom, final Genom newGenom, final double mutationRate) {
+    private void addRandomGenomConnector(final Genom genom, final Genom newGenom, final double mutationRate) {
+        if (this.mutateVeryOften(mutationRate)) {
+            if (!newGenom.genomNeuronList.isEmpty()) {
+                final GenomNeuron genomNeuron = newGenom.genomNeuronList.get(this.rnd.nextInt(newGenom.genomNeuronList.size()));
+
+                final Optional<GenomConnector> optionalGenomConnector = this.createRandomGenomConnector(newGenom);
+
+                optionalGenomConnector.ifPresent(genomConnector -> genomNeuron.genomConnectorList.add(genomConnector));
+            }
+        }
+    }
+
+
+    private void addRandomGenomNeuron(final Genom genom, final Genom newGenom, final double mutationRate) {
         // Add Neuron?
-        if (this.mutateRarely(mutationRate)) {
+        if (this.mutateOften(mutationRate)) {
             final GenomNeuron newGenomNeuron = this.createGenomNeuron(genom, newGenom);
             addGenomNeuronInput(newGenom, newGenomNeuron);
         }
     }
 
-    private void addMutatedGenomOutput(final Genom genom, final Genom newGenom, final double mutationRate) {
+    private void addRandomGenomOutput(final Genom genom, final Genom newGenom, final double mutationRate) {
         // Add Output?
         if (this.mutateRarely(mutationRate)) {
-            final Optional<GenomOutput> newGenomOutput = this.createGenomOutput(genom, newGenom);
-            if (newGenomOutput.isPresent()) {
-                addGenomNeuronOutput(newGenom, newGenomOutput.get());
-            }
+            final Optional<GenomOutput> newGenomOutput = this.createRandomGenomOutput(genom, newGenom);
+            newGenomOutput.ifPresent(genomOutput -> addGenomNeuronOutput(newGenom, genomOutput));
         }
     }
 
@@ -131,7 +141,7 @@ public class GenomService {
         if (!newGenom.genomInputMap.isEmpty()) {
             final GenomInputInterface genomInput = this.calcRandomGenomInput(newGenom);
 
-            final GenomConnector newGenomConnector = this.createGenomConnector(genomInput);
+            final GenomConnector newGenomConnector = this.createRandomGenomConnector(genomInput);
 
             newGenomNeuron.genomConnectorList.add(newGenomConnector);
         }
@@ -180,10 +190,8 @@ public class GenomService {
 
         // Add Connector?
         if (this.mutateRarely(mutationRate)) {
-            final Optional<GenomConnector> newGenomConnector = this.createGenomConnector(newGenom);
-            if (Objects.nonNull(newGenomConnector)) {
-                newGenomNeuron.genomConnectorList.add(newGenomConnector.get());
-            }
+            final Optional<GenomConnector> newGenomConnector = this.createRandomGenomConnector(newGenom);
+            newGenomConnector.ifPresent(genomConnector -> newGenomNeuron.genomConnectorList.add(genomConnector));
         }
     }
 
@@ -229,7 +237,7 @@ public class GenomService {
         }
 
         if (this.mutateRarely(mutationRate)) {
-            outputName = this.calcOutputName();
+            outputName = this.calcRandomOutputName();
         } else {
             outputName = genomOutput.outputName;
         }
@@ -238,18 +246,18 @@ public class GenomService {
         return newGenomOutput;
     }
 
-    private GenomOutput.OutputName calcOutputName() {
+    private GenomOutput.OutputName calcRandomOutputName() {
         final GenomOutput.OutputName outputName = GenomOutput.OutputName.values()[this.rnd.nextInt(GenomOutput.OutputName.values().length)];
         return outputName;
     }
 
-    private Optional<GenomOutput> createGenomOutput(final Genom genom, final Genom newGenom) {
+    private Optional<GenomOutput> createRandomGenomOutput(final Genom genom, final Genom newGenom) {
         final Optional<GenomOutput> newGenomOutput;
 
         if (!newGenom.genomInputMap.isEmpty()) {
             final GenomInputInterface genomInput = this.calcRandomGenomInput(newGenom);
 
-            final GenomOutput.OutputName outputName = this.calcOutputName();
+            final GenomOutput.OutputName outputName = this.calcRandomOutputName();
 
             newGenomOutput = Optional.of(new GenomOutput(this.calcNextId(newGenom), genomInput.getInputId(), outputName));
         } else {
@@ -307,17 +315,15 @@ public class GenomService {
         return newGenomSensor;
     }
 
-    private void addMutatedGenomSensor(final Genom genom, final Genom newGenom, final double mutationRate) {
+    private void addRandomenomSensor(final Genom genom, final Genom newGenom, final double mutationRate) {
         // Add Sensor?
         if (this.mutateRarely(mutationRate)) {
-            final Optional<GenomSensor> newGenomSensor = this.createGenomSensor(genom, newGenom);
-            if (newGenomSensor.isPresent()) {
-                addGenomNeuronSensor(newGenom, newGenomSensor.get());
-            }
+            final Optional<GenomSensor> newGenomSensor = this.createRandomGenomSensor(genom, newGenom);
+            newGenomSensor.ifPresent(genomSensor -> addGenomNeuronSensor(newGenom, genomSensor));
         }
     }
 
-    private Optional<GenomSensor> createGenomSensor(final Genom genom, final Genom newGenom) {
+    private Optional<GenomSensor> createRandomGenomSensor(final Genom genom, final Genom newGenom) {
         final Optional<GenomSensor> newGenomSensor;
 
         //if (!genom.genomInputMap.isEmpty()) {
@@ -336,12 +342,16 @@ public class GenomService {
         newGenom.genomInputMap.put(newGenomSensor.getInputId(), newGenomSensor);
     }
 
-    private boolean mutateRarely(double mutationRate) {
+    private boolean mutateRarely(final double mutationRate) {
         return this.rnd.nextDouble() < mutationRate;
     }
 
-    private boolean mutateOften(double mutationRate) {
-        return mutationRate < this.rnd.nextDouble();
+    private boolean mutateOften(final double mutationRate) {
+        return this.rnd.nextDouble() < (mutationRate * 2.0D);
+    }
+
+    private boolean mutateVeryOften(final double mutationRate) {
+        return this.rnd.nextDouble() < (mutationRate * 4.0D);
     }
 
     private GenomOutput copyGenomOutput(final Genom genom, final GenomOutput genomOutput) {
@@ -349,20 +359,20 @@ public class GenomService {
         return newGenomOutput;
     }
 
-    private Optional<GenomConnector> createGenomConnector(final Genom newGenom) {
+    private Optional<GenomConnector> createRandomGenomConnector(final Genom newGenom) {
         final Optional<GenomConnector> newGenomConnector;
 
         if (!newGenom.genomInputMap.isEmpty()) {
             final GenomInputInterface genomInput = this.calcRandomGenomInput(newGenom);
 
-            newGenomConnector = Optional.of(this.createGenomConnector(genomInput));
+            newGenomConnector = Optional.of(this.createRandomGenomConnector(genomInput));
         } else {
             newGenomConnector = Optional.empty();
         }
         return newGenomConnector;
     }
 
-    private GenomConnector createGenomConnector(final GenomInputInterface genomInput) {
+    private GenomConnector createRandomGenomConnector(final GenomInputInterface genomInput) {
         final GenomConnector newGenomConnector = new GenomConnector(genomInput.getInputId(),
                 this.calcNewValue(), this.calcNewValue());
         return newGenomConnector;

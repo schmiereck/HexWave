@@ -18,6 +18,7 @@ directions:
   * List<GridNodeAreaRef> gridNodeAreaRefList
 
 ## ToDo
+* Age (dy aft n steps)
 * Velocity and Accelleration
   * any external force acting on a part is added as acceleration.
   * The accelerations only work for the time step and are not added over time.

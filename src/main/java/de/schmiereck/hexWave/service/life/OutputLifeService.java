@@ -115,19 +115,19 @@ public class OutputLifeService {
         this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.ComFieldB), FieldTypeService.FieldTypeEnum.Com, Cell.Dir.BP, Cell.Dir.BN);
         this.runOutputField(part, gridNode, brain.getOutput(GenomOutput.OutputName.ComFieldC), FieldTypeService.FieldTypeEnum.Com, Cell.Dir.CP, Cell.Dir.CN);
 
-        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPush, brain.getOutput(GenomOutput.OutputName.PushFieldAP), Cell.Dir.AP);
-        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPush, brain.getOutput(GenomOutput.OutputName.PushFieldAN), Cell.Dir.AN);
-        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPush, brain.getOutput(GenomOutput.OutputName.PushFieldBP), Cell.Dir.BP);
-        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPush, brain.getOutput(GenomOutput.OutputName.PushFieldBN), Cell.Dir.BN);
-        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPush, brain.getOutput(GenomOutput.OutputName.PushFieldCP), Cell.Dir.CP);
-        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPush, brain.getOutput(GenomOutput.OutputName.PushFieldCN), Cell.Dir.CN);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPush, brain.getOutput(GenomOutput.OutputName.PushFieldAP) * MainConfig.OutputAccelerationFieldFactor, Cell.Dir.AP);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPush, brain.getOutput(GenomOutput.OutputName.PushFieldAN) * MainConfig.OutputAccelerationFieldFactor, Cell.Dir.AN);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPush, brain.getOutput(GenomOutput.OutputName.PushFieldBP) * MainConfig.OutputAccelerationFieldFactor, Cell.Dir.BP);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPush, brain.getOutput(GenomOutput.OutputName.PushFieldBN) * MainConfig.OutputAccelerationFieldFactor, Cell.Dir.BN);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPush, brain.getOutput(GenomOutput.OutputName.PushFieldCP) * MainConfig.OutputAccelerationFieldFactor, Cell.Dir.CP);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPush, brain.getOutput(GenomOutput.OutputName.PushFieldCN) * MainConfig.OutputAccelerationFieldFactor, Cell.Dir.CN);
 
-        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPull, brain.getOutput(GenomOutput.OutputName.PullFieldAP), Cell.Dir.AP);
-        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPull, brain.getOutput(GenomOutput.OutputName.PullFieldAN), Cell.Dir.AN);
-        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPull, brain.getOutput(GenomOutput.OutputName.PullFieldBP), Cell.Dir.BP);
-        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPull, brain.getOutput(GenomOutput.OutputName.PullFieldBN), Cell.Dir.BN);
-        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPull, brain.getOutput(GenomOutput.OutputName.PullFieldCP), Cell.Dir.CP);
-        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPull, brain.getOutput(GenomOutput.OutputName.PullFieldCN), Cell.Dir.CN);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPull, brain.getOutput(GenomOutput.OutputName.PullFieldAP) * MainConfig.OutputAccelerationFieldFactor, Cell.Dir.AP);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPull, brain.getOutput(GenomOutput.OutputName.PullFieldAN) * MainConfig.OutputAccelerationFieldFactor, Cell.Dir.AN);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPull, brain.getOutput(GenomOutput.OutputName.PullFieldBP) * MainConfig.OutputAccelerationFieldFactor, Cell.Dir.BP);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPull, brain.getOutput(GenomOutput.OutputName.PullFieldBN) * MainConfig.OutputAccelerationFieldFactor, Cell.Dir.BN);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPull, brain.getOutput(GenomOutput.OutputName.PullFieldCP) * MainConfig.OutputAccelerationFieldFactor, Cell.Dir.CP);
+        this.runOutputField(part, gridNode, FieldTypeService.FieldTypeEnum.PartPull, brain.getOutput(GenomOutput.OutputName.PullFieldCN) * MainConfig.OutputAccelerationFieldFactor, Cell.Dir.CN);
 
         if (MainConfig.useBirthOutput) {
             this.runBirth(newChildLifePartList, lifePart, gridNode, brain.getOutput(GenomOutput.OutputName.BirthA), Cell.Dir.AP, Cell.Dir.AN);
