@@ -1,6 +1,6 @@
 package de.schmiereck.hexWave.service.life;
 
-import de.schmiereck.hexWave.MainConfig;
+import de.schmiereck.hexWave.MainConfig3;
 import de.schmiereck.hexWave.service.brain.Brain;
 import de.schmiereck.hexWave.service.brain.BrainService;
 import de.schmiereck.hexWave.service.genom.Genom;
@@ -29,25 +29,34 @@ public class BirthLifeService {
     private final Random rnd = new Random();
 
     @NotNull
-    public LifePart createChildLifePart(final LifePart parentLifePart, final double mutationRate, final double energy) {
+    public LifePart createChildLifePart(final LifePart parentLifePart) {
+        final GridNode gridNode = this.hexGridService.searchRandomEmptyGridNode(false);
+        return this.createChildLifePart(parentLifePart,
+                MainConfig3.PoolChildMutationRate,
+                this.rnd.nextDouble(MainConfig3.InitialLifePartEnergy / 2.0D, MainConfig3.InitialLifePartEnergy),
+                gridNode);
+    }
+
+    @NotNull
+    public LifePart createChildLifePart(final LifePart parentLifePart, final double mutationRate, final double energy, final GridNode gridNode) {
         final Brain parentLifePartBrain = parentLifePart.getBrain();
         final Genom parentGenom = parentLifePartBrain.getGenom();
         final Genom newGenom = this.genomService.createMutatedGenom(parentGenom, mutationRate);
 
         final Brain childBrain = this.brainService.createBrain(newGenom);
         final PartIdentity childPartIdentity = this.calcChildPartIdentity(parentLifePart.partIdentity);
-        final LifePart childLifePart = this.createLifePartByBrain(childPartIdentity, childBrain, energy);
+        final LifePart childLifePart = this.createLifePartByBrain(childPartIdentity, childBrain, energy, gridNode);
         return childLifePart;
     }
 
-    public LifePart createLifePartByBrain(final PartIdentity partIdentity, final Brain brain, final double energy) {
-        final GridNode gridNode = this.hexGridService.searchRandomEmptyGridNode(false);
+    public LifePart createLifePartByBrain(final PartIdentity partIdentity, final Brain brain, final double energy, final GridNode gridNode) {
+        final int stepCount = this.hexGridService.retrieveStepCount() + this.rnd.nextInt(500);
 
         final Part part = new Part(Part.PartType.Life, energy, 8);
 
         this.hexGridService.addPart(gridNode, part);
 
-        return new LifePart(partIdentity, brain, gridNode, part);
+        return new LifePart(partIdentity, brain, gridNode, part, stepCount);
     }
 
     private PartIdentity calcChildPartIdentity(final PartIdentity parentPartIdentity) {

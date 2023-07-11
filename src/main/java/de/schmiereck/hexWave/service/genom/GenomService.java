@@ -124,9 +124,9 @@ public class GenomService {
 
     private void addRandomGenomOutput(final Genom genom, final Genom newGenom, final double mutationRate) {
         // Add Output?
-        if (this.mutateRarely(mutationRate)) {
+        if (this.mutateOften(mutationRate)) {
             final Optional<GenomOutput> newGenomOutput = this.createRandomGenomOutput(genom, newGenom);
-            newGenomOutput.ifPresent(genomOutput -> addGenomNeuronOutput(newGenom, genomOutput));
+            newGenomOutput.ifPresent(genomOutput -> addGenomOutput(newGenom, genomOutput));
         }
     }
 
@@ -210,7 +210,7 @@ public class GenomService {
                     newGenomOutput = this.copyGenomOutput(genom, genomOutput);
                 }
 
-                addGenomNeuronOutput(newGenom, newGenomOutput);
+                addGenomOutput(newGenom, newGenomOutput);
             }
         }
         // Remove Outputs with no input.
@@ -267,7 +267,7 @@ public class GenomService {
         return newGenomOutput;
     }
 
-    private static void addGenomNeuronOutput(final Genom newGenom, final GenomOutput newGenomOutput) {
+    public static void addGenomOutput(final Genom newGenom, final GenomOutput newGenomOutput) {
         newGenom.genomOutputList.add(newGenomOutput);
     }
 
@@ -286,7 +286,7 @@ public class GenomService {
                     newGenomSensor = this.copyGenomSensor(genom, genomSensor);
                 }
 
-                addGenomNeuronSensor(newGenom, newGenomSensor);
+                addGenomSensor(newGenom, newGenomSensor);
             }
         }
     }
@@ -319,7 +319,7 @@ public class GenomService {
         // Add Sensor?
         if (this.mutateRarely(mutationRate)) {
             final Optional<GenomSensor> newGenomSensor = this.createRandomGenomSensor(genom, newGenom);
-            newGenomSensor.ifPresent(genomSensor -> addGenomNeuronSensor(newGenom, genomSensor));
+            newGenomSensor.ifPresent(genomSensor -> addGenomSensor(newGenom, genomSensor));
         }
     }
 
@@ -337,7 +337,7 @@ public class GenomService {
         return newGenomSensor;
     }
 
-    private static void addGenomNeuronSensor(final Genom newGenom, final GenomSensor newGenomSensor) {
+    public static void addGenomSensor(final Genom newGenom, final GenomSensor newGenomSensor) {
         newGenom.genomSensorList.add(newGenomSensor);
         newGenom.genomInputMap.put(newGenomSensor.getInputId(), newGenomSensor);
     }

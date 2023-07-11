@@ -33,7 +33,7 @@ public class FieldTypeService {
         this.fieldTypeArr[FieldTypeEnum.Part3.no] = new FieldType(3, false);    // Part
         this.fieldTypeArr[FieldTypeEnum.Com.no] = new FieldType(3, false);    // Part
         this.fieldTypeArr[FieldTypeEnum.PartPull.no] = new FieldType(3, false);
-        this.fieldTypeArr[FieldTypeEnum.PartPush.no] = new FieldType(1, false);
+        this.fieldTypeArr[FieldTypeEnum.PartPush.no] = new FieldType(2, false);
         this.fieldTypeArr[FieldTypeEnum.Sun.no] = new FieldType(0, true);    // Sun
     }
 

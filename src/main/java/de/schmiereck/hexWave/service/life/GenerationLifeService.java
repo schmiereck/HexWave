@@ -1,6 +1,6 @@
 package de.schmiereck.hexWave.service.life;
 
-import de.schmiereck.hexWave.MainConfig;
+import de.schmiereck.hexWave.MainConfig3;
 import de.schmiereck.hexWave.service.brain.Brain;
 import de.schmiereck.hexWave.service.brain.BrainService;
 import de.schmiereck.hexWave.service.genom.Genom;
@@ -15,7 +15,6 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -42,7 +41,10 @@ public class GenerationLifeService {
             final Brain brain = this.brainService.createBrain(lifePartGenom);
             final PartIdentity partIdentity = this.birthLifeService.createPartIdentity();
 
-            lifePartList.add(this.birthLifeService.createLifePartByBrain(partIdentity, brain, this.rnd.nextDouble(MainConfig.InitialLifePartEnergy / 2.0D, MainConfig.InitialLifePartEnergy)));
+            final GridNode gridNode = this.hexGridService.searchRandomEmptyGridNode(false);
+            lifePartList.add(this.birthLifeService.createLifePartByBrain(partIdentity, brain,
+                    this.rnd.nextDouble(MainConfig3.InitialLifePartEnergy / 2.0D, MainConfig3.InitialLifePartEnergy),
+                    gridNode));
         }
     }
     
@@ -55,7 +57,10 @@ public class GenerationLifeService {
             final Brain brain = this.brainService.createBrain(lifePartGenom);
             final PartIdentity partIdentity = this.birthLifeService.createPartIdentity();
 
-            lifePartList.add(this.birthLifeService.createLifePartByBrain(partIdentity, brain, this.rnd.nextDouble(MainConfig.InitialLifePartEnergy / 2.0D, MainConfig.InitialLifePartEnergy)));
+            final GridNode gridNode = this.hexGridService.searchRandomEmptyGridNode(false);
+            lifePartList.add(this.birthLifeService.createLifePartByBrain(partIdentity, brain,
+                    this.rnd.nextDouble(MainConfig3.InitialLifePartEnergy / 2.0D, MainConfig3.InitialLifePartEnergy),
+                    gridNode));
         }
     }
 
@@ -80,9 +85,7 @@ public class GenerationLifeService {
 
         for (int pos = 0; pos < (lifePartCount - youngLifePartList.size()); pos++) {
             final LifePart youngLifePart = youngLifePartList.get(pos % youngLifePartList.size());
-            final LifePart childLifePart = this.birthLifeService.createChildLifePart(youngLifePart,
-                    MainConfig.PoolChildMutationRate,
-                    this.rnd.nextDouble(MainConfig.InitialLifePartEnergy / 2.0D, MainConfig.InitialLifePartEnergy));
+            final LifePart childLifePart = this.birthLifeService.createChildLifePart(youngLifePart);
 
             childLifePartList.add(childLifePart);
         }
@@ -100,11 +103,12 @@ public class GenerationLifeService {
                     final Genom genom = this.genomService.createInitialGenom();
                     final Brain brain = this.brainService.createBrain(genom);
                     final PartIdentity partIdentity = this.birthLifeService.createPartIdentity();
-                    childLifePart = this.birthLifeService.createLifePartByBrain(partIdentity, brain, MainConfig.InitialLifePartEnergy);
+                    final GridNode gridNode = this.hexGridService.searchRandomEmptyGridNode(false);
+                    childLifePart = this.birthLifeService.createLifePartByBrain(partIdentity, brain, MainConfig3.InitialLifePartEnergy, gridNode);
                 } else {
                     final LifePart parentLifePart;
                     if (onlyHighEnergy) {
-                        final List<LifePart> parentLifePartList = lifePartList.stream().filter(searchParentLifePart -> searchParentLifePart.getPart().getEnergy() > MainConfig.InitialLifePartEnergy).collect(Collectors.toList());
+                        final List<LifePart> parentLifePartList = lifePartList.stream().filter(searchParentLifePart -> searchParentLifePart.getPart().getEnergy() > MainConfig3.InitialLifePartEnergy).collect(Collectors.toList());
                         if (parentLifePartList.isEmpty()) {
                             parentLifePart = lifePartList.get(this.rnd.nextInt(lifePartList.size()));
                         } else {
@@ -113,9 +117,7 @@ public class GenerationLifeService {
                     } else {
                         parentLifePart = lifePartList.get(this.rnd.nextInt(lifePartList.size()));
                     }
-                    childLifePart = this.birthLifeService.createChildLifePart(parentLifePart,
-                            MainConfig.PoolChildMutationRate,
-                            this.rnd.nextDouble(MainConfig.InitialLifePartEnergy / 2.0D, MainConfig.InitialLifePartEnergy));
+                    childLifePart = this.birthLifeService.createChildLifePart(parentLifePart);
                 }
                 if (Objects.nonNull(childLifePart)) {
                     lifePartList.add(childLifePart);
@@ -124,11 +126,25 @@ public class GenerationLifeService {
         }
     }
 
-    public boolean runDeath(final LifePart lifePart) {
+    public boolean runEnergyDeath(final LifePart lifePart) {
         final boolean removed;
         final Part part = lifePart.getPart();
 
         if (part.getEnergy() <= 0.0D) {
+            final GridNode gridNode = lifePart.getGridNode();
+            this.hexGridService.removePart(gridNode, part);
+            removed = true;
+        } else {
+            removed = false;
+        }
+        return removed;
+    }
+
+    public boolean runAgeDeath(final LifePart lifePart, final int actStepCounter) {
+        final boolean removed;
+        final Part part = lifePart.getPart();
+
+        if (actStepCounter > (lifePart.getStartStepCounter() + MainConfig3.MaxLifePartStepCounter)) {
             final GridNode gridNode = lifePart.getGridNode();
             this.hexGridService.removePart(gridNode, part);
             removed = true;

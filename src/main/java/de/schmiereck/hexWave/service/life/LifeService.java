@@ -1,6 +1,6 @@
 package de.schmiereck.hexWave.service.life;
 
-import de.schmiereck.hexWave.MainConfig;
+import de.schmiereck.hexWave.MainConfig3;
 import de.schmiereck.hexWave.math.HexParticle;
 import de.schmiereck.hexWave.service.brain.Brain;
 import de.schmiereck.hexWave.service.brain.BrainService;
@@ -64,7 +64,6 @@ public class LifeService {
     private int sunPartCount;
     private Genom sunGenom;
     private PartIdentity sunPartIdentity;
-    private PartIdentity wallPartIdentity;
 
     public LifeService() {
     }
@@ -75,7 +74,6 @@ public class LifeService {
         this.sunPartCount = this.hexGridService.getNodeCountX() / 28;
         this.sunGenom = this.genomService.createSunGenom();
         this.sunPartIdentity = new PartIdentity(0.5D, 0.5D, 1.0D);
-        this.wallPartIdentity = new PartIdentity(0.5D, 1.0D, 1.0D);
 
         this.generationLifeService.initializeLifePartList(this.lifePartList, this.lifePartCount);
     }
@@ -84,73 +82,47 @@ public class LifeService {
         this.generationLifeService.initializeByGenomList(this.lifePartList, genomList);
     }
 
-    public void initializeWalls() {
-        // Left-/ Right-Walls.
-        this.createWallY(0, 1, this.hexGridService.getNodeCountY() - 1);
-        this.createWallY(this.hexGridService.getNodeCountX() - 1, 1, this.hexGridService.getNodeCountY() - 1);
-
-        // Bottom-Wall.
-        this.createWallX(0, this.hexGridService.getNodeCountX() - 1, this.hexGridService.getNodeCountY() - 1);
-    }
-
-    public void initializeExtraWalls() {
-        final int middleXPos = this.hexGridService.getNodeCountX() / 2;
-        final int leftXPos = middleXPos - 20;
-        final int rightXPos = middleXPos + 20;
-        final int bottomYPos = this.hexGridService.getNodeCountY() - 15;
-        final int topYPos = bottomYPos - 25;
-
-        // Middle-Wall.
-        this.createWallY(middleXPos, bottomYPos, topYPos);
-        this.createWallX(middleXPos - 15, middleXPos - 1, bottomYPos - 10);
-        this.createWallX(middleXPos + 15, middleXPos + 1, bottomYPos - 10);
-        // Bottom-Wall.
-        this.createWallX(leftXPos, rightXPos, bottomYPos);
-    }
-
-    private void createWallY(final int middleXPos, final int aYPos, final int bYPos) {
-        final int bottomYPos = Math.max(aYPos, bYPos);
-        final int topYPos = Math.min(aYPos, bYPos);
-
-        for (int posY = topYPos; posY <= bottomYPos; posY++) {
-            this.createWall(middleXPos, posY);
-        }
-    }
-
-    private void createWallX(final int aXPos, final int bXPos, final int bottomYPos) {
-        final int leftXPos = Math.min(aXPos, bXPos);
-        final int rightXPos = Math.max(aXPos, bXPos);
-
-        for (int posX = leftXPos; posX <= rightXPos; posX++) {
-            this.createWall(posX, bottomYPos);
-        }
-    }
-
-    private void createWall(final int xPos, final int posY) {
-        final GridNode leftGridNode = this.hexGridService.getGridNode(xPos, posY);
-        final Part leftPart = new Part(Part.PartType.Wall, MainConfig.InitialWallPartEnergy, 0);
-        final LifePart leftLifePart = new LifePart(this.wallPartIdentity, null, leftGridNode, leftPart);
-        this.hexGridService.addPart(leftGridNode, new Part(Part.PartType.Wall, MainConfig.InitialWallPartEnergy, 0));
-        this.wallPartList.add(leftLifePart);
-    }
-
-    public void initializeBall(final int ballXPos, final int ballYPos, final int ballStartVelocityA) {
+    public void initializeBall(final int ballXPos, final int ballYPos, final int ballStartVelocityA, final boolean useBallPush) {
         final Genom lifePartGenom = this.genomService.createInitialGenom();
+
+        if (useBallPush) {
+            initializePushFields(lifePartGenom);
+        }
 
         final Brain brain = this.brainService.createBrain(lifePartGenom);
 
         final GridNode gridNode = this.hexGridService.getGridNode(ballXPos, ballYPos);
 
-        final Part part = new Part(Part.PartType.Life, MainConfig.InitialLifePartEnergy, 8);
-
-        this.hexGridService.addPart(gridNode, part);
+        final Part part = new Part(Part.PartType.Life, MainConfig3.InitialLifePartEnergy, 8);
 
         final PartIdentity partIdentity = this.birthLifeService.createPartIdentity();
-        final LifePart lifePart = new LifePart(partIdentity, brain, gridNode, part);
+        final LifePart lifePart = new LifePart(partIdentity, brain, gridNode, part, 0);
 
         part.getHexParticle().getVelocityHexVector().a = ballStartVelocityA;
 
+        this.addLifePart(lifePart);
+    }
+
+    public void addLifePart(final LifePart lifePart) {
+        this.hexGridService.addPart(lifePart.getGridNode(), lifePart.getPart());
         this.lifePartList.add(lifePart);
+    }
+
+    public void addWallLifePart(final LifePart wallLifePart) {
+        this.hexGridService.addPart(wallLifePart.getGridNode(), wallLifePart.getPart());
+        this.wallPartList.add(wallLifePart);
+    }
+
+    public void initializePushFields(final Genom genom) {
+        final int inputSensorId = this.genomService.calcNextId(genom);
+        GenomService.addGenomSensor(genom, new GenomSensor(inputSensorId, GenomSensor.InputName.Positive));
+
+        addGenomOutput(genom, inputSensorId, GenomOutput.OutputName.PushFieldAP);
+        addGenomOutput(genom, inputSensorId, GenomOutput.OutputName.PushFieldAN);
+        addGenomOutput(genom, inputSensorId, GenomOutput.OutputName.PushFieldBP);
+        addGenomOutput(genom, inputSensorId, GenomOutput.OutputName.PushFieldBN);
+        addGenomOutput(genom, inputSensorId, GenomOutput.OutputName.PushFieldCP);
+        addGenomOutput(genom, inputSensorId, GenomOutput.OutputName.PushFieldCN);
     }
 
     public void initializeShowFields() {
@@ -177,7 +149,11 @@ public class LifeService {
         genom.genomSensorList.add(new GenomSensor(inputSensorId, inputName));
         //genom.genomOutputList.add(new GenomOutput(0, GenomOutput.OutputName.MoveA));
         //genom.genomOutputList.add(new GenomOutput(1, GenomOutput.OutputName.MoveB));
-        genom.genomOutputList.add(new GenomOutput(this.genomService.calcNextId(genom), inputSensorId, outputName));
+        addGenomOutput(genom, inputSensorId, outputName);
+    }
+
+    private void addGenomOutput(Genom genom, int inputSensorId, final GenomOutput.OutputName outputName) {
+        GenomService.addGenomOutput(genom, new GenomOutput(this.genomService.calcNextId(genom), inputSensorId, outputName));
     }
 
     public LifePart creatShowField(final int xPos, final int yPos, final GenomSensor.InputName inputName, final GenomOutput.OutputName outputName) {
@@ -198,19 +174,51 @@ public class LifeService {
 
         final GridNode gridNode = this.hexGridService.getGridNode(xPos, yPos);
 
-        final Part part = new Part(Part.PartType.Life, MainConfig.InitialLifePartEnergy, 8);
+        final Part part = new Part(Part.PartType.Life, MainConfig3.InitialLifePartEnergy, 8);
 
         this.hexGridService.addPart(gridNode, part);
 
         final PartIdentity partIdentity = this.birthLifeService.createPartIdentity();
-        final LifePart lifePart = new LifePart(partIdentity, brain, gridNode, part);
+        final LifePart lifePart = new LifePart(partIdentity, brain, gridNode, part, 0);
         return lifePart;
+    }
+
+    public void runLife() {
+        // Sensor Inputs.
+        this.runSensorInputs();
+
+        // Calc Brain.
+        this.runBrain();
+
+        // Output Results.
+
+        if (MainConfig3.useSunshine) this.addSunshine();
+        this.runOutputActionResults();
+
+        // 1. Part is accelerated (fields, gravity) += In-Acceleration
+        this.calcOutAcceleration();
+
+        // 2. Blocked: Part passes out-acceleration/mass in direction to neighbor as in-acceleration.
+        //    Out acceleration is not set to 0.
+        this.calcAddOutAccelerationToNeigboursIn();
+
+        // 4. In-Acceleration -> Out-Acceleration, In-Acceleration = 0
+        this.calcAddIn2OutAcceleration();
+
+        // 3. Move: Out acceleration/mass is converted to velocity.
+        //this.calcOutAccelerationToVelocity();
+
+        this.runMoveOrCollisions();
+
+        this.calcClearOutAcceleration();
+
+        this.calcNext();
     }
 
     public void addSunshine() {
         for (int sunPartPos = 0; sunPartPos < this.sunPartCount; sunPartPos++) {
             final Brain sunBrain = this.brainService.createBrain(this.sunGenom);
-            this.sunPartList.add(this.createSunPartByBrain(sunBrain, MainConfig.InitialSunPartEnergy));
+            this.sunPartList.add(this.createSunPartByBrain(sunBrain, MainConfig3.InitialSunPartEnergy));
         }
     }
 
@@ -233,7 +241,7 @@ public class LifeService {
     }
 
     public void runOutputActionResults() {
-        if (MainConfig.useEat)
+        if (MainConfig3.useEat)
         this.lifePartList.stream().forEach(lifePart -> {
             this.outputLifeService.runEatOrGiveNeighbourEnergy(lifePart);
         });
@@ -244,76 +252,100 @@ public class LifeService {
         });
         this.lifePartList.addAll(newChildLifePartList);
 
-        if (MainConfig.useWallPushField) {// && finalPosX == 32)
+        if (MainConfig3.useWallPushField) {// && finalPosX == 32)
             this.wallPartList.stream().forEach(lifePart -> {
                 this.runWallPushField(lifePart);
             });
         }
 
-        this.sunPartList.stream().forEach(lifePart -> {
-            this.outputLifeService.runOutputMoveAcceleration(lifePart);
-        });
+        //this.sunPartList.stream().forEach(lifePart -> {
+        //    this.outputLifeService.runOutputMoveAcceleration(lifePart);
+        //});
     }
 
-    /**
-     * alle collisions
-     *      Acceleration: out +=> in, clear out
-     *
-     * alle
-     *      Acceleration: in +=> out, clear in
-     * alle move-collisions
-     *      Acceleration: out +=> in, clear out
-     * alle
-     *      Acceleration: in +=> out, clear in
-     * alle
-     *      Out-Acceleration -> Velocity, clear out
-     */
     public void runMoveOrCollisions() {
 
-        if (MainConfig.useMoveLifePart) {
+        if (MainConfig3.useMoveLifePart) {
             this.lifePartList.stream().forEach(lifePart -> {
-                if (MainConfig.useBall) printDebug(lifePart);
                 //TODO this.runCollisionWithSingleDir(lifePart);
                 this.moveLiveService.runMoveOrCollisionWithDirList(lifePart);
+                if (MainConfig3.useBall) printDebugVelocity(lifePart);
+                if (MainConfig3.useBall) printDebugMove(lifePart);
+                if (MainConfig3.useBall) printDebugEnd();
             });
         }
-        if (MainConfig.useMoveSunPart)
+        if (MainConfig3.useMoveSunPart)
         this.sunPartList.stream().forEach(lifePart -> {
             this.moveLiveService.runMoveOrCollisionWithDirList(lifePart);
         });
+    }
+
+    public void calcAddIn2OutAcceleration() {
+        this.lifePartList.stream().forEach(lifePart -> {
+            this.moveLiveService.runAccelerationAddInToOut(lifePart);
+        });
+        this.sunPartList.stream().forEach(lifePart -> {
+            this.moveLiveService.runAccelerationAddInToOut(lifePart);
+        });
+
 /*
         this.lifePartList.stream().forEach(lifePart -> {
-            this.moveLiveService.runAccelerationAddInToOut(lifePart);
-        });
-        this.sunPartList.stream().forEach(lifePart -> {
-            this.moveLiveService.runAccelerationAddInToOut(lifePart);
-        });
-
-        this.lifePartList.stream().forEach(lifePart -> {
             this.moveLiveService.runOutAccelerationToVelocity(lifePart);
         });
         this.sunPartList.stream().forEach(lifePart -> {
             this.moveLiveService.runOutAccelerationToVelocity(lifePart);
         });
-
  */
     }
 
-    public void calcAcceleration() {
+    public void calcOutAcceleration() {
         this.lifePartList.stream().forEach(lifePart -> {
-            if (MainConfig.useGravitation)
+            if (MainConfig3.useBall) printDebugStart(lifePart);
+            if (MainConfig3.useGravitation)
                 this.accelerationLifeService.calcGravitationalAcceleration(lifePart);
-            this.accelerationLifeService.calcFieldAcceleration(lifePart);
+            this.accelerationLifeService.calcFieldOutAcceleration(lifePart);
+        });
+    }
+
+    public void calcAddOutAccelerationToNeigboursIn() {
+        this.lifePartList.stream().forEach(lifePart -> {
+                this.accelerationLifeService.calcAddOutAccelerationToNeigboursIn(lifePart);
+            if (MainConfig3.useBall) printDebugInAcceleration(lifePart);
+            if (MainConfig3.useBall) printDebugOutAcceleration(lifePart);
+        });
+    }
+
+    public void calcOutAccelerationToVelocity() {
+        this.lifePartList.stream().forEach(lifePart -> {
+                this.accelerationLifeService.calcOutAccelerationToVelocity(lifePart);
+            if (MainConfig3.useBall) printDebugVelocity(lifePart);
+        });
+    }
+
+    public void calcClearOutAcceleration() {
+        this.lifePartList.stream().forEach(lifePart -> {
+                this.accelerationLifeService.calcClearOutAcceleration(lifePart);
         });
     }
 
     public void calcNext() {
         //this.lifePartList.removeIf(lifePart -> this.generationLifeService.runDeath(lifePart));
-        this.lifePartList = this.lifePartList.stream().filter(lifePart -> !this.generationLifeService.runDeath(lifePart)).collect(Collectors.toList());
+        this.lifePartList = this.lifePartList.stream().filter(lifePart -> !this.generationLifeService.runEnergyDeath(lifePart)).collect(Collectors.toList());
         //this.sunPartList.removeIf(lifePart -> this.generationLifeService.runDeath(lifePart));
-        this.sunPartList = this.sunPartList.stream().filter(lifePart -> !this.generationLifeService.runDeath(lifePart)).collect(Collectors.toList());
+        this.sunPartList = this.sunPartList.stream().filter(lifePart -> !this.generationLifeService.runEnergyDeath(lifePart)).collect(Collectors.toList());
 
-        if (MainConfig.useBirth) this.generationLifeService.runBirth(this.lifePartList, this.lifePartCount, MainConfig.MinLifePartCount, true);
+        final int stepCount = this.hexGridService.retrieveStepCount();
+        final List<LifePart> deathLifePartList = this.lifePartList.stream().filter(lifePart -> this.generationLifeService.runAgeDeath(lifePart, stepCount)).collect(Collectors.toList());
+        this.lifePartList.removeAll(deathLifePartList);
+
+        deathLifePartList.stream().forEach(lifePart -> {
+            this.lifePartList.add(this.birthLifeService.createChildLifePart(lifePart));
+            this.lifePartList.add(this.birthLifeService.createChildLifePart(lifePart));
+        });
+
+
+
+        if (MainConfig3.useBirth) this.generationLifeService.runBirth(this.lifePartList, this.lifePartCount, MainConfig3.MinLifePartCount, true);
 
         this.hexGridService.calcNext();
     }
@@ -323,7 +355,7 @@ public class LifeService {
 
         this.brainService.calcBrain(brain);
 
-        if (MainConfig.useEnergy) lifePart.getPart().addEnergy(-0.01);
+        if (MainConfig3.useEnergy) lifePart.getPart().subEnergy(MainConfig3.EnergyCostRunBrain);
     }
 
     private void runWallPushField(LifePart lifePart) {
@@ -343,26 +375,55 @@ public class LifeService {
     }
 
     private static void printDebug(final LifePart lifePart) {
-        final HexParticle hexParticle = lifePart.getPart().getHexParticle();
+        printDebugStart(lifePart);
+        printDebugVelocity(lifePart);
+        printDebugInAcceleration(lifePart);
+        printDebugOutAcceleration(lifePart);
+        printDebugMove(lifePart);
+        printDebugEnd();
+    }
+
+    private static void printDebugStart(final LifePart lifePart) {
         System.out.printf("p(x:%d y:%d) ", lifePart.getGridNode().getPosX(), lifePart.getGridNode().getPosY());
+    }
+
+    private static void printDebugVelocity(final LifePart lifePart) {
+        final HexParticle hexParticle = lifePart.getPart().getHexParticle();
         System.out.printf("v(a:%d b:%d c:%d) ", hexParticle.getVelocityHexVector().a, hexParticle.getVelocityHexVector().b, hexParticle.getVelocityHexVector().c);
-        //System.out.printf("ia(a:%d b:%d c:%d) ", hexParticle.getInAccelerationHexVector().a, hexParticle.getInAccelerationHexVector().b, hexParticle.getInAccelerationHexVector().c);
-        //System.out.printf("oa(a:%d b:%d c:%d) ", hexParticle.getOutAccelerationHexVector().a, hexParticle.getOutAccelerationHexVector().b, hexParticle.getOutAccelerationHexVector().c);
-        System.out.printf("m(a:%d b:%d c:%d) ", hexParticle.getMoveHexVector().a, hexParticle.getMoveHexVector().b, hexParticle.getMoveHexVector().c);
+    }
+
+    private static void printDebugInAcceleration(final LifePart lifePart) {
+        final HexParticle hexParticle = lifePart.getPart().getHexParticle();
+        System.out.printf("ia(a:%d b:%d c:%d) ", hexParticle.getInAccelerationHexVector().a, hexParticle.getInAccelerationHexVector().b, hexParticle.getInAccelerationHexVector().c);
+    }
+
+    private static void printDebugOutAcceleration(final LifePart lifePart) {
+        final HexParticle hexParticle = lifePart.getPart().getHexParticle();
+        System.out.printf("oa(a:%d b:%d c:%d) ", hexParticle.getOutAccelerationHexVector().a, hexParticle.getOutAccelerationHexVector().b, hexParticle.getOutAccelerationHexVector().c);
+    }
+
+    private static void printDebugMove(final LifePart lifePart) {
+        final HexParticle hexParticle = lifePart.getPart().getHexParticle();
+        System.out.printf("vm(a:%d b:%d c:%d) ", hexParticle.getVMoveHexVector().a, hexParticle.getVMoveHexVector().b, hexParticle.getVMoveHexVector().c);
+        System.out.printf("am(a:%d b:%d c:%d) ", hexParticle.getAMoveHexVector().a, hexParticle.getAMoveHexVector().b, hexParticle.getAMoveHexVector().c);
+    }
+
+    private static void printDebugEnd() {
         System.out.println();
     }
 
     private LifePart createSunPartByBrain(final Brain brain, final double energy) {
+        final int stepCount = this.hexGridService.retrieveStepCount();
         final GridNode gridNode = this.hexGridService.searchRandomEmptyGridNode(true);
 
         final Part part = new Part(Part.PartType.Sun, energy, 1);
 
-        part.getHexParticle().getVelocityHexVector().b = MainConfig.InitialSunVellocityB;
-        part.getHexParticle().getVelocityHexVector().c = MainConfig.InitialSunVellocityC;
+        part.getHexParticle().getVelocityHexVector().b = MainConfig3.InitialSunVellocityB;
+        part.getHexParticle().getVelocityHexVector().c = MainConfig3.InitialSunVellocityC;
 
         this.hexGridService.addPart(gridNode, part);
 
-        return new LifePart(this.sunPartIdentity, brain, gridNode, part);
+        return new LifePart(this.sunPartIdentity, brain, gridNode, part, stepCount);
     }
 
     public void calcGenPoolWinners() {

@@ -1,10 +1,11 @@
 package de.schmiereck.hexWave.view;
 
-import de.schmiereck.hexWave.MainConfig;
+import de.schmiereck.hexWave.MainConfig3;
 import de.schmiereck.hexWave.service.genom.GenomDocument;
 import de.schmiereck.hexWave.service.hexGrid.GridNode;
 import de.schmiereck.hexWave.service.hexGrid.Part;
 import de.schmiereck.hexWave.service.life.FieldTypeService;
+import de.schmiereck.hexWave.service.life.InitializeLifeService;
 import de.schmiereck.hexWave.service.life.LifePart;
 import de.schmiereck.hexWave.service.life.LifeService;
 import de.schmiereck.hexWave.service.hexGrid.HexGrid;
@@ -73,6 +74,9 @@ public class HexWaveController implements Initializable
     @Autowired
     private FieldTypeService fieldTypeService;
 
+    @Autowired
+    private InitializeLifeService initializeLifeService;
+
     private GridModel gridModel = new GridModel();
 
     private AnimationTimer animationTimer;
@@ -83,15 +87,16 @@ public class HexWaveController implements Initializable
 
     @Override
     public void initialize(final URL url, final ResourceBundle resourceBundle) {
-        MainConfig.initConfig(MainConfig.ConfigEnum.LifeEnvironment);
-        //MainConfig.initConfig(MainConfig.ConfigEnum.JumpingBall);
-        //MainConfig.initConfig(MainConfig.ConfigEnum.BouncingBall);
-        //MainConfig.initConfig(MainConfig.ConfigEnum.BlockedBall);
-        //MainConfig.initConfig(MainConfig.ConfigEnum.MachineBalls);
-        //MainConfig.initConfig(MainConfig.ConfigEnum.CrashBalls);
-        //MainConfig.initConfig(MainConfig.ConfigEnum.ShowFields);
-        //MainConfig.initConfig(MainConfig.ConfigEnum.OnlySun);
-        //MainConfig.initConfig(MainConfig.ConfigEnum.NoMoves);
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.LifeEnvironment);
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.BlockedBall);
+        MainConfig3.initConfig(MainConfig3.ConfigEnum.JumpingBall);
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.BouncingBall);
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.MachineBalls);
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.CrashBalls);
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.ShowFields);
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.OnlySun);
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.NoMoves);
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.SlideTop);
 
         this.mainPane.setStyle("-fx-background: black;");
 /*
@@ -117,16 +122,20 @@ public class HexWaveController implements Initializable
         final int maxAreaDistance = this.fieldTypeService.getFieldType(FieldTypeService.FieldTypeEnum.Part1).getMaxAreaDistance();
 
         //this.hexGridService.initialize(2, 1);
-        this.hexGridService.initialize(MainConfig.HexGridXSize, MainConfig.HexGridYSize, maxAreaDistance);
-        this.lifeService.initializeWalls();
-        this.lifeService.initializeExtraWalls();
-        this.lifeService.initialize(MainConfig.useLifeParts ? MainConfig.LifePartsCount : 0);
-        if (MainConfig.useBall) {
-            for (int pos = 0; pos < MainConfig.BallStartXPos.length; pos++) {
-                this.lifeService.initializeBall(MainConfig.BallStartXPos[pos], MainConfig.BallStartYPos[pos], MainConfig.BallStartVelocityA[pos]);
+        this.hexGridService.initialize(MainConfig3.HexGridXSize, MainConfig3.HexGridYSize, maxAreaDistance);
+        this.lifeService.initialize(MainConfig3.useLifeParts ? MainConfig3.LifePartsCount : 0);
+        this.initializeLifeService.initialize();
+
+        this.initializeLifeService.initializeWalls();
+        if (MainConfig3.UseExtraWalls)
+            this.initializeLifeService.initializeExtraWalls();
+        if (MainConfig3.useBall) {
+            for (int pos = 0; pos < MainConfig3.BallStartXPos.length; pos++) {
+                this.lifeService.initializeBall(MainConfig3.BallStartXPos[pos], MainConfig3.BallStartYPos[pos], MainConfig3.BallStartVelocityA[pos],
+                        MainConfig3.useBallPush);
             }
         }
-        if (MainConfig.useShowFields) this.lifeService.initializeShowFields();
+        if (MainConfig3.useShowFields) this.lifeService.initializeShowFields();
 
         final HexGrid hexGrid = this.hexGridService.getHexGrid();
 
@@ -296,22 +305,7 @@ public class HexWaveController implements Initializable
     }
 
     private void runLife() {
-        // Sensor Inputs.
-        this.lifeService.runSensorInputs();
-
-        // Calc Brain.
-        this.lifeService.runBrain();
-
-        // Output Results.
-
-        if (MainConfig.useSunshine) this.lifeService.addSunshine();
-        this.lifeService.runOutputActionResults();
-
-        this.lifeService.calcAcceleration();
-
-        this.lifeService.runMoveOrCollisions();
-
-        this.lifeService.calcNext();
+        this.lifeService.runLife();
 
         this.updateView();
     }
@@ -399,7 +393,7 @@ public class HexWaveController implements Initializable
         final Circle gridNodeCircle = gridCellModel.getShape();
         final Part part = lifePart.getPart();
 
-        gridNodeCircle.setRadius(2.0D + Math.min(part.getEnergy() / 5.0D, 8.0D));
+        gridNodeCircle.setRadius(2.0D + Math.min(part.getEnergy() * 6.0D, 8.0D));
         gridNodeCircle.setFill(Color.color(
                 Math.abs(MathUtils.sigmoid(lifePart.partIdentity.partIdentity[0])),
                 Math.abs(MathUtils.sigmoid(lifePart.partIdentity.partIdentity[1])),

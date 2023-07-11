@@ -1,14 +1,9 @@
 package de.schmiereck.hexWave.service.hexGrid;
 
-import static de.schmiereck.hexWave.utils.DirUtils.calcOppositeDir;
-
-import de.schmiereck.hexWave.MainConfig;
-import de.schmiereck.hexWave.math.NumService;
-import de.schmiereck.hexWave.service.life.LifeService;
 import de.schmiereck.hexWave.utils.DirUtils;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -393,6 +388,15 @@ public class HexGridService {
 
     public GridNode getNeighbourGridNode(final GridNode gridNode, final Cell.Dir dir) {
         return this.getNeighbourGridNode(gridNode.getPosX(), gridNode.getPosY(), dir);
+    }
+
+    public Optional<GridNode> getEmptyNeighbourGridNode(final GridNode gridNode, final Cell.Dir dir) {
+        final GridNode neighbourGridNode = this.getNeighbourGridNode(gridNode.getPosX(), gridNode.getPosY(), dir);
+        if (neighbourGridNode.getPartList().isEmpty()) {
+            return Optional.of(neighbourGridNode);
+        } else {
+            return Optional.empty();
+        }
     }
 
     private GridNode getNeighbourGridNode(final int posX, final int posY, final Cell.Dir dir) {

@@ -18,7 +18,8 @@ directions:
   * List<GridNodeAreaRef> gridNodeAreaRefList
 
 ## ToDo
-* Age (dy aft n steps)
+* Upper limit for Energy in a Part.
+* DONE Age (die aft n steps)
 * Velocity and Accelleration
   * any external force acting on a part is added as acceleration.
   * The accelerations only work for the time step and are not added over time.
@@ -26,6 +27,20 @@ directions:
   * If the particle is blocked, its acceleration is passed on to the other particle as pressure. This pressure acceleration is then also used in the next time step. The pressure is thus passed on to other neighboring particles over time.
   * The floor has to absorb and swallow the pressure.
 * Geschwindigkeit und Beschleunigung
+  * Problem
+    * Geschwindigkeit (Aufgrund von Beschleunigung) darf nur erhöht werden,
+      wenn das Teilchen nicht kollidiert.
+    * Eine Kollision kann nur festgestellt werden, wenn sich das Teilchen bewegt.
+    * Ich kann die Beschleunigungen aufaddieren und daraus eine virtuelle Geschwindigkeit (aMove) machen.
+      diese wird im Falle einer Kollision an das Nachbarteilchen weiter gegeben oder
+      sonst in eine Geschwindigkeit überführt.
+    * Eine bestehende Geschwindigkeit wird normal als vMove behandelt. 
+  * Ruhender Part:
+    1. Part is accelerated (fields, gravity) += In-Acceleration
+    2. Blocked: Part passes out-acceleration/mass in direction to neighbor as in-acceleration.
+       Out acceleration is not set to 0.
+    3. Move: Out acceleration/mass is converted to velocity.
+    4. In-Acceleration -> Out-Acceleration, In-Acceleration = 0
   * Grundgedanke
     * Der Austausch (auch Reflektion) zwischen Teilchen findet nur über die Beschleunigung statt.
     * Ein ruhendes Teilchen das kolliediert, gibt seine Beschleuigung an das andere Teilchen weiter.

@@ -1,19 +1,19 @@
 package de.schmiereck.hexWave;
 
-public class MainConfig {
-
+public class MainConfig3 {
 
     public enum ConfigEnum {
         LifeEnvironment,
-        JumpingBall,
         BlockedBall,
+        JumpingBall,
         BouncingBall,
         MachineBalls,
         CrashBalls,
         ShowFields,
         OnlySun,
-        NoMoves
-    };
+        NoMoves,
+        SlideTop
+    }
 
     public static int HexGridXSize = 12;//10;
     public static int HexGridYSize = 3;
@@ -33,29 +33,37 @@ public class MainConfig {
     public static int LifePartsCount = 30+18;
     public static int MinLifePartCount = 30+15;
     public static boolean useBall = false;
+    public static boolean useBallPush = false;
     public static boolean useShowFields = false;
 
-    public static final double InitialLifePartEnergy = 3.0D;
-    public static final double InitialSunPartEnergy = 2.5D;
+    public static final double InitialLifePartEnergy = 1.0D / 2.0D;
+    public static final double InitialSunPartEnergy = 1.0D / 2.3D;
     public static final double InitialWallPartEnergy = 0.0D;
-    public static int InitialSunVellocityB = 8;
-    public static int InitialSunVellocityC = -10;
+    public static double EnergyCostRunBrain = 1.0D / 200.0D;
+
+    public static int MaxLifePartStepCounter = 1200;
+
+    public static int InitialSunVellocityB = 2*50;
+    public static int InitialSunVellocityC = -10*70;
     public static double PoolChildMutationRate = 0.25D;
     public static double BirthChildMutationRate = 0.1D;
     public static double FieldVelocityDiffFactor = 10.0D;
-    public static int GravitationalAccelerationC = 10;
-    public static int GravitationalAccelerationB = 10;
+    public static int GravitationalAccelerationBP = 10;
+    public static int GravitationalAccelerationCN = 10;
 
 
     public static int LifePartOutputFieldStartAreaDistance = 0;
     public static double OutputAccelerationFieldFactor = 4.0D;
+    public static double PartMaxEnergy = 1.0D;
+
+    public static boolean UseExtraWalls = true;
 
 
     public static int[] BallStartXPos;
     public static int[] BallStartYPos;
     public static int[] BallStartVelocityA;
 
-    private MainConfig() {
+    private MainConfig3() {
     }
 
     public static void initConfig(final ConfigEnum configEnum) {
@@ -63,24 +71,6 @@ public class MainConfig {
         switch (configEnum) {
             case LifeEnvironment -> {
                 // Defaults.
-            }
-            case JumpingBall -> {
-                useBall = true;
-                BallStartXPos = new int[] { 30 };
-                BallStartYPos = new int[] { 36 };
-                BallStartVelocityA = new int[] { 0 };
-                useSunshine = false;
-                useLifeParts = false;
-                useEnergy = false;
-            }
-            case BouncingBall -> {
-                useBall = true;
-                BallStartXPos = new int[] { 40 };
-                BallStartYPos = new int[] { 30 };
-                BallStartVelocityA = new int[] { 32 };
-                useSunshine = false;
-                useLifeParts = false;
-                useEnergy = false;
             }
             case BlockedBall -> {
                 useBall = true;
@@ -90,6 +80,27 @@ public class MainConfig {
                 useSunshine = false;
                 useLifeParts = false;
                 useEnergy = false;
+                UseExtraWalls = false;
+            }
+            case JumpingBall -> {
+                useBall = true;
+                BallStartXPos = new int[] { 30 };
+                BallStartYPos = new int[] { 36 };
+                BallStartVelocityA = new int[] { 0 };
+                useSunshine = false;
+                useLifeParts = false;
+                useEnergy = false;
+                UseExtraWalls = false;
+            }
+            case BouncingBall -> {
+                useBall = true;
+                BallStartXPos = new int[] { 40 };
+                BallStartYPos = new int[] { 30 };
+                BallStartVelocityA = new int[] { 32 };
+                useSunshine = false;
+                useLifeParts = false;
+                useEnergy = false;
+                UseExtraWalls = false;
             }
             case MachineBalls -> {
                 useBall = true;
@@ -100,6 +111,7 @@ public class MainConfig {
                 useLifeParts = false;
                 useEnergy = false;
                 useGravitation = false;
+                UseExtraWalls = false;
             }
             case CrashBalls -> {
                 useBall = true;
@@ -113,6 +125,7 @@ public class MainConfig {
                 useLifeParts = false;
                 useEnergy = false;
                 useGravitation = false;
+                UseExtraWalls = false;
             }
             case ShowFields -> {
                 useShowFields = true;
@@ -130,6 +143,16 @@ public class MainConfig {
                 useMoveLifePart = false;
                 useMoveSunPart = false;
                 useEat = false;
+            }
+            case SlideTop -> {
+                useBall = true;
+                useBallPush = true;
+                BallStartXPos = new int[] { 30 };
+                BallStartYPos = new int[] { 36 };
+                BallStartVelocityA = new int[] { 0 };
+                useSunshine = false;
+                useLifeParts = false;
+                useEnergy = false;
             }
             /*
             Neue Scenarien für Beschleunigung

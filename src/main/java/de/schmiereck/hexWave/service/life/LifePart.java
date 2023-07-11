@@ -14,12 +14,14 @@ public class LifePart implements Serializable {
     private final Brain brain;
     private final Part part;
     private transient GridNode gridNode;
+    private final int startStepCounter;
 
-    public LifePart(final PartIdentity partIdentity, final Brain brain, final GridNode gridNode, final Part part) {
+    public LifePart(final PartIdentity partIdentity, final Brain brain, final GridNode gridNode, final Part part, final int startStepCounter) {
         this.partIdentity = partIdentity;
         this.brain = brain;
         this.gridNode = gridNode;
         this.part = part;
+        this.startStepCounter = startStepCounter;
     }
 
     public Brain getBrain() {
@@ -36,5 +38,9 @@ public class LifePart implements Serializable {
 
     public void setGridNode(GridNode gridNode) {
         this.gridNode = gridNode;
+    }
+
+    public int getStartStepCounter() {
+        return this.startStepCounter;
     }
 }

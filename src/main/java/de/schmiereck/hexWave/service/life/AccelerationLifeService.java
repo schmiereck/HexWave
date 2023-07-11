@@ -1,6 +1,6 @@
 package de.schmiereck.hexWave.service.life;
 
-import de.schmiereck.hexWave.MainConfig;
+import de.schmiereck.hexWave.MainConfig3;
 import de.schmiereck.hexWave.math.HexParticle;
 import de.schmiereck.hexWave.service.hexGrid.Cell;
 import de.schmiereck.hexWave.service.hexGrid.FieldType;
@@ -9,7 +9,9 @@ import de.schmiereck.hexWave.service.hexGrid.GridNodeArea;
 import de.schmiereck.hexWave.service.hexGrid.GridNodeAreaRef;
 import de.schmiereck.hexWave.service.hexGrid.HexGridService;
 import de.schmiereck.hexWave.service.hexGrid.Part;
-import de.schmiereck.hexWave.utils.DirUtils;
+import de.schmiereck.hexWave.utils.HexMathUtils;
+
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,13 +26,13 @@ public class AccelerationLifeService {
 
     public void calcGravitationalAcceleration(final LifePart lifePart) {
         final HexParticle hexParticle = lifePart.getPart().getHexParticle();
-        //hexParticle.inAccelerationHexVector.c -= 1;
-        //hexParticle.inAccelerationHexVector.b += 1;
-        hexParticle.velocityHexVector.c -= MainConfig.GravitationalAccelerationC;
-        hexParticle.velocityHexVector.b += MainConfig.GravitationalAccelerationB;
+        HexMathUtils.calcAddOutAcceleration(hexParticle, Cell.Dir.BP, MainConfig3.GravitationalAccelerationBP);
+        HexMathUtils.calcAddOutAcceleration(hexParticle, Cell.Dir.CN, MainConfig3.GravitationalAccelerationCN);
+        //hexParticle.velocityHexVector.b += MainConfig3.GravitationalAccelerationBP;
+        //hexParticle.velocityHexVector.c -= MainConfig3.GravitationalAccelerationCN;
     }
 
-    public void calcFieldAcceleration(final LifePart lifePart) {
+    public void calcFieldOutAcceleration(final LifePart lifePart) {
         final FieldType partPushFieldType = this.fieldTypeService.getFieldType(FieldTypeService.FieldTypeEnum.PartPush);
         final FieldType partPullFieldType = this.fieldTypeService.getFieldType(FieldTypeService.FieldTypeEnum.PartPull);
         final int maxAreaDistance = this.hexGridService.getMaxAreaDistance();
@@ -64,12 +66,12 @@ public class AccelerationLifeService {
                         //final int velocityDiff = (int)((refValue * fieldTypeMaxAreaDistance));
                         //final int velocityDiff = (int)((refValue));
                         final double velocityDiff = ((refValue) * gridNodeAreaPartField.getValue());
-                        final long velocityDiffValue = Math.round(velocityDiff * MainConfig.FieldVelocityDiffFactor) * fieldDirection;
+                        final int velocityDiffValue = (int)Math.round(velocityDiff * MainConfig3.FieldVelocityDiffFactor) * fieldDirection;
 
                         final Cell.Dir gridNodeAreaDir = gridNodeArea.getDir();
                         //final Cell.Dir oppositeGridNodeAreaDir = DirUtils.calcOppositeDir(gridNodeAreaDir);
-                        addInAccellerationDiffValue(gridNodeAreaDir, partHexParticle, velocityDiffValue);
-                        addInAccellerationDiffValue(gridNodeAreaDir, otherPartHexParticle, -velocityDiffValue);
+                        addOutAccellerationDiffValue(gridNodeAreaDir, partHexParticle, velocityDiffValue);
+                        addOutAccellerationDiffValue(gridNodeAreaDir, otherPartHexParticle, -velocityDiffValue);
                         //addInAccellerationDiffValue(oppositeGridNodeAreaDir, otherPartHexParticle, velocityDiffValue);
                     }
                 }
@@ -77,22 +79,77 @@ public class AccelerationLifeService {
         }
     }
 
-    private static void addInAccellerationDiffValue(final Cell.Dir gridNodeAreaDir, final HexParticle partHexParticle, final long velocityDiffValue) {
-        switch (gridNodeAreaDir) {
-            /*
-            case AP -> { partHexParticle.inAccelerationHexVector.a += velocityDiffValue; }
-            case AN -> { partHexParticle.inAccelerationHexVector.a -= velocityDiffValue; }
-            case BP -> { partHexParticle.inAccelerationHexVector.b += velocityDiffValue; }
-            case BN -> { partHexParticle.inAccelerationHexVector.b -= velocityDiffValue; }
-            case CP -> { partHexParticle.inAccelerationHexVector.c += velocityDiffValue; }
-            case CN -> { partHexParticle.inAccelerationHexVector.c -= velocityDiffValue; }
-             */
-            case AP -> { partHexParticle.velocityHexVector.a += velocityDiffValue; }
-            case AN -> { partHexParticle.velocityHexVector.a -= velocityDiffValue; }
-            case BP -> { partHexParticle.velocityHexVector.b += velocityDiffValue; }
-            case BN -> { partHexParticle.velocityHexVector.b -= velocityDiffValue; }
-            case CP -> { partHexParticle.velocityHexVector.c += velocityDiffValue; }
-            case CN -> { partHexParticle.velocityHexVector.c -= velocityDiffValue; }
+    private static void addOutAccellerationDiffValue(final Cell.Dir gridNodeAreaDir, final HexParticle partHexParticle, final int velocityDiffValue) {
+        HexMathUtils.calcAddOutAcceleration(partHexParticle, gridNodeAreaDir, velocityDiffValue);
+    }
+
+    public void calcAddOutAccelerationToNeigboursIn(final LifePart lifePart) {
+        final Part part = lifePart.getPart();
+        final HexParticle hexParticle = part.getHexParticle();
+
+        for (final Cell.Dir dir : Cell.Dir.values()) {
+            final Part blockingPart = this.checkAccelerationPart(lifePart, dir);
+            final int outAcceleration = HexMathUtils.calcGetOutAcceleration(hexParticle, dir);
+            if (outAcceleration > 0) {
+                // TODO ??? Only if Velocity / Move in this Direction?
+                if (Objects.nonNull(blockingPart)) {
+                    final HexParticle blockingPartHexParticle = blockingPart.getHexParticle();
+                    HexMathUtils.calcAddInAcceleration(blockingPartHexParticle, dir, outAcceleration);
+                    //HexMathUtils.calcSetOutAcceleration(hexParticle, dir, 0);
+                }
+            }
         }
+    }
+
+    public void calcOutAccelerationToVelocity(final LifePart lifePart) {
+        final Part part = lifePart.getPart();
+        final HexParticle hexParticle = part.getHexParticle();
+
+        for (final Cell.Dir dir : Cell.Dir.values()) {
+            final Part blockingPart = this.checkAccelerationPart(lifePart, dir);
+            //final Part blockingPart = this.checkVelocityPart(lifePart, dir);
+            final int outAcceleration = HexMathUtils.calcGetOutAcceleration(hexParticle, dir);
+            if (outAcceleration > 0) {
+                if (Objects.isNull(blockingPart)) {
+                    final int velocity = outAcceleration;// / hexParticle.getMass();
+
+                    HexMathUtils.calcAddVelocity(hexParticle, dir, velocity);
+                }
+                HexMathUtils.calcSetOutAcceleration(hexParticle, dir, 0);
+            }
+        }
+    }
+
+    public void calcClearOutAcceleration(final LifePart lifePart) {
+        final Part part = lifePart.getPart();
+        final HexParticle hexParticle = part.getHexParticle();
+
+        for (final Cell.Dir dir : Cell.Dir.values()) {
+            HexMathUtils.calcSetOutAcceleration(hexParticle, dir, 0);
+        }
+    }
+
+    private Part checkAccelerationPart(final LifePart lifePart, final Cell.Dir dir) {
+        final Part blockingPart;
+        final GridNode gridNode = lifePart.getGridNode();
+        final GridNode newGridNode = this.hexGridService.getNeighbourGridNode(gridNode, dir);
+        if (this.hexGridService.getPartList(newGridNode).isEmpty()) {
+            blockingPart = null;
+        } else {
+            blockingPart = this.hexGridService.getPartList(newGridNode).get(0);
+        }
+        return blockingPart;
+    }
+
+    private Part checkVelocityPart(final LifePart lifePart, final Cell.Dir dir) {
+        final Part blockingPart;
+        final GridNode gridNode = lifePart.getGridNode();
+        final GridNode newGridNode = this.hexGridService.getNeighbourGridNode(gridNode, dir);
+        if (this.hexGridService.getPartList(newGridNode).isEmpty()) {
+            blockingPart = null;
+        } else {
+            blockingPart = this.hexGridService.getPartList(newGridNode).get(0);
+        }
+        return blockingPart;
     }
 }

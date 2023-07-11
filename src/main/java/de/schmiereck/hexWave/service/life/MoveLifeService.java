@@ -20,57 +20,85 @@ public class MoveLifeService {
 
     public void runMoveOrCollisionWithSingleDir(final LifePart lifePart) {
         final HexParticle hexParticle = lifePart.getPart().getHexParticle();
-        HexMathUtils.transferVelocityToMove(hexParticle.getVelocityHexVector(), hexParticle.getMoveHexVector());
-        final Cell.Dir moveDir = HexMathUtils.determineNextMove(hexParticle.getMoveHexVector());
+
+        HexMathUtils.transferVelocityToMove(hexParticle);
+        HexMathUtils.transferAcceleratioToMove(hexParticle);
+
+        final Cell.Dir moveDir = HexMathUtils.determineNextMove(hexParticle.getVMoveHexVector());
 
         if (Objects.nonNull(moveDir)) {
             final Part blockingPart = this.movePart(lifePart, moveDir);
             if (Objects.isNull(blockingPart)) {
-                HexMathUtils.calcNextMove3(moveDir, hexParticle.getMoveHexVector(), hexParticle.getVelocityHexVector());
+                HexMathUtils.calcNextMove3(moveDir, hexParticle.getVMoveHexVector(), hexParticle.getVelocityHexVector());
             } else {
-                HexMathUtils.calcNextMove3(moveDir, hexParticle.getMoveHexVector(), hexParticle.velocityHexVector); // TODO ???
+                HexMathUtils.calcNextMove3(moveDir, hexParticle.getVMoveHexVector(), hexParticle.velocityHexVector); // TODO ???
                 if (blockingPart.getPartType() == Part.PartType.Wall) {
-                    HexMathUtils.calcElasticCollisionWithSolidWall(hexParticle, moveDir);
+                    HexMathUtils.calcVelocityElasticCollisionWithSolidWall(hexParticle, moveDir);
                 } else {
                     HexMathUtils.calcVelocityElasticCollision(hexParticle, moveDir, blockingPart.getHexParticle());
                 }
             }
         }
     }
-/*
+
     public void runAccelerationAddInToOut(final LifePart lifePart) {
         final HexParticle hexParticle = lifePart.getPart().getHexParticle();
+        //HexMathUtils.runAccelerationSetInToOut(hexParticle);
         HexMathUtils.runAccelerationAddInToOut(hexParticle);
     }
-
+/*
     public void runOutAccelerationToVelocity(final LifePart lifePart) {
         final HexParticle hexParticle = lifePart.getPart().getHexParticle();
         HexMathUtils.calcOutAccelerationToVelocity(hexParticle);
     }
-
  */
-
     public void runMoveOrCollisionWithDirList(final LifePart lifePart) {
         final HexParticle hexParticle = lifePart.getPart().getHexParticle();
 
-        HexMathUtils.transferVelocityToMove(hexParticle.getVelocityHexVector(), hexParticle.getMoveHexVector());
+        HexMathUtils.transferVelocityToMove(hexParticle);
+        HexMathUtils.transferAcceleratioToMove(hexParticle);
 
-        final List<Cell.Dir> moveDirList = HexMathUtils.determineNextMoveList(hexParticle.getMoveHexVector());
+        final List<Cell.Dir> aMoveDirList = HexMathUtils.determineNextAMoveList(hexParticle);
+
+        if (!aMoveDirList.isEmpty()) {
+            //Cell.Dir nextMoveDir = null;
+            for (final Cell.Dir moveDir : aMoveDirList) {
+                final Part blockingPart = this.checkMovePart(lifePart, moveDir);
+                if (Objects.nonNull(blockingPart)) {
+                    if (blockingPart.getPartType() == Part.PartType.Wall) {
+                        HexMathUtils.clearAMove(hexParticle, moveDir);
+                    } else {
+                    }
+                } else {
+                    HexMathUtils.transferAMoveToVMove(hexParticle, moveDir);
+                }
+            }
+        }
+
+        final List<Cell.Dir> moveDirList = HexMathUtils.determineNextMoveList(hexParticle);
 
         if (!moveDirList.isEmpty()) {
             Cell.Dir nextMoveDir = null;
             for (final Cell.Dir moveDir : moveDirList) {
                 final Part blockingPart = this.checkMovePart(lifePart, moveDir);
                 if (Objects.nonNull(blockingPart)) {
-                    //HexMathUtils.calcNextMove(moveDir, hexParticle.getMoveHexVector()); // TODO ???
-                    //HexMathUtils.calcNextMove3(moveDir, hexParticle.getMoveHexVector(), hexParticle.getVelocityHexVector()); // TODO ???
+                    //HexMathUtils.calcNextMove(moveDir, hexParticle.getMoveHexVector(), hexParticle.getVelocityHexVector()); // TODO ???
+                    //HexMathUtils.calcNextMove2(moveDir, hexParticle.getMoveHexVector(), hexParticle.getVelocityHexVector()); // TODO ???
+                    //HexMathUtils.calcNextMove3(moveDir, hexParticle.getVMoveHexVector(), hexParticle.getVelocityHexVector()); // TODO ???
                     if (blockingPart.getPartType() == Part.PartType.Wall) {
+                        //HexMathUtils.calcNextMove22(moveDir, hexParticle.getMoveHexVector(), hexParticle.getVelocityHexVector());
                         HexMathUtils.calcVelocityElasticCollisionWithSolidWall2(hexParticle, moveDir);
+                        HexMathUtils.clearAMove(hexParticle, moveDir);
+                        //HexMathUtils.calcNextMove22(moveDir, hexParticle.getMoveHexVector(), hexParticle.getVelocityHexVector()); // TODO ???
+                        //HexMathUtils.calcVelocityElasticCollisionWithSolidWall(hexParticle, moveDir);
                         //HexMathUtils.calcAccelerationElasticCollisionWithSolidWall2(hexParticle, moveDir);
                     } else {
                         HexMathUtils.calcVelocityElasticCollision(hexParticle, moveDir, blockingPart.getHexParticle());
                         //HexMathUtils.calcAccelerationElasticCollision(hexParticle, moveDir, blockingPart.getHexParticle());
                     }
+                    //HexMathUtils.calcNextMove(moveDir, hexParticle.getMoveHexVector(), hexParticle.getVelocityHexVector()); // TODO ???
+                    //HexMathUtils.calcNextMove2(moveDir, hexParticle.getMoveHexVector(), hexParticle.getVelocityHexVector()); // TODO ???
+                    //HexMathUtils.calcNextMove3(moveDir, hexParticle.getMoveHexVector(), hexParticle.getVelocityHexVector()); // TODO ???
                 } else {
                     if (Objects.isNull(nextMoveDir)) {
                         nextMoveDir = moveDir;
@@ -79,9 +107,11 @@ public class MoveLifeService {
             }
 
             if (Objects.nonNull(nextMoveDir)) {
-                HexMathUtils.calcNextMove3(nextMoveDir, hexParticle.getMoveHexVector(), hexParticle.getVelocityHexVector());
-                hexParticle.getMoveHexVector().lastCheckedDir = nextMoveDir;
+                HexMathUtils.transferVMoveToVelocity(hexParticle, nextMoveDir);
 
+                HexMathUtils.calcNextMove3(nextMoveDir, hexParticle.getVMoveHexVector(), hexParticle.getVelocityHexVector());
+                hexParticle.getVMoveHexVector().lastCheckedDir = nextMoveDir;
+System.out.print("nextMoveDir(" + nextMoveDir + ") ");
                 final Part blockingPart = this.movePart(lifePart, nextMoveDir);
 
                 if (Objects.nonNull(blockingPart)) {
