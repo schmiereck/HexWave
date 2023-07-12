@@ -103,3 +103,7 @@ directions:
   * DONE Save and Load
 
 ## DONE
+
+# relativistic mass increase
+m(v) = m0 / (sqrt(1 - (v² / c²)))
+m(v) = m0 * (c / (c - v))

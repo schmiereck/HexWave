@@ -1,0 +1,1930 @@
+{
+  "genomList": [
+    {
+      "genomSensorList": [],
+      "genomInputMap": {
+        "2613": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 1,
+          "neuronId": 2613,
+          "genomConnectorList": [
+            {
+              "@id": 1,
+              "genomInputId": 2613,
+              "weight": -0.07325713448965898,
+              "bias": -0.29692760214710945
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        1
+      ],
+      "genomOutputList": [
+        {
+          "@id": 1,
+          "outputId": 2623,
+          "genomInputId": 2613,
+          "outputName": "EatNeighbourAP"
+        }
+      ],
+      "nextId": 2632
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 2,
+          "sensorId": 2592,
+          "inputName": "Part2FieldBP"
+        }
+      ],
+      "genomInputMap": {
+        "2592": 2,
+        "2621": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 3,
+          "neuronId": 2621,
+          "genomConnectorList": [
+            {
+              "@id": 2,
+              "genomInputId": 2592,
+              "weight": -0.3906620639892041,
+              "bias": -0.12208526078525772
+            },
+            {
+              "@id": 3,
+              "genomInputId": 2592,
+              "weight": -0.18433828202372138,
+              "bias": 0.3758902902178909
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        3
+      ],
+      "genomOutputList": [
+        {
+          "@id": 2,
+          "outputId": 2598,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourAP"
+        }
+      ],
+      "nextId": 2622
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 4,
+          "sensorId": 2592,
+          "inputName": "ComFieldCP"
+        },
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 5,
+          "sensorId": 2626,
+          "inputName": "Part3FieldBN"
+        }
+      ],
+      "genomInputMap": {
+        "2592": 4,
+        "2626": 5,
+        "2627": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 6,
+          "neuronId": 2627,
+          "genomConnectorList": [
+            {
+              "@id": 4,
+              "genomInputId": 2626,
+              "weight": -0.4212420492561876,
+              "bias": 0.18441364721011022
+            },
+            {
+              "@id": 5,
+              "genomInputId": 2592,
+              "weight": 0.45125347832098905,
+              "bias": -0.19603087589208057
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        6
+      ],
+      "genomOutputList": [
+        {
+          "@id": 3,
+          "outputId": 2598,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourAP"
+        },
+        {
+          "@id": 4,
+          "outputId": 2625,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourAN"
+        }
+      ],
+      "nextId": 2628
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 7,
+          "sensorId": 2621,
+          "inputName": "Part1FieldCN"
+        },
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 8,
+          "sensorId": 2622,
+          "inputName": "Part2FieldBN"
+        }
+      ],
+      "genomInputMap": {
+        "2625": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 9,
+          "neuronId": 2625,
+          "genomConnectorList": [
+            {
+              "@id": 6,
+              "genomInputId": 2622,
+              "weight": -0.0038703225981373546,
+              "bias": 0.2563387255157441
+            },
+            {
+              "@id": 7,
+              "genomInputId": 2625,
+              "weight": -0.08178330663841182,
+              "bias": -0.47518194431465943
+            }
+          ]
+        },
+        "2621": 7,
+        "2622": 8,
+        "2623": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 10,
+          "neuronId": 2623,
+          "genomConnectorList": []
+        }
+      },
+      "genomNeuronList": [
+        10,
+        9
+      ],
+      "genomOutputList": [
+        {
+          "@id": 5,
+          "outputId": 2598,
+          "genomInputId": 2621,
+          "outputName": "EatNeighbourAP"
+        },
+        {
+          "@id": 6,
+          "outputId": 2624,
+          "genomInputId": 2622,
+          "outputName": "EatNeighbourAN"
+        },
+        {
+          "@id": 7,
+          "outputId": 2626,
+          "genomInputId": 2621,
+          "outputName": "EatNeighbourBP"
+        }
+      ],
+      "nextId": 2627
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 11,
+          "sensorId": 2592,
+          "inputName": "Part1FieldBN"
+        }
+      ],
+      "genomInputMap": {
+        "2592": 11
+      },
+      "genomNeuronList": [],
+      "genomOutputList": [
+        {
+          "@id": 8,
+          "outputId": 2598,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourAP"
+        },
+        {
+          "@id": 9,
+          "outputId": 2625,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourAN"
+        }
+      ],
+      "nextId": 2626
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 12,
+          "sensorId": 2592,
+          "inputName": "Part2FieldBP"
+        }
+      ],
+      "genomInputMap": {
+        "2592": 12
+      },
+      "genomNeuronList": [],
+      "genomOutputList": [
+        {
+          "@id": 10,
+          "outputId": 2598,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourAP"
+        }
+      ],
+      "nextId": 2622
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 13,
+          "sensorId": 2592,
+          "inputName": "Part1FieldBN"
+        }
+      ],
+      "genomInputMap": {
+        "2592": 13,
+        "2626": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 14,
+          "neuronId": 2626,
+          "genomConnectorList": [
+            {
+              "@id": 8,
+              "genomInputId": 2592,
+              "weight": -0.017875259902014218,
+              "bias": 0.06248936980067543
+            },
+            {
+              "@id": 9,
+              "genomInputId": 2626,
+              "weight": 0.31206322965798183,
+              "bias": -0.03442008584795264
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        14
+      ],
+      "genomOutputList": [
+        {
+          "@id": 11,
+          "outputId": 2598,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourAP"
+        },
+        {
+          "@id": 12,
+          "outputId": 2625,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourAN"
+        }
+      ],
+      "nextId": 2627
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 15,
+          "sensorId": 2592,
+          "inputName": "ComFieldCP"
+        }
+      ],
+      "genomInputMap": {
+        "2592": 15,
+        "2628": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 16,
+          "neuronId": 2628,
+          "genomConnectorList": [
+            {
+              "@id": 10,
+              "genomInputId": 2592,
+              "weight": 0.4583717908821886,
+              "bias": 0.1828314331819294
+            },
+            {
+              "@id": 11,
+              "genomInputId": 2628,
+              "weight": -0.39718736788135234,
+              "bias": 0.29895234760465084
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        16
+      ],
+      "genomOutputList": [
+        {
+          "@id": 13,
+          "outputId": 2625,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourAN"
+        },
+        {
+          "@id": 14,
+          "outputId": 2629,
+          "genomInputId": 2628,
+          "outputName": "PullFieldBP"
+        }
+      ],
+      "nextId": 2630
+    },
+    {
+      "genomSensorList": [],
+      "genomInputMap": {
+        "2620": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 17,
+          "neuronId": 2620,
+          "genomConnectorList": []
+        },
+        "2621": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 18,
+          "neuronId": 2621,
+          "genomConnectorList": [
+            {
+              "@id": 12,
+              "genomInputId": 2620,
+              "weight": -0.17064146701762395,
+              "bias": 0.02786675249163062
+            },
+            {
+              "@id": 13,
+              "genomInputId": 2620,
+              "weight": -0.40360858467146377,
+              "bias": 0.44694870039112633
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        17,
+        18
+      ],
+      "genomOutputList": [
+        {
+          "@id": 15,
+          "outputId": 2622,
+          "genomInputId": 2621,
+          "outputName": "EatNeighbourAN"
+        }
+      ],
+      "nextId": 2623
+    },
+    {
+      "genomSensorList": [],
+      "genomInputMap": {
+        "2613": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 19,
+          "neuronId": 2613,
+          "genomConnectorList": [
+            {
+              "@id": 14,
+              "genomInputId": 2613,
+              "weight": -0.009314698643432345,
+              "bias": 0.09251979457267534
+            },
+            {
+              "@id": 15,
+              "genomInputId": 2613,
+              "weight": 0.45320686965389534,
+              "bias": -0.3870712178160708
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        19
+      ],
+      "genomOutputList": [
+        {
+          "@id": 16,
+          "outputId": 2623,
+          "genomInputId": 2613,
+          "outputName": "EatNeighbourAP"
+        }
+      ],
+      "nextId": 2632
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 20,
+          "sensorId": 2592,
+          "inputName": "Part2FieldBP"
+        }
+      ],
+      "genomInputMap": {
+        "2592": 20,
+        "2621": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 21,
+          "neuronId": 2621,
+          "genomConnectorList": []
+        },
+        "2622": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 22,
+          "neuronId": 2622,
+          "genomConnectorList": [
+            {
+              "@id": 16,
+              "genomInputId": 2621,
+              "weight": -0.4971369961256885,
+              "bias": 0.24945364480568732
+            },
+            {
+              "@id": 17,
+              "genomInputId": 2622,
+              "weight": 0.49910630915880194,
+              "bias": 0.10790743608468079
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        21,
+        22
+      ],
+      "genomOutputList": [
+        {
+          "@id": 17,
+          "outputId": 2598,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourAP"
+        }
+      ],
+      "nextId": 2623
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 23,
+          "sensorId": 2592,
+          "inputName": "ComFieldCP"
+        },
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 24,
+          "sensorId": 2627,
+          "inputName": "Part3FieldCN"
+        },
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 25,
+          "sensorId": 2629,
+          "inputName": "NeigbourEnergyAN"
+        }
+      ],
+      "genomInputMap": {
+        "2592": 23,
+        "2627": 24,
+        "2629": 25,
+        "2630": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 26,
+          "neuronId": 2630,
+          "genomConnectorList": [
+            {
+              "@id": 18,
+              "genomInputId": 2627,
+              "weight": -0.23510918131682135,
+              "bias": 0.026943840690263454
+            },
+            {
+              "@id": 19,
+              "genomInputId": 2630,
+              "weight": -0.4228793627534465,
+              "bias": 0.24774981206018543
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        26
+      ],
+      "genomOutputList": [
+        {
+          "@id": 18,
+          "outputId": 2625,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourAN"
+        },
+        {
+          "@id": 19,
+          "outputId": 2628,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourBP"
+        }
+      ],
+      "nextId": 2631
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 27,
+          "sensorId": 2592,
+          "inputName": "ComFieldCP"
+        }
+      ],
+      "genomInputMap": {
+        "2592": 27,
+        "2628": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 28,
+          "neuronId": 2628,
+          "genomConnectorList": [
+            {
+              "@id": 20,
+              "genomInputId": 2592,
+              "weight": 0.06589376597198982,
+              "bias": -0.045147095641997814
+            },
+            {
+              "@id": 21,
+              "genomInputId": 2628,
+              "weight": 0.4074024776636138,
+              "bias": 0.012823490804826032
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        28
+      ],
+      "genomOutputList": [
+        {
+          "@id": 20,
+          "outputId": 2598,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourAP"
+        },
+        {
+          "@id": 21,
+          "outputId": 2625,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourAN"
+        }
+      ],
+      "nextId": 2629
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 29,
+          "sensorId": 2620,
+          "inputName": "Negative"
+        }
+      ],
+      "genomInputMap": {
+        "2620": 29,
+        "2622": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 30,
+          "neuronId": 2622,
+          "genomConnectorList": [
+            {
+              "@id": 22,
+              "genomInputId": 2620,
+              "weight": 0.4289788568204108,
+              "bias": -0.3889342802084763
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        30
+      ],
+      "genomOutputList": [
+        {
+          "@id": 22,
+          "outputId": 2624,
+          "genomInputId": 2622,
+          "outputName": "EatNeighbourAN"
+        }
+      ],
+      "nextId": 2625
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 31,
+          "sensorId": 2621,
+          "inputName": "Part1FieldCN"
+        }
+      ],
+      "genomInputMap": {
+        "2625": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 32,
+          "neuronId": 2625,
+          "genomConnectorList": []
+        },
+        "2627": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 33,
+          "neuronId": 2627,
+          "genomConnectorList": [
+            {
+              "@id": 23,
+              "genomInputId": 2625,
+              "weight": 0.4448262552456089,
+              "bias": -0.25370729830717054
+            }
+          ]
+        },
+        "2621": 31,
+        "2623": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 34,
+          "neuronId": 2623,
+          "genomConnectorList": [
+            {
+              "@id": 24,
+              "genomInputId": 2625,
+              "weight": 0.33361997281282485,
+              "bias": 0.3308786214444237
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        34,
+        32,
+        33
+      ],
+      "genomOutputList": [
+        {
+          "@id": 23,
+          "outputId": 2598,
+          "genomInputId": 2621,
+          "outputName": "EatNeighbourAP"
+        },
+        {
+          "@id": 24,
+          "outputId": 2624,
+          "genomInputId": 2623,
+          "outputName": "EatNeighbourAN"
+        }
+      ],
+      "nextId": 2628
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 35,
+          "sensorId": 2632,
+          "inputName": "NeigbourEnergyCP"
+        }
+      ],
+      "genomInputMap": {
+        "2613": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 36,
+          "neuronId": 2613,
+          "genomConnectorList": [
+            {
+              "@id": 25,
+              "genomInputId": 2613,
+              "weight": 0.4106585421312945,
+              "bias": 0.09741956380344552
+            }
+          ]
+        },
+        "2632": 35
+      },
+      "genomNeuronList": [
+        36
+      ],
+      "genomOutputList": [
+        {
+          "@id": 25,
+          "outputId": 2623,
+          "genomInputId": 2613,
+          "outputName": "EatNeighbourAP"
+        }
+      ],
+      "nextId": 2633
+    },
+    {
+      "genomSensorList": [],
+      "genomInputMap": {
+        "2613": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 37,
+          "neuronId": 2613,
+          "genomConnectorList": [
+            {
+              "@id": 26,
+              "genomInputId": 2613,
+              "weight": 0.29300339041715207,
+              "bias": -0.41134979839200236
+            }
+          ]
+        },
+        "2634": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 38,
+          "neuronId": 2634,
+          "genomConnectorList": [
+            {
+              "@id": 27,
+              "genomInputId": 2613,
+              "weight": 0.35542626299935043,
+              "bias": 0.06584840461298891
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        37,
+        38
+      ],
+      "genomOutputList": [
+        {
+          "@id": 26,
+          "outputId": 2623,
+          "genomInputId": 2613,
+          "outputName": "EatNeighbourAP"
+        },
+        {
+          "@id": 27,
+          "outputId": 2635,
+          "genomInputId": 2613,
+          "outputName": "PushFieldAP"
+        }
+      ],
+      "nextId": 2636
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 39,
+          "sensorId": 2592,
+          "inputName": "Part1FieldBN"
+        },
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 40,
+          "sensorId": 2626,
+          "inputName": "Positive"
+        }
+      ],
+      "genomInputMap": {
+        "2592": 39,
+        "2626": 40,
+        "2627": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 41,
+          "neuronId": 2627,
+          "genomConnectorList": [
+            {
+              "@id": 28,
+              "genomInputId": 2626,
+              "weight": 0.014741219778863002,
+              "bias": -0.20619487118664637
+            },
+            {
+              "@id": 29,
+              "genomInputId": 2627,
+              "weight": 0.39033537737361157,
+              "bias": -0.4458791312961685
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        41
+      ],
+      "genomOutputList": [
+        {
+          "@id": 28,
+          "outputId": 2598,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourAP"
+        },
+        {
+          "@id": 29,
+          "outputId": 2625,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourAN"
+        }
+      ],
+      "nextId": 2628
+    },
+    {
+      "genomSensorList": [],
+      "genomInputMap": {
+        "2626": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 42,
+          "neuronId": 2626,
+          "genomConnectorList": []
+        },
+        "2628": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 43,
+          "neuronId": 2628,
+          "genomConnectorList": []
+        },
+        "2613": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 44,
+          "neuronId": 2613,
+          "genomConnectorList": [
+            {
+              "@id": 30,
+              "genomInputId": 2626,
+              "weight": 0.22059358386652583,
+              "bias": -0.02097355163917436
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        44,
+        42,
+        43
+      ],
+      "genomOutputList": [
+        {
+          "@id": 30,
+          "outputId": 2629,
+          "genomInputId": 2613,
+          "outputName": "EatNeighbourCP"
+        },
+        {
+          "@id": 31,
+          "outputId": 2630,
+          "genomInputId": 2626,
+          "outputName": "EatNeighbourCN"
+        }
+      ],
+      "nextId": 2631
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 45,
+          "sensorId": 2592,
+          "inputName": "ComFieldCP"
+        },
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 46,
+          "sensorId": 2627,
+          "inputName": "Part3FieldCN"
+        },
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 47,
+          "sensorId": 2631,
+          "inputName": "ComFieldCN"
+        }
+      ],
+      "genomInputMap": {
+        "2592": 45,
+        "2627": 46,
+        "2631": 47,
+        "2632": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 48,
+          "neuronId": 2632,
+          "genomConnectorList": [
+            {
+              "@id": 31,
+              "genomInputId": 2592,
+              "weight": -0.10853343986586517,
+              "bias": 0.06970318531041708
+            },
+            {
+              "@id": 32,
+              "genomInputId": 2631,
+              "weight": -0.4871890798516394,
+              "bias": -0.13659789080457496
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        48
+      ],
+      "genomOutputList": [
+        {
+          "@id": 32,
+          "outputId": 2625,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourAN"
+        },
+        {
+          "@id": 33,
+          "outputId": 2628,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourBP"
+        },
+        {
+          "@id": 34,
+          "outputId": 2633,
+          "genomInputId": 2592,
+          "outputName": "BirthA"
+        }
+      ],
+      "nextId": 2634
+    },
+    {
+      "genomSensorList": [],
+      "genomInputMap": {
+        "2613": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 49,
+          "neuronId": 2613,
+          "genomConnectorList": [
+            {
+              "@id": 33,
+              "genomInputId": 2613,
+              "weight": -0.3149759954234609,
+              "bias": -0.3738466930418687
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        49
+      ],
+      "genomOutputList": [],
+      "nextId": 2632
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 50,
+          "sensorId": 2592,
+          "inputName": "Part2FieldBP"
+        }
+      ],
+      "genomInputMap": {
+        "2592": 50,
+        "2624": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 51,
+          "neuronId": 2624,
+          "genomConnectorList": [
+            {
+              "@id": 34,
+              "genomInputId": 2592,
+              "weight": 0.02251491267828376,
+              "bias": 0.34855377761743545
+            },
+            {
+              "@id": 35,
+              "genomInputId": 2592,
+              "weight": 0.10787191244947081,
+              "bias": 0.44094800033261405
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        51
+      ],
+      "genomOutputList": [
+        {
+          "@id": 35,
+          "outputId": 2598,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourAP"
+        },
+        {
+          "@id": 36,
+          "outputId": 2625,
+          "genomInputId": 2624,
+          "outputName": "EatNeighbourAN"
+        }
+      ],
+      "nextId": 2626
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 52,
+          "sensorId": 2592,
+          "inputName": "Part1FieldBN"
+        }
+      ],
+      "genomInputMap": {
+        "2592": 52,
+        "2626": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 53,
+          "neuronId": 2626,
+          "genomConnectorList": [
+            {
+              "@id": 36,
+              "genomInputId": 2626,
+              "weight": -0.1971162252891664,
+              "bias": -0.1772717629727124
+            }
+          ]
+        },
+        "2627": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 54,
+          "neuronId": 2627,
+          "genomConnectorList": [
+            {
+              "@id": 37,
+              "genomInputId": 2626,
+              "weight": 0.4236003562143371,
+              "bias": -0.2729827378784604
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        53,
+        54
+      ],
+      "genomOutputList": [
+        {
+          "@id": 37,
+          "outputId": 2625,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourAN"
+        }
+      ],
+      "nextId": 2628
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 55,
+          "sensorId": 2592,
+          "inputName": "ComFieldCP"
+        }
+      ],
+      "genomInputMap": {
+        "2592": 55
+      },
+      "genomNeuronList": [],
+      "genomOutputList": [
+        {
+          "@id": 38,
+          "outputId": 2625,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourAN"
+        }
+      ],
+      "nextId": 2630
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 56,
+          "sensorId": 2592,
+          "inputName": "Part2FieldBP"
+        },
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 57,
+          "sensorId": 2620,
+          "inputName": "Negative"
+        }
+      ],
+      "genomInputMap": {
+        "2592": 56,
+        "2620": 57
+      },
+      "genomNeuronList": [],
+      "genomOutputList": [
+        {
+          "@id": 39,
+          "outputId": 2624,
+          "genomInputId": 2592,
+          "outputName": "ComFieldB"
+        }
+      ],
+      "nextId": 2625
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 58,
+          "sensorId": 2592,
+          "inputName": "ComFieldCP"
+        }
+      ],
+      "genomInputMap": {
+        "2592": 58
+      },
+      "genomNeuronList": [],
+      "genomOutputList": [
+        {
+          "@id": 40,
+          "outputId": 2598,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourAP"
+        },
+        {
+          "@id": 41,
+          "outputId": 2625,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourAN"
+        }
+      ],
+      "nextId": 2629
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 59,
+          "sensorId": 2592,
+          "inputName": "Part2FieldBP"
+        }
+      ],
+      "genomInputMap": {
+        "2592": 59,
+        "2624": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 60,
+          "neuronId": 2624,
+          "genomConnectorList": [
+            {
+              "@id": 38,
+              "genomInputId": 2592,
+              "weight": 0.12911214226496204,
+              "bias": 0.03451695572520108
+            },
+            {
+              "@id": 39,
+              "genomInputId": 2624,
+              "weight": -0.003548498597148897,
+              "bias": -0.1867974304583082
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        60
+      ],
+      "genomOutputList": [
+        {
+          "@id": 42,
+          "outputId": 2620,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourBN"
+        }
+      ],
+      "nextId": 2625
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 61,
+          "sensorId": 2592,
+          "inputName": "Part2FieldBP"
+        }
+      ],
+      "genomInputMap": {
+        "2592": 61,
+        "2626": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 62,
+          "neuronId": 2626,
+          "genomConnectorList": [
+            {
+              "@id": 40,
+              "genomInputId": 2592,
+              "weight": -0.30595492347740183,
+              "bias": 0.48470305477181985
+            },
+            {
+              "@id": 41,
+              "genomInputId": 2626,
+              "weight": 0.3907390034273558,
+              "bias": -0.2897767920547405
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        62
+      ],
+      "genomOutputList": [
+        {
+          "@id": 43,
+          "outputId": 2598,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourAP"
+        }
+      ],
+      "nextId": 2627
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 63,
+          "sensorId": 2592,
+          "inputName": "ComFieldCP"
+        }
+      ],
+      "genomInputMap": {
+        "2592": 63,
+        "2628": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 64,
+          "neuronId": 2628,
+          "genomConnectorList": [
+            {
+              "@id": 42,
+              "genomInputId": 2592,
+              "weight": 0.13881195777864905,
+              "bias": -0.14627914679816495
+            },
+            {
+              "@id": 43,
+              "genomInputId": 2592,
+              "weight": -0.0029956139350688638,
+              "bias": -0.46976281933788466
+            },
+            {
+              "@id": 44,
+              "genomInputId": 2592,
+              "weight": -0.11867958201933448,
+              "bias": -0.4949617761744276
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        64
+      ],
+      "genomOutputList": [
+        {
+          "@id": 44,
+          "outputId": 2598,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourAP"
+        }
+      ],
+      "nextId": 2629
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 65,
+          "sensorId": 2632,
+          "inputName": "NeigbourEnergyCP"
+        }
+      ],
+      "genomInputMap": {
+        "2613": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 66,
+          "neuronId": 2613,
+          "genomConnectorList": [
+            {
+              "@id": 45,
+              "genomInputId": 2613,
+              "weight": 0.34840319905577144,
+              "bias": -0.2166707358812231
+            }
+          ]
+        },
+        "2632": 65,
+        "2634": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 67,
+          "neuronId": 2634,
+          "genomConnectorList": [
+            {
+              "@id": 46,
+              "genomInputId": 2632,
+              "weight": 0.45308222188090175,
+              "bias": 0.32492532592725243
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        66,
+        67
+      ],
+      "genomOutputList": [
+        {
+          "@id": 45,
+          "outputId": 2623,
+          "genomInputId": 2613,
+          "outputName": "EatNeighbourAP"
+        }
+      ],
+      "nextId": 2635
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 68,
+          "sensorId": 2621,
+          "inputName": "Part1FieldCN"
+        },
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 69,
+          "sensorId": 2628,
+          "inputName": "Part1FieldBN"
+        }
+      ],
+      "genomInputMap": {
+        "2625": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 70,
+          "neuronId": 2625,
+          "genomConnectorList": []
+        },
+        "2627": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 71,
+          "neuronId": 2627,
+          "genomConnectorList": [
+            {
+              "@id": 47,
+              "genomInputId": 2625,
+              "weight": 0.4375048228407391,
+              "bias": -0.28668044366473716
+            }
+          ]
+        },
+        "2628": 69,
+        "2621": 68,
+        "2623": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 72,
+          "neuronId": 2623,
+          "genomConnectorList": [
+            {
+              "@id": 48,
+              "genomInputId": 2623,
+              "weight": 0.3801399303116192,
+              "bias": 0.40757506906642116
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        72,
+        70,
+        71
+      ],
+      "genomOutputList": [
+        {
+          "@id": 46,
+          "outputId": 2598,
+          "genomInputId": 2621,
+          "outputName": "EatNeighbourAP"
+        },
+        {
+          "@id": 47,
+          "outputId": 2629,
+          "genomInputId": 2623,
+          "outputName": "PushFieldAN"
+        }
+      ],
+      "nextId": 2630
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 73,
+          "sensorId": 2620,
+          "inputName": "Negative"
+        }
+      ],
+      "genomInputMap": {
+        "2625": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 74,
+          "neuronId": 2625,
+          "genomConnectorList": [
+            {
+              "@id": 49,
+              "genomInputId": 2620,
+              "weight": -0.028046845562493372,
+              "bias": -0.04330484887532626
+            },
+            {
+              "@id": 50,
+              "genomInputId": 2620,
+              "weight": 0.13220991196831955,
+              "bias": -0.2545893899130548
+            }
+          ]
+        },
+        "2620": 73
+      },
+      "genomNeuronList": [
+        74
+      ],
+      "genomOutputList": [
+        {
+          "@id": 48,
+          "outputId": 2626,
+          "genomInputId": 2625,
+          "outputName": "EatNeighbourAN"
+        }
+      ],
+      "nextId": 2627
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 75,
+          "sensorId": 2620,
+          "inputName": "Negative"
+        }
+      ],
+      "genomInputMap": {
+        "2620": 75
+      },
+      "genomNeuronList": [],
+      "genomOutputList": [],
+      "nextId": 2625
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 76,
+          "sensorId": 2620,
+          "inputName": "Negative"
+        }
+      ],
+      "genomInputMap": {
+        "2620": 76
+      },
+      "genomNeuronList": [],
+      "genomOutputList": [],
+      "nextId": 2625
+    },
+    {
+      "genomSensorList": [],
+      "genomInputMap": {
+        "2613": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 77,
+          "neuronId": 2613,
+          "genomConnectorList": [
+            {
+              "@id": 51,
+              "genomInputId": 2632,
+              "weight": 0.3462330469902125,
+              "bias": 0.1202665630280586
+            }
+          ]
+        },
+        "2632": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 78,
+          "neuronId": 2632,
+          "genomConnectorList": [
+            {
+              "@id": 52,
+              "genomInputId": 2613,
+              "weight": -0.010997396921764935,
+              "bias": 0.10558242831674947
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        77,
+        78
+      ],
+      "genomOutputList": [
+        {
+          "@id": 49,
+          "outputId": 2623,
+          "genomInputId": 2613,
+          "outputName": "EatNeighbourAP"
+        },
+        {
+          "@id": 50,
+          "outputId": 2633,
+          "genomInputId": 2613,
+          "outputName": "EatNeighbourCN"
+        }
+      ],
+      "nextId": 2634
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 79,
+          "sensorId": 2592,
+          "inputName": "ComFieldCP"
+        },
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 80,
+          "sensorId": 2631,
+          "inputName": "Part3FieldCP"
+        }
+      ],
+      "genomInputMap": {
+        "2592": 79,
+        "2630": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 81,
+          "neuronId": 2630,
+          "genomConnectorList": [
+            {
+              "@id": 53,
+              "genomInputId": 2631,
+              "weight": 0.1934744277113173,
+              "bias": -0.3948656359620649
+            }
+          ]
+        },
+        "2631": 80
+      },
+      "genomNeuronList": [
+        81
+      ],
+      "genomOutputList": [
+        {
+          "@id": 51,
+          "outputId": 2625,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourAN"
+        },
+        {
+          "@id": 52,
+          "outputId": 2628,
+          "genomInputId": 2592,
+          "outputName": "EatNeighbourBP"
+        }
+      ],
+      "nextId": 2632
+    },
+    {
+      "genomSensorList": [],
+      "genomInputMap": {
+        "2628": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 82,
+          "neuronId": 2628,
+          "genomConnectorList": []
+        },
+        "2629": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 83,
+          "neuronId": 2629,
+          "genomConnectorList": [
+            {
+              "@id": 54,
+              "genomInputId": 2628,
+              "weight": 0.2902493070501274,
+              "bias": 0.03057617148302827
+            },
+            {
+              "@id": 55,
+              "genomInputId": 2629,
+              "weight": 0.2257892167363582,
+              "bias": -0.32821199412243174
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        82,
+        83
+      ],
+      "genomOutputList": [],
+      "nextId": 2630
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 84,
+          "sensorId": 2630,
+          "inputName": "NeigbourPartTypeCP"
+        }
+      ],
+      "genomInputMap": {
+        "2630": 84,
+        "2631": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 85,
+          "neuronId": 2631,
+          "genomConnectorList": [
+            {
+              "@id": 56,
+              "genomInputId": 2630,
+              "weight": 0.37158461241548324,
+              "bias": 0.4126723791704803
+            },
+            {
+              "@id": 57,
+              "genomInputId": 2631,
+              "weight": 0.3519379099521076,
+              "bias": 0.1434077455344781
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        85
+      ],
+      "genomOutputList": [],
+      "nextId": 2632
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 86,
+          "sensorId": 2622,
+          "inputName": "Part2FieldBN"
+        }
+      ],
+      "genomInputMap": {
+        "2625": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 87,
+          "neuronId": 2625,
+          "genomConnectorList": [
+            {
+              "@id": 58,
+              "genomInputId": 2623,
+              "weight": 0.43142746884990424,
+              "bias": -0.4256108662531459
+            }
+          ]
+        },
+        "2622": 86,
+        "2623": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 88,
+          "neuronId": 2623,
+          "genomConnectorList": []
+        }
+      },
+      "genomNeuronList": [
+        88,
+        87
+      ],
+      "genomOutputList": [
+        {
+          "@id": 53,
+          "outputId": 2626,
+          "genomInputId": 2625,
+          "outputName": "EatNeighbourBP"
+        }
+      ],
+      "nextId": 2627
+    },
+    {
+      "genomSensorList": [],
+      "genomInputMap": {
+        "2626": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 89,
+          "neuronId": 2626,
+          "genomConnectorList": [
+            {
+              "@id": 59,
+              "genomInputId": 2626,
+              "weight": -0.4074280229724655,
+              "bias": -0.416372688054943
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        89
+      ],
+      "genomOutputList": [],
+      "nextId": 2627
+    },
+    {
+      "genomSensorList": [],
+      "genomInputMap": {
+        "2622": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 90,
+          "neuronId": 2622,
+          "genomConnectorList": [
+            {
+              "@id": 60,
+              "genomInputId": 2622,
+              "weight": 0.06731951855340379,
+              "bias": 0.16883353784465505
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        90
+      ],
+      "genomOutputList": [],
+      "nextId": 2623
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 91,
+          "sensorId": 2620,
+          "inputName": "Negative"
+        }
+      ],
+      "genomInputMap": {
+        "2620": 91
+      },
+      "genomNeuronList": [],
+      "genomOutputList": [],
+      "nextId": 2625
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 92,
+          "sensorId": 2627,
+          "inputName": "Part3FieldCN"
+        }
+      ],
+      "genomInputMap": {
+        "2627": 92,
+        "2632": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 93,
+          "neuronId": 2632,
+          "genomConnectorList": [
+            {
+              "@id": 61,
+              "genomInputId": 2627,
+              "weight": 0.23313763507354202,
+              "bias": -0.21196315007896904
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        93
+      ],
+      "genomOutputList": [],
+      "nextId": 2634
+    },
+    {
+      "genomSensorList": [],
+      "genomInputMap": {
+        "2620": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 94,
+          "neuronId": 2620,
+          "genomConnectorList": []
+        },
+        "2621": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 95,
+          "neuronId": 2621,
+          "genomConnectorList": [
+            {
+              "@id": 62,
+              "genomInputId": 2621,
+              "weight": 0.20892557006568513,
+              "bias": -0.23630976057689135
+            },
+            {
+              "@id": 63,
+              "genomInputId": 2620,
+              "weight": 0.31406599678864644,
+              "bias": -0.3356478077369658
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        94,
+        95
+      ],
+      "genomOutputList": [
+        {
+          "@id": 54,
+          "outputId": 2623,
+          "genomInputId": 2621,
+          "outputName": "BirthC"
+        }
+      ],
+      "nextId": 2624
+    },
+    {
+      "genomSensorList": [
+        {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomSensor",
+          "@id": 96,
+          "sensorId": 2628,
+          "inputName": "Part2FieldAP"
+        }
+      ],
+      "genomInputMap": {
+        "2626": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 97,
+          "neuronId": 2626,
+          "genomConnectorList": [
+            {
+              "@id": 64,
+              "genomInputId": 2626,
+              "weight": 0.42777944640499066,
+              "bias": -0.1583143095638827
+            }
+          ]
+        },
+        "2628": 96
+      },
+      "genomNeuronList": [
+        97
+      ],
+      "genomOutputList": [],
+      "nextId": 2629
+    },
+    {
+      "genomSensorList": [],
+      "genomInputMap": {
+        "2626": {
+          "@class": "de.schmiereck.hexWave.service.genom.GenomNeuron",
+          "@id": 98,
+          "neuronId": 2626,
+          "genomConnectorList": [
+            {
+              "@id": 65,
+              "genomInputId": 2626,
+              "weight": 0.1390175166826877,
+              "bias": -0.2909679349368194
+            }
+          ]
+        }
+      },
+      "genomNeuronList": [
+        98
+      ],
+      "genomOutputList": [
+        {
+          "@id": 55,
+          "outputId": 2627,
+          "genomInputId": 2626,
+          "outputName": "EatNeighbourAN"
+        }
+      ],
+      "nextId": 2628
+    }
+  ]
+}
