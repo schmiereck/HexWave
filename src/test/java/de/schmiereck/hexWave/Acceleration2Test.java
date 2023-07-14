@@ -32,8 +32,9 @@ public class Acceleration2Test {
             xAMove += (xOutAcceleration);
 
             //xVMove += (xVelocity + xOutAcceleration);
-            xVMove += calcVMove(xOutAcceleration, xVelocity + xAMove, MaxVelocity);
-            //xVMove += (xVelocity + xAMove);
+            //xVMove += calcVMove(xOutAcceleration, xVelocity + xAMove, MaxVelocity);
+            //!!!xVMove += calcVMove(xAMove, xVelocity, MaxVelocity);
+            xVMove += (xVelocity + xAMove);
             //xVMove = calcVMove(xAMove, xVMove, xVelocity, MaxVelocity);
 
             final int moveDir = calcMoveDir(xVMove, MaxMove);
@@ -47,16 +48,19 @@ public class Acceleration2Test {
                     //xVelocity = (calcNewVelocity(xVelocity, xAMove, MaxVelocity));
                     //xVMove += xVelocity - ((MaxMove + MaxMove) * moveDir); // Korrektur-Hack!!!! //xVMove += 30;  für moveDir = -1
                     xVMove = -xVMove;
-                    xVMove -= (MaxMove + MaxMove) * moveDir;
-                    xAMove = 0;
-                    //xAMove -= xOutAcceleration;
+                    xVMove -= (xVelocity + xAMove);
+                    //xVMove -= (MaxMove + MaxMove) * moveDir;
+                    //xAMove = 0;
+                    //xAMove = -xAMove;
+                    xAMove -= xOutAcceleration;
                     System.out.printf("xPos:%2d, xAMove:%4d, xVMove:%4d, xVelocity:%4d\t <- HIT-AFTER  ----\n", xPos, xAMove, xVMove, xVelocity);
                 } else {
                     // Move:
                     System.out.printf("xPos:%2d, xAMove:%4d, xVMove:%4d, xVelocity:%4d\t <- MOVE-BEVOR\n", xPos, xAMove, xVMove, xVelocity);
 
                     xVelocity += xAMove;
-                    //xVelocity = calcNewVelocity(xVelocity, xVMove, MaxVelocity);
+                    //xVelocity = calcNewVelocity(xVelocity, xAMove, MaxVelocity);
+
                     //xVMove = calcVMove(xVMove, xVelocity, MaxVelocity);
                     xAMove = 0;
 
