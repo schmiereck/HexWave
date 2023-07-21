@@ -15,7 +15,7 @@ public class Acceleration2Test {
 
         //final int MaxMove = 64;
         final int MaxMove = 60;
-        final int MaxVelocity = MaxMove + MaxMove;
+        final int MaxVelocity = MaxMove;
 
         //final int xGravitation = -10;
         //final int xGravitation = 10;
@@ -184,10 +184,10 @@ public class Acceleration2Test {
 
     private static int calcMoveDir(final int xVMove, final int MaxMove) {
         final int moveDir;
-        if ((xVMove) >= MaxMove) {
+        if ((xVMove) > MaxMove) {
             moveDir = 1;
         } else {
-            if ((xVMove) <= -MaxMove) {
+            if ((xVMove) < -MaxMove) {
                 moveDir = -1;
             } else {
                 moveDir = 0;
