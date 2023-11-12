@@ -9,13 +9,11 @@ public class LifePart implements Serializable {
     public final PartIdentity partIdentity;
     private final Part part;
     private transient GridNode gridNode;
-    private final int startStepCounter;
 
-    public LifePart(final PartIdentity partIdentity, final GridNode gridNode, final Part part, final int startStepCounter) {
+    public LifePart(final PartIdentity partIdentity, final GridNode gridNode, final Part part) {
         this.partIdentity = partIdentity;
         this.gridNode = gridNode;
         this.part = part;
-        this.startStepCounter = startStepCounter;
     }
 
     public Part getPart() {
@@ -28,9 +26,5 @@ public class LifePart implements Serializable {
 
     public void setGridNode(GridNode gridNode) {
         this.gridNode = gridNode;
-    }
-
-    public int getStartStepCounter() {
-        return this.startStepCounter;
     }
 }

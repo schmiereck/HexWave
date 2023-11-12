@@ -24,9 +24,6 @@ public class GridNodeArea {
      */
     private final GridNode[][] gridNodeArr;
 
-    private List<PartField> partFieldList = new ArrayList<>();
-    private List<PartField> antiPartFieldList = new ArrayList<>();
-
     /**
      * A List of all Parts in this Area.
      */
@@ -75,42 +72,6 @@ public class GridNodeArea {
 
     public void setGridNodeAreaArr(final int areaDistancePos, final int gridNodePos, final GridNode gridNode) {
         this.gridNodeArr[areaDistancePos][gridNodePos] = gridNode;
-    }
-
-    public List<PartField> getPartFieldList() {
-        return this.partFieldList;
-    }
-
-    public void addPartField(final PartField partField) {
-        this.partFieldList.add(partField);
-    }
-
-    public void removePartField(final PartField partField) {
-        this.partFieldList.remove(partField);
-    }
-
-    public List<PartField> setPartFieldList(final List<PartField> newPartFieldList) {
-        final List<PartField> retPartFieldList = this.partFieldList;
-        this.partFieldList = newPartFieldList;
-        return retPartFieldList;
-    }
-
-    public List<PartField> getAntiPartFieldList() {
-        return this.antiPartFieldList;
-    }
-
-    public void addAntiPartField(final PartField partField) {
-        this.antiPartFieldList.add(partField);
-    }
-
-    public void removeAntiPartField(final PartField partField) {
-        this.antiPartFieldList.remove(partField);
-    }
-
-    public List<PartField> setAntiPartFieldList(final List<PartField> newPartFieldList) {
-        final List<PartField> retPartFieldList = this.antiPartFieldList;
-        this.antiPartFieldList = newPartFieldList;
-        return retPartFieldList;
     }
 
     public GridNode getParentGridNode() {

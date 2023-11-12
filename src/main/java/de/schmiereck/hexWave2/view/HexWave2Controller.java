@@ -5,7 +5,6 @@ import de.schmiereck.hexWave2.service.hexGrid.GridNode;
 import de.schmiereck.hexWave2.service.hexGrid.HexGrid;
 import de.schmiereck.hexWave2.service.hexGrid.HexGridService;
 import de.schmiereck.hexWave2.service.hexGrid.Part;
-import de.schmiereck.hexWave2.service.life.FieldTypeService;
 import de.schmiereck.hexWave2.service.life.InitializeLifeService;
 import de.schmiereck.hexWave2.service.life.LifePart;
 import de.schmiereck.hexWave2.service.life.LifeService;
@@ -65,9 +64,6 @@ public class HexWave2Controller implements Initializable
     private LifeService lifeService;
 
     @Autowired
-    private FieldTypeService fieldTypeService;
-
-    @Autowired
     private InitializeLifeService initializeLifeService;
 
     private GridModel gridModel = new GridModel();
@@ -113,13 +109,14 @@ public class HexWave2Controller implements Initializable
             }
         });
 */
-        final int maxAreaDistance = this.fieldTypeService.getFieldType(FieldTypeService.FieldTypeEnum.Part1).getMaxAreaDistance();
+        final int maxAreaDistance = 3;
 
         //this.hexGridService.initialize(2, 1);
         this.hexGridService.initialize(MainConfig3.HexGridXSize, MainConfig3.HexGridYSize, maxAreaDistance);
-        this.lifeService.initialize(MainConfig3.useLifeParts ? MainConfig3.LifePartsCount : 0);
+        this.lifeService.initialize();
         this.initializeLifeService.initialize();
 
+        if (MainConfig3.UseWalls)
         this.initializeLifeService.initializeWalls();
         if (MainConfig3.UseExtraWalls)
             this.initializeLifeService.initializeExtraWalls();
@@ -129,7 +126,6 @@ public class HexWave2Controller implements Initializable
                         MainConfig3.useBallPush);
             }
         }
-        if (MainConfig3.useShowFields) this.lifeService.initializeShowFields();
 
         final HexGrid hexGrid = this.hexGridService.getHexGrid();
 
@@ -310,6 +306,7 @@ public class HexWave2Controller implements Initializable
 
     public void updateView() {
         this.counterText.setText(String.format("Step: %d (Parts: %,d)", this.hexGridService.retrieveStepCount(), this.lifeService.retrievePartCount()));
+        final HexGrid hexGrid = this.hexGridService.getHexGrid();
 
         for (int posY = 0; posY < this.gridModel.getNodeCountY(); posY++) {
             for (int posX = 0; posX < this.gridModel.getNodeCountX(); posX++) {
@@ -317,36 +314,37 @@ public class HexWave2Controller implements Initializable
 
                 this.drawNothing(gridCellModel);
 
+                final GridNode gridNode = this.hexGridService.getGridNode(posX, posY);
+                final double partValue = this.hexGridService.retrieveActGridNodePartValue(posX, posY);
+
                 //final double part1FieldValue = this.hexGridService.retrieveActGridNodePartFieldValue(posX, posY,
                 //        this.fieldTypeService.getFieldType(FieldTypeService.FieldTypeEnum.Part1));
                 //final double part2FieldValue = this.hexGridService.retrieveActGridNodePartFieldValue(posX, posY,
                 //        this.fieldTypeService.getFieldType(FieldTypeService.FieldTypeEnum.Part2));
                 //final double part3FieldValue = this.hexGridService.retrieveActGridNodePartFieldValue(posX, posY,
                 //        this.fieldTypeService.getFieldType(FieldTypeService.FieldTypeEnum.Part3));
-                final double partPushFieldValue = this.hexGridService.retrieveActGridNodePartFieldValue(posX, posY,
-                        this.fieldTypeService.getFieldType(FieldTypeService.FieldTypeEnum.PartPush));
-                final double partPullFieldValue = this.hexGridService.retrieveActGridNodePartFieldValue(posX, posY,
-                        this.fieldTypeService.getFieldType(FieldTypeService.FieldTypeEnum.PartPull));
-                final double comFieldValue = this.hexGridService.retrieveActGridNodePartFieldValue(posX, posY,
-                        this.fieldTypeService.getFieldType(FieldTypeService.FieldTypeEnum.Com));
+
+                //final double partPushFieldValue = this.hexGridService.retrieveActGridNodePartFieldValue(posX, posY,
+                //        this.fieldTypeService.getFieldType(FieldTypeService.FieldTypeEnum.PartPush));
+                //final double partPullFieldValue = this.hexGridService.retrieveActGridNodePartFieldValue(posX, posY,
+                //        this.fieldTypeService.getFieldType(FieldTypeService.FieldTypeEnum.PartPull));
+                //final double comFieldValue = this.hexGridService.retrieveActGridNodePartFieldValue(posX, posY,
+                //        this.fieldTypeService.getFieldType(FieldTypeService.FieldTypeEnum.Com));
 
                 //final double extraValue = this.hexGridService.retrieveActGridNodeExtraValue(posX, posY);
                 //showCircleShape(gridCellModel.getShape2(), extraValue, Color.WHITE, Color.WHITE);
 
-                showCircleShape(gridCellModel.getShape3(), partPushFieldValue, Color.TRANSPARENT, Color.RED);//Color.ORANGE, Color.RED);
-                showCircleShape(gridCellModel.getShape4(), partPullFieldValue, Color.TRANSPARENT, Color.LIGHTBLUE);//Color.AQUA, Color.BLUE);
-                showCircleShape(gridCellModel.getShape5(), comFieldValue, Color.TRANSPARENT, Color.ANTIQUEWHITE);//Color.YELLOW, Color.ANTIQUEWHITE);
+                //showCircleShape(gridCellModel.getShape3(), partPushFieldValue, Color.TRANSPARENT, Color.RED);//Color.ORANGE, Color.RED);
+                //showCircleShape(gridCellModel.getShape4(), partPullFieldValue, Color.TRANSPARENT, Color.LIGHTBLUE);//Color.AQUA, Color.BLUE);
+                showCircleShape(gridCellModel.getShape5(), partValue, Color.TRANSPARENT, Color.ANTIQUEWHITE);//Color.YELLOW, Color.ANTIQUEWHITE);
             }
         }
 
         this.lifeService.getWallPartList().stream().forEach(lifePart -> {
-            drawLifePart(lifePart);
-        });
-        this.lifeService.getSunPartList().stream().forEach(lifePart -> {
-            drawLifePart(lifePart);
+            //drawLifePart(lifePart);
         });
         this.lifeService.getLifePartList().stream().forEach(lifePart -> {
-            drawLifePart(lifePart);
+            //drawLifePart(lifePart);
         });
     }
 
@@ -363,18 +361,19 @@ public class HexWave2Controller implements Initializable
         }
     }
 
+    final static double RadiusFactor = 0.25D;
+
     private static void showCircleShape(final Circle gridNodeCircle2, final double fieldValue, final Color pColor, final Color nColor) {
         if (fieldValue > 0.0D) {
-            gridNodeCircle2.setRadius(Math.min(fieldValue * 2.0D, 12.0D));
+            gridNodeCircle2.setRadius(Math.min(fieldValue * RadiusFactor, 12.0D));
             gridNodeCircle2.setVisible(true);
             gridNodeCircle2.setStroke(pColor.interpolate(nColor, MathUtils.sigmoid(fieldValue + 0.1D)));
         } else {
             if (fieldValue < 0.0D) {
-                gridNodeCircle2.setRadius(Math.min(-fieldValue * 2.0D, 12.0D));
+                gridNodeCircle2.setRadius(Math.min(-fieldValue * RadiusFactor, 12.0D));
                 gridNodeCircle2.setVisible(true);
                 gridNodeCircle2.setStroke(nColor.interpolate(pColor, MathUtils.sigmoid(-fieldValue + 0.1D)));
             } else {
-
                 gridNodeCircle2.setVisible(false);
             }
         }

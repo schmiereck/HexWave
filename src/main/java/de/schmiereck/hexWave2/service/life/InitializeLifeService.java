@@ -4,6 +4,7 @@ import de.schmiereck.hexWave2.MainConfig3;
 import de.schmiereck.hexWave2.service.hexGrid.GridNode;
 import de.schmiereck.hexWave2.service.hexGrid.HexGridService;
 import de.schmiereck.hexWave2.service.hexGrid.Part;
+import de.schmiereck.hexWave2.service.hexGrid.Particle;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -65,8 +66,10 @@ public class InitializeLifeService {
 
     public void createWall(final int xPos, final int posY) {
         final GridNode wallGridNode = this.hexGridService.getGridNode(xPos, posY);
-        final Part wallPart = new Part(Part.PartType.Wall, MainConfig3.InitialWallPartEnergy, 0);
-        final LifePart wallLifePart = new LifePart(this.wallPartIdentity, wallGridNode, wallPart, 0);
+        final int probability = MainConfig3.InitialWallPartProbability;
+        final Particle wallParticle = new Particle();
+        final Part wallPart = new Part(wallParticle, Part.PartType.Wall, MainConfig3.InitialWallPartEnergy, MainConfig3.InitialWallPartMass, probability, 1);
+        final LifePart wallLifePart = new LifePart(this.wallPartIdentity, wallGridNode, wallPart);
         this.lifeService.addWallLifePart(wallLifePart);
     }
 }
