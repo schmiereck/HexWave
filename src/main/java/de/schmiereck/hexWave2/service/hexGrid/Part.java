@@ -1,6 +1,7 @@
 package de.schmiereck.hexWave2.service.hexGrid;
 
 import de.schmiereck.hexWave2.math.HexParticle;
+import de.schmiereck.hexWave2.math.ProbabilityVector;
 
 import java.io.Serializable;
 
@@ -24,12 +25,18 @@ public class Part implements Serializable {
     private int count;
     private boolean propagate;
 
-    public Part(final Particle particle, final PartType partType, final double energy, final int mass, final int probability, final int count) {
+    public Cell.Dir rotationDir;
+
+    public final ProbabilityVector probabilityVector;
+
+    public Part(final Particle particle, final PartType partType, final double energy, final int mass, final int probability, final int count, Cell.Dir rotationDir) {
         this.particle = particle;
         this.partType = partType;
         this.energy = energy;
         this.probability = probability;
         this.count = count;
+        this.rotationDir = rotationDir;
+        this.probabilityVector = new ProbabilityVector();
         this.hexParticle = new HexParticle(mass);
     }
 

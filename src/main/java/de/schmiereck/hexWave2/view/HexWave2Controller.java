@@ -361,7 +361,9 @@ public class HexWave2Controller implements Initializable
         }
     }
 
+    //final static double RadiusFactor = 0.1D;
     final static double RadiusFactor = 0.25D;
+    //final static double RadiusFactor = 0.5D;
 
     private static void showCircleShape(final Circle gridNodeCircle2, final double fieldValue, final Color pColor, final Color nColor) {
         if (fieldValue > 0.0D) {
