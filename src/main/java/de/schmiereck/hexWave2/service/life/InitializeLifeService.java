@@ -1,6 +1,7 @@
 package de.schmiereck.hexWave2.service.life;
 
 import de.schmiereck.hexWave2.MainConfig3;
+import de.schmiereck.hexWave2.math.ProbabilityService;
 import de.schmiereck.hexWave2.service.hexGrid.Cell;
 import de.schmiereck.hexWave2.service.hexGrid.GridNode;
 import de.schmiereck.hexWave2.service.hexGrid.HexGridService;
@@ -69,7 +70,14 @@ public class InitializeLifeService {
         final GridNode wallGridNode = this.hexGridService.getGridNode(xPos, posY);
         final int probability = MainConfig3.InitialWallPartProbability;
         final Particle wallParticle = new Particle();
-        final Part wallPart = new Part(wallParticle, Part.PartType.Wall, MainConfig3.InitialWallPartEnergy, MainConfig3.InitialWallPartMass, probability, 1, Cell.Dir.AP);
+        final Part wallPart = new Part(wallParticle,
+                Part.PartType.Wall,
+                MainConfig3.InitialWallPartEnergy,
+                MainConfig3.InitialWallPartMass,
+                probability,
+                1,
+                Cell.Dir.AP,
+                ProbabilityService.createVector(0, 0, 0, 0, 0, 0));
         final LifePart wallLifePart = new LifePart(this.wallPartIdentity, wallGridNode, wallPart);
         this.lifeService.addWallLifePart(wallLifePart);
     }

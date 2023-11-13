@@ -29,14 +29,15 @@ public class Part implements Serializable {
 
     public final ProbabilityVector probabilityVector;
 
-    public Part(final Particle particle, final PartType partType, final double energy, final int mass, final int probability, final int count, Cell.Dir rotationDir) {
+    public Part(final Particle particle, final PartType partType, final double energy, final int mass,
+                final int probability, final int count, Cell.Dir rotationDir, final ProbabilityVector probabilityVector) {
         this.particle = particle;
         this.partType = partType;
         this.energy = energy;
         this.probability = probability;
         this.count = count;
         this.rotationDir = rotationDir;
-        this.probabilityVector = new ProbabilityVector();
+        this.probabilityVector = probabilityVector;
         this.hexParticle = new HexParticle(mass);
     }
 

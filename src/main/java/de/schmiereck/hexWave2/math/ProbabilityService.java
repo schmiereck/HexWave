@@ -120,4 +120,46 @@ public class ProbabilityService {
             case CN -> { probabilityVector.cnLimit = limit; probabilityVector.cnCnt = cnt; }
         }
     }
+
+    public static ProbabilityVector createVector(final ProbabilityVector probabilityVector) {
+        final ProbabilityVector retProbabilityVector = new ProbabilityVector();
+
+        retProbabilityVector.apLimit = probabilityVector.apLimit;
+        retProbabilityVector.anLimit = probabilityVector.anLimit;
+        retProbabilityVector.bpLimit = probabilityVector.bpLimit;
+        retProbabilityVector.bnLimit = probabilityVector.bnLimit;
+        retProbabilityVector.cpLimit = probabilityVector.cpLimit;
+        retProbabilityVector.cnLimit = probabilityVector.cnLimit;
+
+        retProbabilityVector.apCnt = probabilityVector.apCnt;
+        retProbabilityVector.anCnt = probabilityVector.anCnt;
+        retProbabilityVector.bpCnt = probabilityVector.bpCnt;
+        retProbabilityVector.bnCnt = probabilityVector.bnCnt;
+        retProbabilityVector.cpCnt = probabilityVector.cpCnt;
+        retProbabilityVector.cnCnt = probabilityVector.cnCnt;
+
+        return retProbabilityVector;
+    }
+
+    final static int MaxPercent = 100;
+    final static int MaxProp = 32;
+
+    public static ProbabilityVector createVector(int apPerc, int bpPerc, int cpPerc, int anPerc, int bnPerc, int cnPerc) {
+        final ProbabilityVector retProbabilityVector = new ProbabilityVector();
+
+        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.AP, calcProbByPercent(MaxPercent, apPerc, MaxProp));
+        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.AN, calcProbByPercent(MaxPercent, anPerc, MaxProp));
+
+        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.BP, calcProbByPercent(MaxPercent, bpPerc, MaxProp));
+        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.BN, calcProbByPercent(MaxPercent, bnPerc, MaxProp));
+
+        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.CP, calcProbByPercent(MaxPercent, cpPerc, MaxProp));
+        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.CN, calcProbByPercent(MaxPercent, cnPerc, MaxProp));
+
+        return retProbabilityVector;
+    }
+
+    public static int calcProbByPercent(int maxPercent, int percent, int maxProp) {
+        return (((maxPercent - (percent * 2)) * maxProp) / maxPercent);
+    }
 }

@@ -2,6 +2,7 @@ package de.schmiereck.hexWave2.service.life;
 
 import de.schmiereck.hexWave2.MainConfig3;
 import de.schmiereck.hexWave2.math.HexParticle;
+import de.schmiereck.hexWave2.math.ProbabilityService;
 import de.schmiereck.hexWave2.service.hexGrid.Cell;
 import de.schmiereck.hexWave2.service.hexGrid.GridNode;
 import de.schmiereck.hexWave2.service.hexGrid.HexGridService;
@@ -45,7 +46,13 @@ public class LifeService {
 
         final Particle ballParticle = new Particle();
         final int probability = MainConfig3.InitialBallPartProbability;
-        final Part ballPart = new Part(ballParticle, Part.PartType.Life, MainConfig3.InitialBallPartEnergy, MainConfig3.InitialBallPartMass, probability, 1, Cell.Dir.AP);
+        final Part ballPart = new Part(ballParticle, Part.PartType.Life,
+                MainConfig3.InitialBallPartEnergy,
+                MainConfig3.InitialBallPartMass,
+                probability,
+                1,
+                Cell.Dir.AP,
+                ProbabilityService.createVector(50, 50, 50, 50, 50, 50));
 
         final PartIdentity partIdentity = this.createPartIdentity();
         final LifePart lifePart = new LifePart(partIdentity, gridNode, ballPart);

@@ -235,7 +235,9 @@ public class HexGridService {
                                 final Part newPart = new Part(sourcePart.getParticle(), sourcePart.getPartType(),
                                         sourcePart.getEnergy(), sourcePart.getHexParticle().getMass(),
                                         transferProbability,
-                                        1, sourcePart.rotationDir);
+                                        1,
+                                        sourcePart.rotationDir,
+                                        ProbabilityService.createVector(sourcePart.probabilityVector));
                                 gridNode.addPart(this.nextCellArrPos, newPart);
                             }
                             sourcePart.setProbability(sourceProbability - transferProbability);
@@ -300,7 +302,9 @@ public class HexGridService {
                                 final Part newPart = new Part(sourcePart.getParticle(), sourcePart.getPartType(),
                                         sourcePart.getEnergy(), sourcePart.getHexParticle().getMass(),
                                         transferProbability,
-                                        1, sourcePart.rotationDir);
+                                        1,
+                                        sourcePart.rotationDir,
+                                        ProbabilityService.createVector(sourcePart.probabilityVector));
                                 gridNode.addPart(this.nextCellArrPos, newPart);
                             }
                             sourcePart.setProbability(sourceProbability - transferProbability);

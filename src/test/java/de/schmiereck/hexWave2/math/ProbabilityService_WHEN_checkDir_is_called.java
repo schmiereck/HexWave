@@ -90,9 +90,7 @@ public class ProbabilityService_WHEN_checkDir_is_called {
 
         for (int percent = 0; percent <= MaxPercent; percent++) {
         //int percent = 99; {
-            final int bareProp = ((((MaxPercent) - (percent * 2)) * (MaxProp)) / (MaxPercent));
-            //final int prob = bareProp > 0 ? bareProp + 1 : bareProp - 1;
-            final int prob = bareProp;
+            final int prob = ProbabilityService.calcProbByPercent(MaxPercent, percent, MaxProp);
 
             final ProbabilityVector probabilityVector = new ProbabilityVector();
             ProbabilityService.setProbabilityLimit(probabilityVector, Cell.Dir.AP, prob);
