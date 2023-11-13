@@ -52,7 +52,10 @@ public class LifeService {
                 probability,
                 1,
                 Cell.Dir.AP,
-                ProbabilityService.createVector(50, 50, 50, 50, 50, 50));
+                //ProbabilityService.createVector(95, 0, 0, 5, 0, 0));
+                ProbabilityService.createVector(
+                        50, 50, 50,
+                        50, 50, 50));
 
         final PartIdentity partIdentity = this.createPartIdentity();
         final LifePart lifePart = new LifePart(partIdentity, gridNode, ballPart);

@@ -22,6 +22,7 @@ public class Part implements Serializable {
 
     private double energy;
     private int probability;
+    private int[] probabilityDirArr = new int[Cell.Dir.values().length];
     private int count;
     private boolean propagate;
 
@@ -71,6 +72,14 @@ public class Part implements Serializable {
 
     public int getProbability() {
         return this.probability;
+    }
+
+    public void setDirProbability(final Cell.Dir dir, final int probability) {
+        this.probabilityDirArr[dir.ordinal()] = probability;
+    }
+
+    public int getDirProbability(final Cell.Dir dir) {
+        return this.probabilityDirArr[dir.ordinal()];
     }
 
     public void setCount(final int count) {
