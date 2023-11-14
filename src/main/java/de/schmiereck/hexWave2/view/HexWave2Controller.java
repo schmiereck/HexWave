@@ -4,9 +4,6 @@ import de.schmiereck.hexWave2.MainConfig3;
 import de.schmiereck.hexWave2.service.hexGrid.GridNode;
 import de.schmiereck.hexWave2.service.hexGrid.HexGrid;
 import de.schmiereck.hexWave2.service.hexGrid.HexGridService;
-import de.schmiereck.hexWave2.service.hexGrid.Part;
-import de.schmiereck.hexWave2.service.life.InitializeLifeService;
-import de.schmiereck.hexWave2.service.life.LifePart;
 import de.schmiereck.hexWave2.service.life.LifeService;
 import de.schmiereck.hexWave2.utils.MathUtils;
 import javafx.animation.AnimationTimer;
@@ -35,7 +32,6 @@ import javafx.stage.Window;
 
 import java.io.File;
 import java.net.URL;
-import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -62,9 +58,6 @@ public class HexWave2Controller implements Initializable
 
     @Autowired
     private LifeService lifeService;
-
-    @Autowired
-    private InitializeLifeService initializeLifeService;
 
     private GridModel gridModel = new GridModel();
 
@@ -114,12 +107,11 @@ public class HexWave2Controller implements Initializable
         //this.hexGridService.initialize(2, 1);
         this.hexGridService.initialize(MainConfig3.HexGridXSize, MainConfig3.HexGridYSize, maxAreaDistance);
         this.lifeService.initialize();
-        this.initializeLifeService.initialize();
 
         if (MainConfig3.UseWalls)
-        this.initializeLifeService.initializeWalls();
+            this.lifeService.initializeWalls();
         if (MainConfig3.UseExtraWalls)
-            this.initializeLifeService.initializeExtraWalls();
+            this.lifeService.initializeExtraWalls();
         if (MainConfig3.useBall) {
             for (int pos = 0; pos < MainConfig3.BallStartXPos.length; pos++) {
                 this.lifeService.initializeBall(MainConfig3.BallStartXPos[pos], MainConfig3.BallStartYPos[pos], MainConfig3.BallStartVelocityA[pos],
@@ -195,7 +187,7 @@ public class HexWave2Controller implements Initializable
         final File file = this.fileChooser.showSaveDialog(window);
         if (file != null) {
             this.lastFile = file;
-            final List<LifePart> lifePartList = this.lifeService.getLifePartList();
+            //final List<LifePart> lifePartList = this.lifeService.getLifePartList();
             //final GenomDocument genomDocument = new GenomDocument();
             //genomDocument.genomList = lifePartList.stream().map(lifePart -> lifePart.getBrain().getGenom()).collect(Collectors.toList());
 
@@ -273,7 +265,6 @@ public class HexWave2Controller implements Initializable
 
     @FXML
     public void onNextGenerationButtonClick(final ActionEvent actionEvent) {
-        this.lifeService.calcGenPoolWinners();
         this.updateView();
     }
 
@@ -305,7 +296,9 @@ public class HexWave2Controller implements Initializable
     }
 
     public void updateView() {
-        this.counterText.setText(String.format("Step: %d (Parts: %,d)", this.hexGridService.retrieveStepCount(), this.lifeService.retrievePartCount()));
+        this.counterText.setText(String.format("Step: %d (Parts: %,d)",
+                this.hexGridService.retrieveStepCount(),
+                this.lifeService.retrievePartCount()));
         final HexGrid hexGrid = this.hexGridService.getHexGrid();
 
         for (int posY = 0; posY < this.gridModel.getNodeCountY(); posY++) {
@@ -339,26 +332,6 @@ public class HexWave2Controller implements Initializable
                 showCircleShape(gridCellModel.getShape5(), partValue, Color.TRANSPARENT, Color.ANTIQUEWHITE);//Color.YELLOW, Color.ANTIQUEWHITE);
             }
         }
-
-        this.lifeService.getWallPartList().stream().forEach(lifePart -> {
-            //drawLifePart(lifePart);
-        });
-        this.lifeService.getLifePartList().stream().forEach(lifePart -> {
-            //drawLifePart(lifePart);
-        });
-    }
-
-    private void drawLifePart(final LifePart lifePart) {
-        final GridNode gridNode = lifePart.getGridNode();
-        final Part part = lifePart.getPart();
-        final GridCellModel gridCellModel = this.gridModel.getGridCellModel(gridNode.getPosX(), gridNode.getPosY());
-
-        switch (part.getPartType()) {
-            case Nothing -> this.drawNothing(gridCellModel);
-            case Life -> this.drawLife(gridCellModel, lifePart);
-            case Wall -> this.drawWall(gridCellModel);
-            case Sun -> this.drawSun(gridCellModel);
-        }
     }
 
     //final static double RadiusFactor = 0.1D;
@@ -386,18 +359,6 @@ public class HexWave2Controller implements Initializable
 
         gridNodeCircle.setRadius(1.0D);
         gridNodeCircle.setFill(Color.DARKSLATEGRAY);
-    }
-
-    private void drawLife(final GridCellModel gridCellModel, final LifePart lifePart) {
-        final Circle gridNodeCircle = gridCellModel.getShape();
-        final Part part = lifePart.getPart();
-
-        gridNodeCircle.setRadius(2.0D + Math.min(part.getEnergy() * 6.0D, 8.0D));
-        gridNodeCircle.setFill(Color.color(
-                Math.abs(MathUtils.sigmoid(lifePart.partIdentity.partIdentity[0])),
-                Math.abs(MathUtils.sigmoid(lifePart.partIdentity.partIdentity[1])),
-                Math.abs(MathUtils.sigmoid(lifePart.partIdentity.partIdentity[2]))
-                ));
     }
 
     private void drawWall(final GridCellModel gridCellModel) {

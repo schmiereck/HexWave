@@ -23,13 +23,7 @@ public class LifeService {
     @Autowired
     private HexGridService hexGridService;
 
-    @Autowired
-    private AccelerationLifeService accelerationLifeService;
-
     private final Random rnd = new Random();
-
-    private List<LifePart> lifePartList = new ArrayList<>();
-    private List<LifePart> wallPartList = new ArrayList<>();
 
     public LifeService() {
     }
@@ -37,185 +31,104 @@ public class LifeService {
     public void initialize() {
     }
 
+    /**
+     *     bn  cp
+     *      \ /
+     *  an---A---ap
+     *      / \
+     *     cn  bp
+     *
+     */
     public void initializeBall(final int ballXPos, final int ballYPos, final int ballStartVelocityA, final boolean useBallPush) {
-        if (useBallPush) {
-            //initializePushFields();
-        }
-
         final GridNode gridNode = this.hexGridService.getGridNode(ballXPos, ballYPos);
 
         final Particle ballParticle = new Particle();
         final int probability = MainConfig3.InitialBallPartProbability;
         final Part ballPart = new Part(ballParticle, Part.PartType.Life,
-                MainConfig3.InitialBallPartEnergy,
-                MainConfig3.InitialBallPartMass,
-                probability,
                 1,
                 Cell.Dir.AP,
-                ProbabilityService.createVector(16, 16, 16, 16, 16, 16));
-                //ProbabilityService.createVector(20, 16, 16, 16, 16, 16));
-                //ProbabilityService.createVector(95, 0, 0, 5, 0, 0));
-                //ProbabilityService.createVector(55, 15, 15, 5, 5, 5));
-                //ProbabilityService.createVector(45, 15, 25, 5, 5, 5));
-                //ProbabilityService.createVector(60, 0, 40, 0, 0, 0));
+                //ProbabilityService.createVector(16, 16, 16, 16, 16, 16, probability));
+                //ProbabilityService.createVector(20, 16, 16, 16, 16, 16, probability));
+                //ProbabilityService.createVector(95, 0, 0, 5, 0, 0, probability));
+                //ProbabilityService.createVector(55, 15, 15, 5, 5, 5, probability));
+                ProbabilityService.createVector(55, 10, 20, 5, 5, 5, probability));
+                //ProbabilityService.createVector(40, 15, 30, 5, 5, 5, probability));
+                //ProbabilityService.createVector(60, 15, 15, 5, 5, 5, probability));
+                //ProbabilityService.createVector(60, 0, 40, 0, 0, 0, probability));
 
-        final PartIdentity partIdentity = this.createPartIdentity();
-        final LifePart lifePart = new LifePart(partIdentity, gridNode, ballPart);
+        //ballPart.getHexParticle().getVelocityHexVector().a = ballStartVelocityA;
 
-        ballPart.getHexParticle().getVelocityHexVector().a = ballStartVelocityA;
-
-        this.addLifePart(lifePart);
+        this.addPart(gridNode, ballPart);
     }
 
-    public void addLifePart(final LifePart lifePart) {
-        this.hexGridService.addActPart(lifePart.getGridNode(), lifePart.getPart());
-        this.lifePartList.add(lifePart);
-    }
-
-    public void addWallLifePart(final LifePart wallLifePart) {
-        this.hexGridService.addActPart(wallLifePart.getGridNode(), wallLifePart.getPart());
-        this.wallPartList.add(wallLifePart);
+    public void addPart(final GridNode gridNode, final Part part) {
+        this.hexGridService.addActPart(gridNode, part);
     }
 
     public void runLife() {
-        // Output Results.
-
-        // 1. Part is accelerated (fields, gravity) += In-Acceleration
-        this.calcOutAcceleration();
-
-        // 2. Blocked: Part passes out-acceleration/mass in direction to neighbor as in-acceleration.
-        //    Out acceleration is not set to 0.
-        this.calcAddOutAccelerationToNeigboursIn();
-
-        this.runMoveOrCollisions();
-
-        this.calcClearOutAcceleration();
-
         this.calcNext();
     }
 
-    public void runMoveOrCollisions() {
-
-        if (MainConfig3.useMoveLifePart) {
-            this.lifePartList.stream().forEach(lifePart -> {
-                //TODO this.runCollisionWithSingleDir(lifePart);
-                if (MainConfig3.useBall) printDebugVelocity(lifePart);
-                if (MainConfig3.useBall) printDebugMove(lifePart);
-                if (MainConfig3.useBall) printDebugEnd();
-            });
-        }
-    }
-
-    public void calcOutAcceleration() {
-        this.lifePartList.stream().forEach(lifePart -> {
-            if (MainConfig3.useBall) printDebugStart(lifePart);
-            if (MainConfig3.useGravitation)
-                this.accelerationLifeService.calcGravitationalAcceleration(lifePart);
-        });
-    }
-
-    public void calcAddOutAccelerationToNeigboursIn() {
-        this.lifePartList.stream().forEach(lifePart -> {
-                this.accelerationLifeService.calcAddOutAccelerationToNeigboursIn(lifePart);
-            if (MainConfig3.useBall) printDebugInAcceleration(lifePart);
-            if (MainConfig3.useBall) printDebugOutAcceleration(lifePart);
-        });
-    }
-
-    public void calcOutAccelerationToVelocity() {
-        this.lifePartList.stream().forEach(lifePart -> {
-                this.accelerationLifeService.calcOutAccelerationToVelocity(lifePart);
-            if (MainConfig3.useBall) printDebugVelocity(lifePart);
-        });
-    }
-
-    public void calcClearOutAcceleration() {
-        this.lifePartList.stream().forEach(lifePart -> {
-                this.accelerationLifeService.calcClearOutAcceleration(lifePart);
-        });
-    }
-
     public void calcNext() {
-        //this.lifePartList = this.lifePartList.stream().filter(lifePart -> !this.generationLifeService.runEnergyDeath(lifePart)).collect(Collectors.toList());
-
-        //this.sunPartList = this.sunPartList.stream().filter(lifePart -> !this.generationLifeService.runEnergyDeath(lifePart)).collect(Collectors.toList());
-
-        //final int stepCount = this.hexGridService.retrieveStepCount();
-        //final List<LifePart> deathLifePartList = this.lifePartList.stream().filter(lifePart -> this.generationLifeService.runAgeDeath(lifePart, stepCount)).collect(Collectors.toList());
-        //this.lifePartList.removeAll(deathLifePartList);
-
-        //deathLifePartList.stream().forEach(lifePart -> {
-        //    this.lifePartList.add(this.birthLifeService.createChildLifePart(lifePart));
-        //    this.lifePartList.add(this.birthLifeService.createChildLifePart(lifePart));
-        //});
-
-        //if (MainConfig3.useBirth) this.generationLifeService.runBirth(this.lifePartList, this.lifePartCount, MainConfig3.MinLifePartCount, true);
-
         this.hexGridService.calcNext();
     }
 
-    private static void printDebug(final LifePart lifePart) {
-        printDebugStart(lifePart);
-        printDebugVelocity(lifePart);
-        printDebugInAcceleration(lifePart);
-        printDebugOutAcceleration(lifePart);
-        printDebugMove(lifePart);
-        printDebugEnd();
-    }
-
-    private static void printDebugStart(final LifePart lifePart) {
-        System.out.printf("p(x:%d y:%d) ", lifePart.getGridNode().getPosX(), lifePart.getGridNode().getPosY());
-    }
-
-    private static void printDebugVelocity(final LifePart lifePart) {
-        final HexParticle hexParticle = lifePart.getPart().getHexParticle();
-        System.out.printf("v(a:%d b:%d c:%d) ", hexParticle.getVelocityHexVector().a, hexParticle.getVelocityHexVector().b, hexParticle.getVelocityHexVector().c);
-    }
-
-    private static void printDebugInAcceleration(final LifePart lifePart) {
-        final HexParticle hexParticle = lifePart.getPart().getHexParticle();
-        System.out.printf("ia(a:%d b:%d c:%d) ", hexParticle.getInAccelerationHexVector().a, hexParticle.getInAccelerationHexVector().b, hexParticle.getInAccelerationHexVector().c);
-    }
-
-    private static void printDebugOutAcceleration(final LifePart lifePart) {
-        final HexParticle hexParticle = lifePart.getPart().getHexParticle();
-        System.out.printf("oa(a:%d b:%d c:%d) ", hexParticle.getOutAccelerationHexVector().a, hexParticle.getOutAccelerationHexVector().b, hexParticle.getOutAccelerationHexVector().c);
-    }
-
-    private static void printDebugMove(final LifePart lifePart) {
-        final HexParticle hexParticle = lifePart.getPart().getHexParticle();
-        System.out.printf("vm(a:%d b:%d c:%d) ", hexParticle.getVMoveHexVector().a, hexParticle.getVMoveHexVector().b, hexParticle.getVMoveHexVector().c);
-        System.out.printf("am(a:%d b:%d c:%d) ", hexParticle.getAMoveHexVector().a, hexParticle.getAMoveHexVector().b, hexParticle.getAMoveHexVector().c);
-    }
-
-    private static void printDebugEnd() {
-        System.out.println();
-    }
-
-    public void calcGenPoolWinners() {
-        //this.lifePartList = this.generationLifeService.calcGenPoolWinners(this.lifePartList, this.lifePartCount);
-    }
-
-    public List<LifePart> getWallPartList() {
-        return this.wallPartList;
-    }
-
-    public List<LifePart> getLifePartList() {
-        return this.lifePartList;
-    }
-
     public long retrievePartCount() {
-        return this.lifePartList.size();
+        return this.hexGridService.calcPartCount();
     }
 
-    public PartIdentity createPartIdentity() {
-        return new PartIdentity(this.calcChildPartIdentityValue(),
-                this.calcChildPartIdentityValue(),
-                this.calcChildPartIdentityValue());
+    public void initializeWalls() {
+        // Left-/ Right-Walls.
+        this.createWallY(0, 1, this.hexGridService.getNodeCountY() - 1);
+        this.createWallY(this.hexGridService.getNodeCountX() - 1, 1, this.hexGridService.getNodeCountY() - 1);
+
+        // Bottom-Wall.
+        this.createWallX(0, this.hexGridService.getNodeCountX() - 1, this.hexGridService.getNodeCountY() - 1);
     }
 
-    private double calcChildPartIdentityValue() {
-        return (this.rnd.nextDouble() * 2.0D) - 1.0D;
+    public void initializeExtraWalls() {
+        final int middleXPos = this.hexGridService.getNodeCountX() / 2;
+        final int leftXPos = middleXPos - 20;
+        final int rightXPos = middleXPos + 20;
+        final int bottomYPos = this.hexGridService.getNodeCountY() - 15;
+        final int topYPos = bottomYPos - 25;
+
+        // Middle-Wall.
+        this.createWallY(middleXPos, bottomYPos, topYPos);
+        this.createWallX(middleXPos - 15, middleXPos - 1, bottomYPos - 10);
+        this.createWallX(middleXPos + 15, middleXPos + 1, bottomYPos - 10);
+        // Bottom-Wall.
+        this.createWallX(leftXPos, rightXPos, bottomYPos);
+    }
+
+    private void createWallY(final int middleXPos, final int aYPos, final int bYPos) {
+        final int bottomYPos = Math.max(aYPos, bYPos);
+        final int topYPos = Math.min(aYPos, bYPos);
+
+        for (int posY = topYPos; posY <= bottomYPos; posY++) {
+            this.createWall(middleXPos, posY);
+        }
+    }
+
+    private void createWallX(final int aXPos, final int bXPos, final int bottomYPos) {
+        final int leftXPos = Math.min(aXPos, bXPos);
+        final int rightXPos = Math.max(aXPos, bXPos);
+
+        for (int posX = leftXPos; posX <= rightXPos; posX++) {
+            this.createWall(posX, bottomYPos);
+        }
+    }
+
+    public void createWall(final int xPos, final int posY) {
+        final GridNode wallGridNode = this.hexGridService.getGridNode(xPos, posY);
+        final int probability = MainConfig3.InitialWallPartProbability;
+        final Particle wallParticle = new Particle();
+        final Part wallPart = new Part(wallParticle,
+                Part.PartType.Wall,
+                1,
+                Cell.Dir.AP,
+                ProbabilityService.createVector(0, 0, 0, 0, 0, 0, probability));
+        this.addPart(wallGridNode, wallPart);
     }
 
 }

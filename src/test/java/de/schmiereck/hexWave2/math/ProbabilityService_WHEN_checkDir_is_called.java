@@ -90,7 +90,7 @@ public class ProbabilityService_WHEN_checkDir_is_called {
 
         for (int percent = 0; percent <= MaxPercent; percent++) {
         //int percent = 99; {
-            final int prob = ProbabilityService.calcProbByPercent(MaxPercent, percent, MaxProp);
+            final int prob = ProbabilityService.calcProbByPercent(MaxPercent, MaxProp, percent);
 
             final ProbabilityVector probabilityVector = new ProbabilityVector();
             ProbabilityService.setProbabilityLimit(probabilityVector, Cell.Dir.AP, prob);
@@ -108,7 +108,10 @@ public class ProbabilityService_WHEN_checkDir_is_called {
             final long apCount = Stream.of(expectedApArr).filter(b -> b).count();
             //final long anCount = Stream.of(expectedAnArr).filter(b -> b).count();
 
-            System.out.printf("AP: percent:%3d (%3.1f%%): prop:%3d: %s\n", percent, (apCount * 100.0D / ExpectedSize), prob, Arrays.toString(Arrays.copyOf(expectedApArr, MaxProp)));
+            final int absLimitValue = ProbabilityService.calcAbsLimitValue(probabilityVector, Cell.Dir.AP);
+
+            System.out.printf("AP: percent:%3d (%3.1f%%): prop:%3d: LimitValue:%3d: %s\n",
+                    percent, (apCount * 100.0D / ExpectedSize), prob, absLimitValue, Arrays.toString(Arrays.copyOf(expectedApArr, MaxProp)));
             //System.out.printf("AN: percent:%3d (%3.1f%%): prop:%3d: %s\n", percent, (anCount * 100.0D / ExpectedSize), prop, Arrays.toString(expectedAnArr));
             for (int pos = 0; pos < ExpectedSize; pos++) {
                 Assertions.assertEquals(expectedApArr[pos], ProbabilityService.checkDir(probabilityVector, Cell.Dir.AP), "AP: percent:%d, pos:%d".formatted(percent, pos));

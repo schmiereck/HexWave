@@ -10,7 +10,6 @@ public class MainConfig3 {
         BouncingBall,
         MachineBalls,
         CrashBalls,
-        NoMoves,
         SlideTop
     }
 
@@ -18,8 +17,6 @@ public class MainConfig3 {
     public static int HexGridYSize = 3;
 
     public static ConfigEnum config;
-    public static boolean useGravitation = true;
-    public static boolean useMoveLifePart = true;
     public static boolean useBall = false;
     public static boolean useBallPush = false;
 
@@ -59,7 +56,6 @@ public class MainConfig3 {
                 BallStartVelocityA = new int[] { 0 };
                 UseWalls = false;
                 UseExtraWalls = false;
-                useGravitation = false;
             }
             case BlockedBall -> {
                 useBall = true;
@@ -88,7 +84,6 @@ public class MainConfig3 {
                 BallStartXPos = new int[] { 30, 36, 37, 38 };
                 BallStartYPos = new int[] { 30, 30, 30, 30 };
                 BallStartVelocityA = new int[] { 128, 0, 0, 0 };
-                useGravitation = false;
                 UseExtraWalls = false;
             }
             case CrashBalls -> {
@@ -99,11 +94,7 @@ public class MainConfig3 {
                                             25, 25 };
                 BallStartVelocityA = new int[] { 128, -128,
                                                  128, -64 };
-                useGravitation = false;
                 UseExtraWalls = false;
-            }
-            case NoMoves -> {
-                useMoveLifePart = false;
             }
             case SlideTop -> {
                 useBall = true;
