@@ -3,11 +3,13 @@ package de.schmiereck.hexWave2;
 public class MainConfig3 {
 
     public enum ConfigEnum {
-        LifeEnvironment,
         StaticBall,
+        BouncingBall,
+        InteractingBalls,
+        CrashingBalls,
+        LifeEnvironment,
         BlockedBall,
         JumpingBall,
-        BouncingBall,
         MachineBalls,
         CrashBalls,
         SlideTop
@@ -54,6 +56,22 @@ public class MainConfig3 {
                 BallStartXPos = new int[] { 36 };
                 BallStartYPos = new int[] { 20 };
                 BallStartVelocityA = new int[] { 0 };
+                UseWalls = false;
+                UseExtraWalls = false;
+            }
+            case InteractingBalls -> {
+                useBall = true;
+                BallStartXPos = new int[] { 36, 46 };
+                BallStartYPos = new int[] { 20, 20 };
+                BallStartVelocityA = new int[] { 1, 1 };
+                UseWalls = false;
+                UseExtraWalls = false;
+            }
+            case CrashingBalls -> {
+                useBall = true;
+                BallStartXPos = new int[] { 36, 46 };
+                BallStartYPos = new int[] { 20, 20 };
+                BallStartVelocityA = new int[] { 0, -20 };
                 UseWalls = false;
                 UseExtraWalls = false;
             }

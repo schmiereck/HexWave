@@ -3,6 +3,7 @@ package de.schmiereck.hexWave2.service.life;
 import de.schmiereck.hexWave2.MainConfig3;
 import de.schmiereck.hexWave2.math.HexParticle;
 import de.schmiereck.hexWave2.math.ProbabilityService;
+import de.schmiereck.hexWave2.math.ProbabilityVector;
 import de.schmiereck.hexWave2.service.hexGrid.Cell;
 import de.schmiereck.hexWave2.service.hexGrid.GridNode;
 import de.schmiereck.hexWave2.service.hexGrid.HexGridService;
@@ -42,16 +43,26 @@ public class LifeService {
     public void initializeBall(final int ballXPos, final int ballYPos, final int ballStartVelocityA, final boolean useBallPush) {
         final GridNode gridNode = this.hexGridService.getGridNode(ballXPos, ballYPos);
 
-        final Particle ballParticle = new Particle();
         final int probability = MainConfig3.InitialBallPartProbability;
-        final Part ballPart = new Part(ballParticle, Part.PartType.Life,
+
+        final ProbabilityVector probabilityVector =
+        switch (ballStartVelocityA) {
+            case 0 -> ProbabilityService.createVector(0, 0, 0, 0, 0, 0, probability);
+            case 1 -> ProbabilityService.createVector(16, 16, 16, 16, 16, 16, probability);
+            case 2 -> ProbabilityService.createVector(20, 16, 16, 16, 16, 16, probability);
+            case 3 -> ProbabilityService.createVector(95, 0, 0, 5, 0, 0, probability);
+            default -> ProbabilityService.createVector(0, 0, 0, 0, 0, 0, probability);
+        };
+        final Particle ballParticle = new Particle();
+        final Part ballPart = new Part(ballParticle,
+                Part.PartType.Life,
                 1,
                 Cell.Dir.AP,
-                //ProbabilityService.createVector(16, 16, 16, 16, 16, 16, probability));
-                //ProbabilityService.createVector(20, 16, 16, 16, 16, 16, probability));
-                //ProbabilityService.createVector(95, 0, 0, 5, 0, 0, probability));
+                probabilityVector);
+                //ProbabilityService.createVector(, probability));
+                //ProbabilityService.createVector(, probability));
                 //ProbabilityService.createVector(55, 15, 15, 5, 5, 5, probability));
-                ProbabilityService.createVector(55, 10, 20, 5, 5, 5, probability));
+                //ProbabilityService.createVector(55, 10, 20, 5, 5, 5, probability));
                 //ProbabilityService.createVector(40, 15, 30, 5, 5, 5, probability));
                 //ProbabilityService.createVector(60, 15, 15, 5, 5, 5, probability));
                 //ProbabilityService.createVector(60, 0, 40, 0, 0, 0, probability));

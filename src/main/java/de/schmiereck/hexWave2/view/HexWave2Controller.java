@@ -69,11 +69,13 @@ public class HexWave2Controller implements Initializable
 
     @Override
     public void initialize(final URL url, final ResourceBundle resourceBundle) {
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBall);
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.BouncingBall);
+        MainConfig3.initConfig(MainConfig3.ConfigEnum.InteractingBalls);
+
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.LifeEnvironment);
-        MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBall);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.BlockedBall);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.JumpingBall);
-        //MainConfig3.initConfig(MainConfig3.ConfigEnum.BouncingBall);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.MachineBalls);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.CrashBalls);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.ShowFields);
@@ -107,6 +109,7 @@ public class HexWave2Controller implements Initializable
         //this.hexGridService.initialize(2, 1);
         this.hexGridService.initialize(MainConfig3.HexGridXSize, MainConfig3.HexGridYSize, maxAreaDistance);
         this.lifeService.initialize();
+
 
         if (MainConfig3.UseWalls)
             this.lifeService.initializeWalls();
