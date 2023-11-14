@@ -138,7 +138,7 @@ public class ProbabilityService {
         probabilityVector.cntArr[dir.ordinal()] = cnt;
     }
 
-    public static ProbabilityVector createVector(final ProbabilityVector probabilityVector, final int transferProbability) {
+    public static ProbabilityVector createVector(final ProbabilityVector probabilityVector) { //, final int transferProbability)
         final ProbabilityVector retProbabilityVector = new ProbabilityVector();
 
         //retProbabilityVector.apLimit = probabilityVector.apLimit;
@@ -160,12 +160,12 @@ public class ProbabilityService {
             retProbabilityVector.cntArr[dirPos] = probabilityVector.cntArr[dirPos];
         }
 
-        retProbabilityVector.setProbability(transferProbability);
+        //retProbabilityVector.setProbability(transferProbability);
 
         return retProbabilityVector;
     }
 
-    public static ProbabilityVector createVector(int apPerc, int bpPerc, int cpPerc, int anPerc, int bnPerc, int cnPerc, int probability) {
+    public static ProbabilityVector createVector(int apPerc, int bpPerc, int cpPerc, int anPerc, int bnPerc, int cnPerc) { // , int probability
         final ProbabilityVector retProbabilityVector = new ProbabilityVector();
 
         ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.AP, calcProbByPercent(MaxPercent, MaxProp, apPerc));
@@ -177,14 +177,15 @@ public class ProbabilityService {
         ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.CP, calcProbByPercent(MaxPercent, MaxProp, cpPerc));
         ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.CN, calcProbByPercent(MaxPercent, MaxProp, cnPerc));
 
-        retProbabilityVector.setProbability(probability);
+        //retProbabilityVector.setProbability(probability);
 
         return retProbabilityVector;
     }
 
     public static boolean compare(final ProbabilityVector aProbabilityVector, final ProbabilityVector bProbabilityVector) {
-        boolean equal = aProbabilityVector.getProbability() == bProbabilityVector.getProbability();
-        if (equal) {
+        boolean equal = true;
+        //boolean equal = aProbabilityVector.getProbability() == bProbabilityVector.getProbability();
+        //if (equal) {
             for (int dirPos = 0; dirPos < Cell.Dir.values().length; dirPos++) {
                 if ((aProbabilityVector.limitArr[dirPos] != bProbabilityVector.limitArr[dirPos]) ||
                         (aProbabilityVector.cntArr[dirPos] != bProbabilityVector.cntArr[dirPos])) {
@@ -192,7 +193,7 @@ public class ProbabilityService {
                     break;
                 }
             }
-        }
+        //}
         return equal;
     }
 

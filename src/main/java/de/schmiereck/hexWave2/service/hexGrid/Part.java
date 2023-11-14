@@ -24,14 +24,16 @@ public class Part implements Serializable {
     public Cell.Dir rotationDir;
 
     public final ProbabilityVector probabilityVector;
+    private int probability;
 
     public Part(final Particle particle, final PartType partType,
-                final int count, Cell.Dir rotationDir, final ProbabilityVector probabilityVector) {
+                final int count, Cell.Dir rotationDir, final ProbabilityVector probabilityVector, final int probability) {
         this.particle = particle;
         this.partType = partType;
         this.count = count;
         this.rotationDir = rotationDir;
         this.probabilityVector = probabilityVector;
+        this.probability = probability;
     }
 
     public Particle getParticle() {
@@ -48,6 +50,14 @@ public class Part implements Serializable {
 
     public int getCount() {
         return this.count;
+    }
+
+    public void setProbability(final int probability) {
+        this.probability = probability;
+    }
+
+    public int getProbability() {
+        return this.probability;
     }
 
 }
