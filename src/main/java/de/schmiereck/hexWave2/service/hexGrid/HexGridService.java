@@ -184,6 +184,7 @@ public class HexGridService {
                     sourcePart.setCount(1);
 
                     sourcePart.rotationDir = HexMathUtils.calcNextMoveDir(sourcePart.rotationDir);
+                    ProbabilityService.calcNext(sourcePart.probabilityVector);
                 });
                 /*
                 final List<Part> mergedPartList = gridNode.getPartList(this.actCellArrPos).stream()
@@ -221,18 +222,35 @@ public class HexGridService {
 
                 gridNode.getPartList(this.actCellArrPos).stream().forEach(sourcePart -> {
                     final int sourceProbability = sourcePart.getProbability();
-                    final int dirProbability = sourceProbability / 6;
+                    final int stepLimitSum = sourcePart.probabilityVector.stepLimitSum;
+
+                    //final int dirProbability = sourceProbability / 6;
+
                     //if (sourceProbability >= (6 * TransProp)) {
                     //if (sourceProbability >= (6)) {
-                    if (dirProbability > 0) {
-                        sourcePart.setPropagate(true);
-                    }
-                    for (final Cell.Dir dir : Cell.Dir.values()) {
-                        sourcePart.setDirProbability(dir, dirProbability);
-                    }
+                    //if (dirProbability > 0) {
+                    //    sourcePart.setPropagate(true);
+                    //}
+                    if (stepLimitSum > 0) {
+                        int dirProbabilitySum = 0;
+                        for (final Cell.Dir dir : Cell.Dir.values()) {
+                            final int dirProbability;
+                            if (ProbabilityService.checkDir(sourcePart.probabilityVector, dir)) {
+                                final int limit = ProbabilityService.calcLimit(sourcePart.probabilityVector, dir);
+                                dirProbability = (limit * sourceProbability) / stepLimitSum;
+                            } else {
+                                dirProbability = 0;
+                            }
+                            dirProbabilitySum += dirProbability;
+                            sourcePart.setDirProbability(dir, dirProbability);
+                        }
 
-                    sourcePart.setProbability(sourceProbability - dirProbability * 6);
-                    ProbabilityService.calcNext(sourcePart.probabilityVector);
+                        if (dirProbabilitySum > 0) {
+                            sourcePart.setPropagate(true);
+                        }
+                        //sourcePart.setProbability(sourceProbability - dirProbability * 6);
+                        sourcePart.setProbability(sourceProbability - dirProbabilitySum);
+                    }
                 });
             }
         }
@@ -273,6 +291,7 @@ public class HexGridService {
                                         ProbabilityService.createVector(sourcePart.probabilityVector));
                                 gridNode.addPart(this.nextCellArrPos, newPart);
                             }
+                            sourcePart.setDirProbability(sourceDir, 0);
                             //sourcePart.setProbability(sourceProbability - transferProbability);
                         }
                     });
@@ -285,13 +304,19 @@ public class HexGridService {
                 final GridNode gridNode = this.getGridNode(posX, posY);
 
                 gridNode.getPartList(this.actCellArrPos).stream().forEach(sourcePart -> {
-                    if (sourcePart.getProbability() > 0) {
-                        final Optional<Part> optionalPart = this.searchNextParticlePart(gridNode, sourcePart.getParticle(), sourcePart.getProbability());
+                    int sourcePartProbability = sourcePart.getProbability();
+                    for (final Cell.Dir dir : Cell.Dir.values()) {
+                        sourcePartProbability += sourcePart.getDirProbability(dir);
+                        sourcePart.setDirProbability(dir, 0);
+                    }
+                    if (sourcePartProbability > 0) {
+                        final Optional<Part> optionalPart = this.searchNextParticlePart(gridNode, sourcePart.getParticle(), sourcePartProbability);
                         if (optionalPart.isPresent()) {
                             final Part part = optionalPart.get();
                             //part.setProbability(part.getProbability() + sourcePart.getProbability());
                             part.setCount(part.getCount() + 1);
                         } else {
+                            sourcePart.setProbability(sourcePartProbability);
                             sourcePart.setPropagate(false);
                             gridNode.addPart(this.nextCellArrPos, sourcePart);
                         }

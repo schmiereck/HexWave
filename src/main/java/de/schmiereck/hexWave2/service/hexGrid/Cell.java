@@ -4,6 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Cell {
+    /**
+     *     bn  cp
+     *      \ /
+     *  an---A---ap
+     *      / \
+     *     cn  bp
+     *
+     */
     public enum Dir {
         //!np NP,
         AP, // right

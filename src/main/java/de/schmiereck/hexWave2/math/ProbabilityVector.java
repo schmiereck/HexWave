@@ -1,5 +1,7 @@
 package de.schmiereck.hexWave2.math;
 
+import de.schmiereck.hexWave2.service.hexGrid.Cell;
+
 /**
  * 0 (100%, always)
  * x
@@ -31,10 +33,13 @@ public class ProbabilityVector {
      * {@link Integer#MAX_VALUE}: As rare as possible.
      * -x: Every time but not if 0.
      */
-    public int apLimit, anLimit, bpLimit, bnLimit, cpLimit, cnLimit;
+    //public int apLimit, anLimit, bpLimit, bnLimit, cpLimit, cnLimit;
+    public int[] limitArr =  new int[Cell.Dir.values().length];
 
     /**
      * Counter.
      */
-    public int apCnt, anCnt, bpCnt, bnCnt, cpCnt, cnCnt;
+    //public int apCnt, anCnt, bpCnt, bnCnt, cpCnt, cnCnt;
+    public int[] cntArr =  new int[Cell.Dir.values().length];
+    public int stepLimitSum;
 }
