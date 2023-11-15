@@ -57,7 +57,7 @@ public class MainConfig3 {
                 useBall = true;
                 BallStartXPos = new int[] { 36 };
                 BallStartYPos = new int[] { 20 };
-                BallStartVelocityA = new int[] { 5 };
+                BallStartVelocityA = new int[] { 6 };
                 UseWalls = false;
                 UseExtraWalls = false;
             }

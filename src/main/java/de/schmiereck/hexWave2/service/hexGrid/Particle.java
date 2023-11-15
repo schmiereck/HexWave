@@ -4,7 +4,7 @@ public class Particle {
 
     public enum PartType {
         Nothing,
-        Life,
+        Particle,
         Field,
         Wall,
     }

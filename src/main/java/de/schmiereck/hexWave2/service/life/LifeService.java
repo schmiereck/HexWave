@@ -50,10 +50,11 @@ public class LifeService {
             case 3 -> ProbabilityService.createVector(95, 0, 0, 5, 0, 0);
             case 4 -> ProbabilityService.createVector(100, 0, 0, 0, 0, 0);
             case 5 -> ProbabilityService.createVector(25, 0, 0, 0, 0, 0);
+            case 6 -> ProbabilityService.createVector(55, 15, 15, 5, 5, 5);
             default -> ProbabilityService.createVector(0, 0, 0, 0, 0, 0);
         };
         final Particle fieldParticle = new Particle(Particle.PartType.Field, null);
-        final Particle ballParticle = new Particle(Particle.PartType.Life, fieldParticle);
+        final Particle ballParticle = new Particle(Particle.PartType.Particle, fieldParticle);
         final Part ballPart = new Part(ballParticle,
                 1,
                 Cell.Dir.AP,
@@ -61,7 +62,7 @@ public class LifeService {
                 probability);
                 //ProbabilityService.createVector(, probability));
                 //ProbabilityService.createVector(, probability));
-                //ProbabilityService.createVector(55, 15, 15, 5, 5, 5, probability));
+                //ProbabilityService.createVector(, probability));
                 //ProbabilityService.createVector(55, 10, 20, 5, 5, 5, probability));
                 //ProbabilityService.createVector(40, 15, 30, 5, 5, 5, probability));
                 //ProbabilityService.createVector(60, 15, 15, 5, 5, 5, probability));

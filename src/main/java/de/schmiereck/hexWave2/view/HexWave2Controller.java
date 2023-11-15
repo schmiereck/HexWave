@@ -312,6 +312,7 @@ public class HexWave2Controller implements Initializable
 
                 final GridNode gridNode = this.hexGridService.getGridNode(posX, posY);
                 final double partValue = this.hexGridService.retrieveActGridNodePartValue(posX, posY);
+                final double fieldValue = this.hexGridService.retrieveActGridNodeFieldValue(posX, posY);
 
                 //final double part1FieldValue = this.hexGridService.retrieveActGridNodePartFieldValue(posX, posY,
                 //        this.fieldTypeService.getFieldType(FieldTypeService.FieldTypeEnum.Part1));
@@ -331,7 +332,7 @@ public class HexWave2Controller implements Initializable
                 //showCircleShape(gridCellModel.getShape2(), extraValue, Color.WHITE, Color.WHITE);
 
                 //showCircleShape(gridCellModel.getShape3(), partPushFieldValue, Color.TRANSPARENT, Color.RED);//Color.ORANGE, Color.RED);
-                //showCircleShape(gridCellModel.getShape4(), partPullFieldValue, Color.TRANSPARENT, Color.LIGHTBLUE);//Color.AQUA, Color.BLUE);
+                showCircleShape(gridCellModel.getShape4(), fieldValue/55.0D, Color.TRANSPARENT, Color.BLUE);//Color.AQUA, Color.LIGHTBLUE);
                 showCircleShape(gridCellModel.getShape5(), partValue, Color.TRANSPARENT, Color.ANTIQUEWHITE);//Color.YELLOW, Color.ANTIQUEWHITE);
             }
         }
