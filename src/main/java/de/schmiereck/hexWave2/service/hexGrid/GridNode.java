@@ -1,5 +1,7 @@
 package de.schmiereck.hexWave2.service.hexGrid;
 
+import de.schmiereck.hexWave2.MainConfig3;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,14 +39,15 @@ public class GridNode {
         this.cellArr[1] = new Cell();
 
         this.gridNodeAreaArr = new GridNodeArea[Cell.Dir.values().length][];
-        for (final Cell.Dir dir : Cell.Dir.values()) {
-            final GridNodeArea[] gridNodeAreaArr = new GridNodeArea[GridNodeArea.calcGridNodeArrSizeForMaxAreaDistance(maxAreaDistance)];
-            this.gridNodeAreaArr[dir.ordinal()] = gridNodeAreaArr;
+        if (MainConfig3.useGridNodeAreaRef)
+            for (final Cell.Dir dir : Cell.Dir.values()) {
+                final GridNodeArea[] gridNodeAreaArr = new GridNodeArea[GridNodeArea.calcGridNodeArrSizeForMaxAreaDistance(maxAreaDistance)];
+                this.gridNodeAreaArr[dir.ordinal()] = gridNodeAreaArr;
 
-            for (int areaDistance = 0; areaDistance < GridNodeArea.calcGridNodeArrSizeForMaxAreaDistance(maxAreaDistance); areaDistance++) {
-                gridNodeAreaArr[areaDistance] = new GridNodeArea(this, dir, areaDistance);
+                for (int areaDistance = 0; areaDistance < GridNodeArea.calcGridNodeArrSizeForMaxAreaDistance(maxAreaDistance); areaDistance++) {
+                    gridNodeAreaArr[areaDistance] = new GridNodeArea(this, dir, areaDistance);
+                }
             }
-        }
     }
 
     public int getPosX() {
@@ -62,17 +65,23 @@ public class GridNode {
     void addPart(final int cellArrPos, final Part part) {
         this.cellArr[cellArrPos].addPart(part);
 
-        this.gridNodeAreaRefList.stream().forEach(gridNodeAreaRef -> {
-            gridNodeAreaRef.getGridNodeArea().addPart(part);
-        });
+        if (MainConfig3.useGridNodeAreaRef)
+            this.gridNodeAreaRefList.stream().forEach(gridNodeAreaRef -> {
+                gridNodeAreaRef.getGridNodeArea().addPart(part);
+            });
+    }
+
+    public void addPartList(final int cellArrPos, final List<Part> partList) {
+        partList.stream().forEach(part -> this.addPart(cellArrPos, part));
     }
 
     void removePart(final int cellArrPos, final Part part) {
         this.cellArr[cellArrPos].removePart(part);
 
-        this.gridNodeAreaRefList.stream().forEach(gridNodeAreaRef -> {
-            gridNodeAreaRef.getGridNodeArea().removePart(part);
-        });
+        if (MainConfig3.useGridNodeAreaRef)
+            this.gridNodeAreaRefList.stream().forEach(gridNodeAreaRef -> {
+                gridNodeAreaRef.getGridNodeArea().removePart(part);
+            });
     }
 
     public GridNodeArea getGridNodeArea(final Cell.Dir dir, final int areaDistance) {
@@ -94,4 +103,5 @@ public class GridNode {
     private void addGridNodeAreaRef(final GridNodeAreaRef gridNodeAreaRef) {
         this.gridNodeAreaRefList.add(gridNodeAreaRef);
     }
+
 }

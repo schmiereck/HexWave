@@ -108,6 +108,65 @@ directions:
 m(v) = m0 / (sqrt(1 - (v² / c²)))  
 m(v) = m0 * (c / (c - v))
 
+# Felder
+* ElektrischesFeld
+  * https://de.wikipedia.org/wiki/Elektrisches_Feld  
+    **Nahwirkung statt Fernwirkung**  
+    Zusammenfassend geht man aus heutiger Sicht davon aus, dass die Wechselwirkung zwischen den Ladungen erst vom elektrischen Feld vermittelt wird.  
+    Ändert sich die Position einer der Ladungen, so breitet sich die Änderung des Feldes mit Lichtgeschwindigkeit im Raum aus.
+
+# Systematik
+* Elementarteilchen
+  * Ein Elementarteilchen in drei Raumdimensionen ist immer entweder ein Fermion oder ein Boson.  
+    In sehr dünnen Schichten, also zweidimensionalen Systemen, 
+    gibt es außer Bosonen und Fermionen die sogenannten Anyonen, 
+    die einer eigenen Quantenstatistik mit beliebigem (englisch ‘any’) Spin genügen.
+* Quarks und Gluonen
+  * Quarks (Fermionen)
+    * drei Farben (r, g, b)
+    * 6 Flavors: u (up), d (down), c (charm), s (strange), t (top), b (bottom)
+      * drei Generationen: (u, d), (c, s), (t, b)
+      * drittelzahlige elektrische Ladung Q 
+      * Baryonenzahl B
+      * Zu jedem Quark existiert ein Antiteilchen mit entgegengesetzten Quantenzahlen.
+  * Gluonen
+    * acht Farbkombinationen (rB, rG, Rg, gB, bR, bG, (gG-rR)/sqrt(2), (gG+rR-2bB)/sqrt(2))
+    * masselose Elementarteilchen mit Spin 1
+* Leptonen
+  * Elementarteilchen mit halbzahligem Spin (1 / 2, 3 / 2, ...)
+  * unterliegen nicht der starken Wechselwirkung
+  * Elektron, das Myon und das Tau-Lepton sowie die zugehörigen Neutrinos.
+* Fermionen
+  * Spin von 1 / 2
+* Bosonen
+  * ganzzahligen Spin
+* Hadronen
+  * aus Quarks, Antiquarks und Gluonen zusammengesetzt 
+* Elementarladung
+  * kleinste in der Natur frei vorkommende elektrische Ladungsmenge.
+  
+* Elektron
+  * Spin von 1 / 2
+  * Lepton
+
 # Info
-* Pfadintegral: Die Realität als Summe aller Eventualitäten - Spektrum der Wissenschaft  
-  https://www.spektrum.de/news/pfadintegral-die-realitaet-als-summe-aller-eventualitaeten/2197570
+* Pfadintegral
+  * https://de.wikipedia.org/wiki/Pfadintegral
+  * Pfadintegral: Die Realität als Summe aller Eventualitäten - Spektrum der Wissenschaft  
+    https://www.spektrum.de/news/pfadintegral-die-realitaet-als-summe-aller-eventualitaeten/2197570
+* Gittereichtheorie
+  * https://de.wikipedia.org/wiki/Gittereichtheorie
+  * https://www.spektrum.de/lexikon/physik/gittereichtheorie/5871
+* Quantenchromodynamik
+  * https://www.spektrum.de/lexikon/physik/quantenchromodynamik/11843
+* Elementarteilchen
+  * https://www.spektrum.de/lexikon/physik/quarks/11907
+  * https://www.spektrum.de/lexikon/physik/leptonen/8965
+    * https://www.spektrum.de/lexikon/physik/elektron/4067
+    * https://de.wikipedia.org/wiki/Elektron
+    * https://www.spektrum.de/lexikon/physik/myon/10054
+    * https://www.spektrum.de/lexikon/physik/neutrinos/10248
+  * https://www.spektrum.de/lexikon/physik/gluonen/5998
+  * https://de.wikipedia.org/wiki/Fermion
+* Standardmodell der Elementarteilchen
+  * https://de.wikipedia.org/wiki/Datei:Standard_Model_of_Elementary_Particles-de.svg

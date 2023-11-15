@@ -165,7 +165,7 @@ public class ProbabilityService {
         return retProbabilityVector;
     }
 
-    public static ProbabilityVector createVector(int apPerc, int bpPerc, int cpPerc, int anPerc, int bnPerc, int cnPerc) { // , int probability
+    public static ProbabilityVector createVector(final int apPerc, final int bpPerc, final int cpPerc, final int anPerc, final int bnPerc, final int cnPerc) { // , int probability
         final ProbabilityVector retProbabilityVector = new ProbabilityVector();
 
         ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.AP, calcProbByPercent(MaxPercent, MaxProp, apPerc));

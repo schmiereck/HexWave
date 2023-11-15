@@ -1,7 +1,6 @@
 package de.schmiereck.hexWave2.service.life;
 
 import de.schmiereck.hexWave2.MainConfig3;
-import de.schmiereck.hexWave2.math.HexParticle;
 import de.schmiereck.hexWave2.math.ProbabilityService;
 import de.schmiereck.hexWave2.math.ProbabilityVector;
 import de.schmiereck.hexWave2.service.hexGrid.Cell;
@@ -10,8 +9,6 @@ import de.schmiereck.hexWave2.service.hexGrid.HexGridService;
 import de.schmiereck.hexWave2.service.hexGrid.Part;
 import de.schmiereck.hexWave2.service.hexGrid.Particle;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,11 +48,13 @@ public class LifeService {
             case 1 -> ProbabilityService.createVector(16, 16, 16, 16, 16, 16);
             case 2 -> ProbabilityService.createVector(20, 16, 16, 16, 16, 16);
             case 3 -> ProbabilityService.createVector(95, 0, 0, 5, 0, 0);
+            case 4 -> ProbabilityService.createVector(100, 0, 0, 0, 0, 0);
+            case 5 -> ProbabilityService.createVector(25, 0, 0, 0, 0, 0);
             default -> ProbabilityService.createVector(0, 0, 0, 0, 0, 0);
         };
-        final Particle ballParticle = new Particle();
+        final Particle fieldParticle = new Particle(Particle.PartType.Field, null);
+        final Particle ballParticle = new Particle(Particle.PartType.Life, fieldParticle);
         final Part ballPart = new Part(ballParticle,
-                Part.PartType.Life,
                 1,
                 Cell.Dir.AP,
                 probabilityVector,
@@ -134,9 +133,9 @@ public class LifeService {
     public void createWall(final int xPos, final int posY) {
         final GridNode wallGridNode = this.hexGridService.getGridNode(xPos, posY);
         final int probability = MainConfig3.InitialWallPartProbability;
-        final Particle wallParticle = new Particle();
+        final Particle fieldParticle = new Particle(Particle.PartType.Field, null);
+        final Particle wallParticle = new Particle(Particle.PartType.Wall, fieldParticle);
         final Part wallPart = new Part(wallParticle,
-                Part.PartType.Wall,
                 1,
                 Cell.Dir.AP,
                 ProbabilityService.createVector(0, 0, 0, 0, 0, 0),

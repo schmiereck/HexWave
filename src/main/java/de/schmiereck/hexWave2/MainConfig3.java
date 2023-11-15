@@ -15,6 +15,8 @@ public class MainConfig3 {
         SlideTop
     }
 
+    public static boolean useGridNodeAreaRef = false;
+
     public static int HexGridXSize = 12;//10;
     public static int HexGridYSize = 3;
 
@@ -55,7 +57,7 @@ public class MainConfig3 {
                 useBall = true;
                 BallStartXPos = new int[] { 36 };
                 BallStartYPos = new int[] { 20 };
-                BallStartVelocityA = new int[] { 0 };
+                BallStartVelocityA = new int[] { 5 };
                 UseWalls = false;
                 UseExtraWalls = false;
             }
