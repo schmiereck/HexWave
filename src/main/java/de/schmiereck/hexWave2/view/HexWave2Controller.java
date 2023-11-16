@@ -71,8 +71,8 @@ public class HexWave2Controller implements Initializable
     @Override
     public void initialize(final URL url, final ResourceBundle resourceBundle) {
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBall);
-        MainConfig3.initConfig(MainConfig3.ConfigEnum.MovingBall);
-        //MainConfig3.initConfig(MainConfig3.ConfigEnum.InteractingBalls);
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.MovingBall);
+        MainConfig3.initConfig(MainConfig3.ConfigEnum.InteractingBalls);
 
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.BouncingBall);
 

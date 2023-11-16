@@ -39,6 +39,8 @@ public class MainConfig3 {
     public static int GravitationalAccelerationCN = 10;
 
 
+    public static boolean useRotation = false;
+
     public static boolean UseWalls = true;
     public static boolean UseExtraWalls = true;
 
