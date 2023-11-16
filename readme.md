@@ -150,6 +150,7 @@ m(v) = m0 * (c / (c - v))
   * Lepton
 
 # Info
+* http://www.mikomma.de/fh/eldy/hertz.html
 * Pfadintegral
   * https://de.wikipedia.org/wiki/Pfadintegral
   * Pfadintegral: Die Realität als Summe aller Eventualitäten - Spektrum der Wissenschaft  
