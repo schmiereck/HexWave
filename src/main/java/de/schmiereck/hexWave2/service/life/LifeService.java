@@ -51,7 +51,7 @@ public class LifeService {
             case 3 -> ProbabilityService.createVector(95, 0, 0, 5, 0, 0);
             case 4 -> ProbabilityService.createVector(100, 0, 0, 0, 0, 0);
             case 5 -> ProbabilityService.createVector(25, 0, 0, 0, 0, 0);
-            case 6 -> ProbabilityService.createVector(55, 15, 15, 5, 5, 5);
+            case 6 -> ProbabilityService.createVector(50, 10, 10, 2, 5, 5);
             default -> ProbabilityService.createVector(0, 0, 0, 0, 0, 0);
         };
         final Particle fieldParticle = new Particle(Particle.PartType.Field, fieldSubType, null);

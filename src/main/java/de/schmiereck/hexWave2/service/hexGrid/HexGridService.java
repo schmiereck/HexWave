@@ -283,24 +283,28 @@ public class HexGridService {
                         final int sourceDirProbability = sourcePart.probabilityVector.getDirProbability(sourceDir);
                         final int transferProbability;
 
-                        if (sourcePart.getParticle().getPartType() == Particle.PartType.Field) {
-                            final List<Part> fieldPartList = this.searchNextParticlePartList(gridNode, sourcePart.getParticle());
-                            if (!fieldPartList.isEmpty()) {
-                                final int fieldDirProbabilitySum = fieldPartList.stream().
-                                        map(part -> part.probabilityVector.getDirProbability(dir)).
-                                        reduce(0, Integer::sum);
+                        if (sourceDirProbability > 0) {
+                            if (sourcePart.getParticle().getPartType() == Particle.PartType.Field) {
+                                final List<Part> fieldPartList = this.searchNextParticlePartList(gridNode, sourcePart.getParticle());
+                                if (!fieldPartList.isEmpty()) {
+                                    final int fieldDirProbabilitySum = fieldPartList.stream().
+                                            map(part -> part.probabilityVector.getDirProbability(dir)).
+                                            reduce(0, Integer::sum);
 
-                                final int fieldDirProbabilityDiff = sourceDirProbability - fieldDirProbabilitySum;
-                                if (fieldDirProbabilityDiff > 0) {
-                                    transferProbability = fieldDirProbabilityDiff;
+                                    final int fieldDirProbabilityDiff = sourceDirProbability - fieldDirProbabilitySum;
+                                    if (fieldDirProbabilityDiff > 0) {
+                                        transferProbability = fieldDirProbabilityDiff;
+                                    } else {
+                                        transferProbability = 0;
+                                    }
                                 } else {
-                                    transferProbability = 0;
+                                    transferProbability = sourceDirProbability;
                                 }
                             } else {
                                 transferProbability = sourceDirProbability;
                             }
-                        } else {
-                            transferProbability = sourceDirProbability;
+                        }  else {
+                            transferProbability = 0;
                         }
 
                         if ((transferProbability > 0) &&

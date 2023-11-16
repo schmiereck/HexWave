@@ -198,7 +198,14 @@ public class ProbabilityService {
     }
 
     public static int calcProbByPercent(final int maxPercent, final int maxProp, final int percent) {
-        return (((maxPercent - (percent * 2)) * maxProp) / maxPercent);
+        final int retProb;
+        final int prob = (((maxPercent - (percent * 2)) * maxProp) / maxPercent);
+        if (prob == 0) {
+            retProb = 1;
+        } else {
+            retProb = prob;
+        }
+        return retProb;
     }
 
     public static int calcAbsLimitValue(final ProbabilityVector probabilityVector, final Cell.Dir dir) {

@@ -6,6 +6,7 @@ public class MainConfig3 {
 
     public enum ConfigEnum {
         StaticBall,
+        MovingBall,
         BouncingBall,
         InteractingBalls,
         CrashingBalls,
@@ -58,6 +59,16 @@ public class MainConfig3 {
                 // Defaults.
             }
             case StaticBall -> {
+                useBall = true;
+                BallStartXPos = new int[] { 36 };
+                BallStartYPos = new int[] { 20 };
+                BallStartVelocityA = new int[] { 0 };
+                BallPartSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.ParticleE };
+                BallFieldSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.FieldN };
+                UseWalls = false;
+                UseExtraWalls = false;
+            }
+            case MovingBall -> {
                 useBall = true;
                 BallStartXPos = new int[] { 36 };
                 BallStartYPos = new int[] { 20 };
