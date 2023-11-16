@@ -4,6 +4,7 @@ import de.schmiereck.hexWave2.MainConfig3;
 import de.schmiereck.hexWave2.service.hexGrid.GridNode;
 import de.schmiereck.hexWave2.service.hexGrid.HexGrid;
 import de.schmiereck.hexWave2.service.hexGrid.HexGridService;
+import de.schmiereck.hexWave2.service.hexGrid.Particle;
 import de.schmiereck.hexWave2.service.life.LifeService;
 import de.schmiereck.hexWave2.utils.MathUtils;
 import javafx.animation.AnimationTimer;
@@ -70,8 +71,9 @@ public class HexWave2Controller implements Initializable
     @Override
     public void initialize(final URL url, final ResourceBundle resourceBundle) {
         MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBall);
-        //MainConfig3.initConfig(MainConfig3.ConfigEnum.BouncingBall);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.InteractingBalls);
+
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.BouncingBall);
 
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.LifeEnvironment);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.BlockedBall);
@@ -118,7 +120,8 @@ public class HexWave2Controller implements Initializable
         if (MainConfig3.useBall) {
             for (int pos = 0; pos < MainConfig3.BallStartXPos.length; pos++) {
                 this.lifeService.initializeBall(MainConfig3.BallStartXPos[pos], MainConfig3.BallStartYPos[pos], MainConfig3.BallStartVelocityA[pos],
-                        MainConfig3.useBallPush);
+                        MainConfig3.useBallPush,
+                        MainConfig3.BallPartSubTypeArr[pos], MainConfig3.BallFieldSubTypeArr[pos]);
             }
         }
 
@@ -312,7 +315,8 @@ public class HexWave2Controller implements Initializable
 
                 final GridNode gridNode = this.hexGridService.getGridNode(posX, posY);
                 final double partValue = this.hexGridService.retrieveActGridNodePartValue(posX, posY);
-                final double fieldValue = this.hexGridService.retrieveActGridNodeFieldValue(posX, posY);
+                final double nFieldValue = this.hexGridService.retrieveActGridNodeFieldValue(posX, posY, Particle.PartSubType.FieldN);
+                final double pFieldValue = this.hexGridService.retrieveActGridNodeFieldValue(posX, posY, Particle.PartSubType.FieldP);
 
                 //final double part1FieldValue = this.hexGridService.retrieveActGridNodePartFieldValue(posX, posY,
                 //        this.fieldTypeService.getFieldType(FieldTypeService.FieldTypeEnum.Part1));
@@ -331,12 +335,15 @@ public class HexWave2Controller implements Initializable
                 //final double extraValue = this.hexGridService.retrieveActGridNodeExtraValue(posX, posY);
                 //showCircleShape(gridCellModel.getShape2(), extraValue, Color.WHITE, Color.WHITE);
 
-                //showCircleShape(gridCellModel.getShape3(), partPushFieldValue, Color.TRANSPARENT, Color.RED);//Color.ORANGE, Color.RED);
-                showCircleShape(gridCellModel.getShape4(), fieldValue/55.0D, Color.TRANSPARENT, Color.BLUE);//Color.AQUA, Color.LIGHTBLUE);
+                showCircleShape(gridCellModel.getShape3(), pFieldValue/FieldFactor, Color.TRANSPARENT, Color.LIGHTCORAL);//Color.ORANGE, Color.RED);
+                showCircleShape(gridCellModel.getShape4(), nFieldValue/FieldFactor, Color.TRANSPARENT, Color.LIGHTBLUE);//Color.AQUA, Color.BLUE);, Color.LIGHTBLUE
                 showCircleShape(gridCellModel.getShape5(), partValue, Color.TRANSPARENT, Color.ANTIQUEWHITE);//Color.YELLOW, Color.ANTIQUEWHITE);
             }
         }
     }
+
+    //final static double FieldFactor = 55.0D;
+    final static double FieldFactor = 9.0D;
 
     //final static double RadiusFactor = 0.1D;
     final static double RadiusFactor = 0.25D;

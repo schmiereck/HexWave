@@ -37,7 +37,8 @@ public class LifeService {
      *     cn  bp
      *
      */
-    public void initializeBall(final int ballXPos, final int ballYPos, final int ballStartVelocityA, final boolean useBallPush) {
+    public void initializeBall(final int ballXPos, final int ballYPos, final int ballStartVelocityA, final boolean useBallPush,
+                               final Particle.PartSubType partSubType, final Particle.PartSubType fieldSubType) {
         final GridNode gridNode = this.hexGridService.getGridNode(ballXPos, ballYPos);
 
         final int probability = MainConfig3.InitialBallPartProbability;
@@ -53,10 +54,9 @@ public class LifeService {
             case 6 -> ProbabilityService.createVector(55, 15, 15, 5, 5, 5);
             default -> ProbabilityService.createVector(0, 0, 0, 0, 0, 0);
         };
-        final Particle fieldParticle = new Particle(Particle.PartType.Field, null);
-        final Particle ballParticle = new Particle(Particle.PartType.Particle, fieldParticle);
+        final Particle fieldParticle = new Particle(Particle.PartType.Field, fieldSubType, null);
+        final Particle ballParticle = new Particle(Particle.PartType.Particle, partSubType, fieldParticle);
         final Part ballPart = new Part(ballParticle,
-                1,
                 Cell.Dir.AP,
                 probabilityVector,
                 probability);
@@ -134,10 +134,9 @@ public class LifeService {
     public void createWall(final int xPos, final int posY) {
         final GridNode wallGridNode = this.hexGridService.getGridNode(xPos, posY);
         final int probability = MainConfig3.InitialWallPartProbability;
-        final Particle fieldParticle = new Particle(Particle.PartType.Field, null);
-        final Particle wallParticle = new Particle(Particle.PartType.Wall, fieldParticle);
+        final Particle fieldParticle = new Particle(Particle.PartType.Field, Particle.PartSubType.FieldWall, null);
+        final Particle wallParticle = new Particle(Particle.PartType.Wall, Particle.PartSubType.ParticleWall, fieldParticle);
         final Part wallPart = new Part(wallParticle,
-                1,
                 Cell.Dir.AP,
                 ProbabilityService.createVector(0, 0, 0, 0, 0, 0),
                 probability);

@@ -1,5 +1,7 @@
 package de.schmiereck.hexWave2;
 
+import de.schmiereck.hexWave2.service.hexGrid.Particle;
+
 public class MainConfig3 {
 
     public enum ConfigEnum {
@@ -43,6 +45,8 @@ public class MainConfig3 {
     public static int[] BallStartXPos;
     public static int[] BallStartYPos;
     public static int[] BallStartVelocityA;
+    public static Particle.PartSubType[] BallPartSubTypeArr;
+    public static Particle.PartSubType[] BallFieldSubTypeArr;
 
     private MainConfig3() {
     }
@@ -58,14 +62,18 @@ public class MainConfig3 {
                 BallStartXPos = new int[] { 36 };
                 BallStartYPos = new int[] { 20 };
                 BallStartVelocityA = new int[] { 6 };
+                BallPartSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.ParticleE };
+                BallFieldSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.FieldN };
                 UseWalls = false;
                 UseExtraWalls = false;
             }
             case InteractingBalls -> {
                 useBall = true;
-                BallStartXPos = new int[] { 36, 46 };
+                BallStartXPos = new int[] { 38, 45 };
                 BallStartYPos = new int[] { 20, 20 };
-                BallStartVelocityA = new int[] { 1, 1 };
+                BallStartVelocityA = new int[] { 0, 0 };
+                BallPartSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.ParticleE, Particle.PartSubType.ParticleE };
+                BallFieldSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.FieldN, Particle.PartSubType.FieldP };
                 UseWalls = false;
                 UseExtraWalls = false;
             }

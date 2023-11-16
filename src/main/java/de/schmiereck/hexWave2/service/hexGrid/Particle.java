@@ -9,17 +9,32 @@ public class Particle {
         Wall,
     }
 
+    public enum PartSubType {
+        Nothing,
+        ParticleE,
+        ParticleWall,
+        FieldP,
+        FieldN,
+        FieldWall,
+    }
+
     private final PartType partType;
+    private final PartSubType partSubType;
     private final Particle fieldParticle;
     //private final Particle parentParticle;
 
-    public Particle(final PartType partType, final Particle fieldParticle) {
+    public Particle(final PartType partType, final PartSubType partSubType, final Particle fieldParticle) {
+        this.partSubType = partSubType;
         this.partType = partType;
         this.fieldParticle = fieldParticle;
     }
 
     public PartType getPartType() {
         return this.partType;
+    }
+
+    public PartSubType getPartSubType() {
+        return this.partSubType;
     }
 
     public Particle getFieldParticle() {
