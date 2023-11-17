@@ -5,7 +5,8 @@ import de.schmiereck.hexWave2.service.hexGrid.Particle;
 public class MainConfig3 {
 
     public enum ConfigEnum {
-        StaticBall,
+        StaticBallPoint,
+        StaticBallPotential,
         MovingBall,
         BouncingBall,
         InteractingBalls,
@@ -60,11 +61,21 @@ public class MainConfig3 {
             case LifeEnvironment -> {
                 // Defaults.
             }
-            case StaticBall -> {
+            case StaticBallPoint -> {
                 useBall = true;
                 BallStartXPos = new int[] { 36 };
                 BallStartYPos = new int[] { 20 };
                 BallStartVelocityA = new int[] { 0 };
+                BallPartSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.ParticleE };
+                BallFieldSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.FieldN };
+                UseWalls = false;
+                UseExtraWalls = false;
+            }
+            case StaticBallPotential -> {
+                useBall = true;
+                BallStartXPos = new int[] { 36 };
+                BallStartYPos = new int[] { 20 };
+                BallStartVelocityA = new int[] { 1 };
                 BallPartSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.ParticleE };
                 BallFieldSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.FieldN };
                 UseWalls = false;

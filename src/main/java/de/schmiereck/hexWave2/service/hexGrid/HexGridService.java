@@ -188,7 +188,143 @@ public class HexGridService {
         }
     }
 
+    final boolean enableFunctionA = false;
+
     private void calcGrid() {
+        //--------------------------------------------------------------------------------------------------------------
+        // Precalculation of Act-Grid
+        // (ex.: Merge similar Part of same Particle, Probability to DirProbability, ...)
+        this.precalcActGrid();
+
+        //--------------------------------------------------------------------------------------------------------------
+        // Transfer rotation:
+        if (MainConfig3.useRotation)
+            transferRotation();
+
+        //--------------------------------------------------------------------------------------------------------------
+        // Transfer probability distribution from Act- to Next-Grid:
+
+        // Transfer DirProbabilities from Neighbours to Probability.
+        // Depending on:
+        // - calcTransferProbabilityForField()
+        // - checkProbabilityTransfer()
+        for (int posY = 0; posY < this.hexGrid.getNodeCountY(); posY++) {
+            for (int posX = 0; posX < this.hexGrid.getNodeCountX(); posX++) {
+                final GridNode targetGridNode = this.getGridNode(posX, posY);
+
+                for (final Cell.Dir dir : Cell.Dir.values()) {
+                    final GridNode sourceGridNode = this.getNeighbourGridNode(posX, posY, dir);
+
+                    final Cell.Dir sourceDir = DirUtils.calcOppositeDir(dir);
+                    sourceGridNode.getPartList(this.actCellArrPos).stream().forEach(sourcePart -> {
+                        final int transferDirProbability;
+                        final int actSourceDirProbability = sourcePart.probabilityVector.getDirProbability(sourceDir);
+
+                        if (actSourceDirProbability > 0) {
+                            if (sourcePart.getParticle().getPartType() == Particle.PartType.Field) {
+                                transferDirProbability = this.calcActTransferProbabilityForField(targetGridNode, sourcePart, actSourceDirProbability, dir);
+                            } else {
+                                // Particle:
+                                transferDirProbability = actSourceDirProbability;
+                            }
+                        }  else {
+                            transferDirProbability = 0;
+                        }
+
+                        final int leftDirProbability = actSourceDirProbability - transferDirProbability;
+
+                        if ((transferDirProbability > 0) &&
+                                this.checkProbabilityTransfer(sourcePart, sourceDir)) {
+                            //final Optional<Part> optionalPart = this.searchNextParticlePart(targetGridNode, sourcePart.getParticle(), sourcePart.probabilityVector, transferDirProbability);
+                            this.transferProbabilityToNextByNewPart(sourcePart, targetGridNode, transferDirProbability);
+
+                            // TODO !!!! removing this changes a lot !!!
+                            if (enableFunctionA)
+                                sourcePart.probabilityVector.setDirProbability(sourceDir, leftDirProbability);
+                        } else {
+                            if (!enableFunctionA)
+                                this.transferProbabilityToNextByNewPart(sourcePart, sourceGridNode, leftDirProbability);
+                        }
+                    });
+                }
+            }
+        }
+
+        // Transfer left Act DirProbability to Next Probability Parts.
+        for (int posY = 0; posY < this.hexGrid.getNodeCountY(); posY++) {
+            for (int posX = 0; posX < this.hexGrid.getNodeCountX(); posX++) {
+                final GridNode gridNode = this.getGridNode(posX, posY);
+
+                gridNode.getPartList(this.actCellArrPos).stream().
+                        //filter(sourcePart -> sourcePart.getParticle().getPartType() == Particle.PartType.Life).
+                        forEach(sourcePart -> {
+                            final int sourcePartProbability;
+                            if (enableFunctionA)
+                                sourcePartProbability = PartService.calcProbabilitySumAndResetDirProbability(sourcePart);
+                            else
+                                sourcePartProbability = sourcePart.getProbability();
+
+                            if (sourcePartProbability > 0) {
+                                this.transferProbabilityToNextByCopyPart(sourcePart, gridNode, sourcePartProbability);
+                            }
+                        });
+                if (enableFunctionA)
+                gridNode.getPartList(this.nextCellArrPos).stream().
+                        //filter(sourcePart -> sourcePart.getParticle().getPartType() == Particle.PartType.Life).
+                                forEach(sourcePart -> {
+                            for (final Cell.Dir dir : Cell.Dir.values()) {
+                                if (sourcePart.probabilityVector.getDirProbability(dir) > 0) {
+                                    throw new RuntimeException("DirProbability.");
+                                    //sourcePart.probabilityVector.setDirProbability(dir, 0);
+                                }
+                            }
+                        });
+            }
+        }
+        //--------------------------------------------------------------------------------------------------------------
+        // Add Field for each Life-Part
+        for (int posY = 0; posY < this.hexGrid.getNodeCountY(); posY++) {
+            for (int posX = 0; posX < this.hexGrid.getNodeCountX(); posX++) {
+                final GridNode gridNode = this.getGridNode(posX, posY);
+                    final List<Part> newFieldList = new ArrayList<>();
+
+                    gridNode.getPartList(this.nextCellArrPos).stream().
+                        filter(sourcePart -> sourcePart.getParticle().getPartType() == Particle.PartType.Particle).
+                        forEach(sourcePart -> {
+                            if (first) {
+                            final Particle fieldParticle = sourcePart.getParticle().getFieldParticle();
+                            for (final Cell.Dir dir : Cell.Dir.values()) {
+                                final int apPerc = 100;
+                                final int bpPerc = 100;
+                                final int cpPerc = 100;
+                                final int anPerc = 100;
+                                final int bnPerc = 100;
+                                final int cnPerc = 100;
+
+                                final Part fieldPart = new Part(fieldParticle,
+                                        dir,
+                                        ProbabilityService.createVector(apPerc, bpPerc, cpPerc, anPerc, bnPerc, cnPerc),
+                                        //ProbabilityService.createFieldVector(dir),
+
+                                        //sourcePart.getProbability()
+                                        //1
+                                        //6*6*6
+                                        6*6 + ((6*6 * sourcePart.getProbability()) / MainConfig3.InitialBallPartProbability)
+                                        //((6 * sourcePart.getProbability()) / MainConfig3.InitialBallPartProbability)
+                                );
+
+                                newFieldList.add(fieldPart);
+                            }
+                                //first = false;
+                            }
+                        });
+                gridNode.addPartList(this.nextCellArrPos, newFieldList);
+            }
+        }
+        //--------------------------------------------------------------------------------------------------------------
+    }
+
+    private void precalcActGrid() {
         //--------------------------------------------------------------------------------------------------------------
         // Normalize probability:
         this.partCount = 0;
@@ -232,12 +368,6 @@ public class HexGridService {
                 this.partCount += mergedPartList.size();
             }
         }
-
-        //--------------------------------------------------------------------------------------------------------------
-        // Transfer rotation:
-        if (MainConfig3.useRotation)
-            transferRotation();
-
         //--------------------------------------------------------------------------------------------------------------
         // Transfer probability distribution:
         // Distribute Probability to the possible DirProbabilities depending on probabilityVector.
@@ -250,117 +380,13 @@ public class HexGridService {
                 });
             }
         }
-
-        // Transfer DirProbabilities from Neighbours to Probability.
-        // Depending on:
-        // checkProbabilityTransfer
-        //
-        for (int posY = 0; posY < this.hexGrid.getNodeCountY(); posY++) {
-            for (int posX = 0; posX < this.hexGrid.getNodeCountX(); posX++) {
-                final GridNode gridNode = this.getGridNode(posX, posY);
-
-                for (final Cell.Dir dir : Cell.Dir.values()) {
-                    final GridNode sourceGridNode = this.getNeighbourGridNode(posX, posY, dir);
-
-                    final Cell.Dir sourceDir = DirUtils.calcOppositeDir(dir);
-                    sourceGridNode.getPartList(this.actCellArrPos).stream().forEach(sourcePart -> {
-                        final int transferProbability;
-                        final int sourceDirProbability = sourcePart.probabilityVector.getDirProbability(sourceDir);
-
-                        if (sourceDirProbability > 0) {
-                            if (sourcePart.getParticle().getPartType() == Particle.PartType.Field) {
-                                transferProbability = this.calcTransferProbabilityForField(gridNode, sourcePart, sourceDirProbability, dir);
-                            } else {
-                                // Particle:
-                                transferProbability = sourceDirProbability;
-                            }
-                        }  else {
-                            transferProbability = 0;
-                        }
-
-                        if ((transferProbability > 0) &&
-                                this.checkProbabilityTransfer(sourcePart, sourceDir)) {
-                            //final Optional<Part> optionalPart = this.searchNextParticlePart(gridNode, sourcePart.getParticle(), sourcePart.probabilityVector, transferProbability);
-                            this.transferProbabilityToNextByNewPart(sourcePart, gridNode, transferProbability);
-                            sourcePart.probabilityVector.setDirProbability(sourceDir, sourceDirProbability - transferProbability);
-                        }
-                    });
-                }
-            }
-        }
-
-        // Transfer Act DirProbability to Next Probability Parts.
-        for (int posY = 0; posY < this.hexGrid.getNodeCountY(); posY++) {
-            for (int posX = 0; posX < this.hexGrid.getNodeCountX(); posX++) {
-                final GridNode gridNode = this.getGridNode(posX, posY);
-
-                gridNode.getPartList(this.actCellArrPos).stream().
-                        //filter(sourcePart -> sourcePart.getParticle().getPartType() == Particle.PartType.Life).
-                        forEach(sourcePart -> {
-                            final int sourcePartProbability = PartService.calcProbabilitySumAndResetDirProbability(sourcePart);
-                            if (sourcePartProbability > 0) {
-                                this.transferProbabilityToNextByCopyPart(sourcePart, gridNode, sourcePartProbability);
-                            }
-                        });
-                gridNode.getPartList(this.nextCellArrPos).stream().
-                        //filter(sourcePart -> sourcePart.getParticle().getPartType() == Particle.PartType.Life).
-                                forEach(sourcePart -> {
-                            for (final Cell.Dir dir : Cell.Dir.values()) {
-                                if (sourcePart.probabilityVector.getDirProbability(dir) > 0) {
-                                    throw new RuntimeException("DirProbability.");
-                                    //sourcePart.probabilityVector.setDirProbability(dir, 0);
-                                }
-                            }
-                        });
-            }
-        }
-        //--------------------------------------------------------------------------------------------------------------
-        // Add Field for each Life-Part
-        for (int posY = 0; posY < this.hexGrid.getNodeCountY(); posY++) {
-            for (int posX = 0; posX < this.hexGrid.getNodeCountX(); posX++) {
-                final GridNode gridNode = this.getGridNode(posX, posY);
-                    final List<Part> newFieldList = new ArrayList<>();
-
-                    gridNode.getPartList(this.nextCellArrPos).stream().
-                        filter(sourcePart -> sourcePart.getParticle().getPartType() == Particle.PartType.Particle).
-                        forEach(sourcePart -> {
-                            if (first) {
-                            final Particle fieldParticle = sourcePart.getParticle().getFieldParticle();
-                            for (final Cell.Dir dir : Cell.Dir.values()) {
-                                final int apPerc = 100;
-                                final int bpPerc = 100;
-                                final int cpPerc = 100;
-                                final int anPerc = 100;
-                                final int bnPerc = 100;
-                                final int cnPerc = 100;
-
-                                final Part fieldPart = new Part(fieldParticle,
-                                        dir,
-                                        ProbabilityService.createVector(apPerc, bpPerc, cpPerc, anPerc, bnPerc, cnPerc),
-                                        //ProbabilityService.createFieldVector(dir),
-
-                                        //sourcePart.getProbability()
-                                        //1
-                                        //6*6*6
-                                        6*6 +
-                                        ((6*6 * sourcePart.getProbability()) / MainConfig3.InitialBallPartProbability)
-                                );
-
-                                newFieldList.add(fieldPart);
-                            }
-                                //first = false;
-                            }
-                        });
-                gridNode.addPartList(this.nextCellArrPos, newFieldList);
-            }
-        }
         //--------------------------------------------------------------------------------------------------------------
     }
 
     /**
      * Distribute Probability to the possible DirProbabilities depending on probabilityVector.
      */
-    private void transferProbabilityToDirProbabilities(Part sourcePart) {
+    private void transferProbabilityToDirProbabilities(final Part sourcePart) {
         final int sourceProbability = sourcePart.getProbability();
         final int stepLimitSum = sourcePart.probabilityVector.stepLimitSum;
 
@@ -381,20 +407,20 @@ public class HexGridService {
         }
     }
 
-    private void transferProbabilityToNextByNewPart(final Part sourcePart, final GridNode gridNode, final int transferProbability) {
-        final Optional<Part> optionalPart = this.searchNextParticlePart(gridNode, sourcePart.getParticle(), sourcePart.probabilityVector);
-        if (optionalPart.isPresent()) {
-            final Part part = optionalPart.get();
-            //part.setCount(part.getCount() + 1);
-            part.setProbability(part.getProbability() + transferProbability);
+    private void transferProbabilityToNextByNewPart(final Part sourcePart, final GridNode targetGridNode, final int transferProbability) {
+        final Optional<Part> optionalNextPart = this.searchNextParticlePart(targetGridNode, sourcePart.getParticle(), sourcePart.probabilityVector);
+        if (optionalNextPart.isPresent()) {
+            final Part nextPart = optionalNextPart.get();
+            //nextPart.setCount(nextPart.getCount() + 1);
+            nextPart.setProbability(nextPart.getProbability() + transferProbability);
         } else {
-            final Part newPart = new Part(sourcePart.getParticle(),
+            final Part newNextPart = new Part(sourcePart.getParticle(),
                     //HexMathUtils.calcNextMoveDir(sourcePart.rotationDir),
                     //HexMathUtils.calcNextMoveDir(dir),
                     sourcePart.rotationDir,
                     ProbabilityService.createVector(sourcePart.probabilityVector),
                     transferProbability);
-            gridNode.addPart(this.nextCellArrPos, newPart);
+            targetGridNode.addPart(this.nextCellArrPos, newNextPart);
         }
     }
 
@@ -417,12 +443,12 @@ public class HexGridService {
      *    A existing Field of the Target-Node in the transfer-direction
      *    is a "pressure" against the flow from source to target.
      *    Only the difference between source to target is transferred.
-     * b) TODO Same Field-Type of other Particles:
+     * b) Same Field-Type of other Particles:
      *    ...
-     * c) TODO Opposite Field-Type of other Particles:
+     * c) Opposite Field-Type of other Particles:
      *    ...
      */
-    private int calcTransferProbabilityForField(final GridNode targetGridNode, final Part sourcePart, final int sourceDirProbability, final Cell.Dir dir) {
+    private int calcActTransferProbabilityForField(final GridNode targetGridNode, final Part sourcePart, final int sourceDirProbability, final Cell.Dir dir) {
         final int transferProbability;
         //so geht das nicht, dir sum bilden auf dem next part
         // a) Field of the same Particle:
@@ -542,7 +568,7 @@ public class HexGridService {
                                 final int sourceProbability = sourcePart.getProbability();
 
                                 final int transferProbability;
-                                if (checkRotationTransfer(sourcePart, sourceDir)) {
+                                if (this.checkRotationTransfer(sourcePart, sourceDir)) {
                                     //transferProbability = Math.min(sourceProbability, TransProp);
                                     transferProbability = sourceProbability / 2;
                                     //transferProbability = sourceProbability / 6;
