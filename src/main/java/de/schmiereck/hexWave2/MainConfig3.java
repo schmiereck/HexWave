@@ -82,11 +82,12 @@ public class MainConfig3 {
             }
             case InteractingBalls -> {
                 useBall = true;
-                BallStartXPos = new int[] { 38, 45 };
+                BallStartXPos = new int[] { 38, 45 - 2 };
                 BallStartYPos = new int[] { 20, 20 };
                 BallStartVelocityA = new int[] { 0, 0 };
                 BallPartSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.ParticleE, Particle.PartSubType.ParticleE };
                 BallFieldSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.FieldN, Particle.PartSubType.FieldP };
+                //BallFieldSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.FieldN, Particle.PartSubType.FieldN };
                 UseWalls = false;
                 UseExtraWalls = false;
             }

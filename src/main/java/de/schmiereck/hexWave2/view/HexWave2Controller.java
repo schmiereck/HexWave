@@ -336,8 +336,12 @@ public class HexWave2Controller implements Initializable
                 //final double extraValue = this.hexGridService.retrieveActGridNodeExtraValue(posX, posY);
                 //showCircleShape(gridCellModel.getShape2(), extraValue, Color.WHITE, Color.WHITE);
 
-                showCircleShape(gridCellModel.getShape3(), pFieldValue/FieldFactor, Color.TRANSPARENT, Color.LIGHTCORAL);//Color.ORANGE, Color.RED);
-                showCircleShape(gridCellModel.getShape4(), nFieldValue/FieldFactor, Color.TRANSPARENT, Color.LIGHTBLUE);//Color.AQUA, Color.BLUE);, Color.LIGHTBLUE
+                if (pFieldValue > 0.0D && nFieldValue > 0.0D) {
+                    showCircleShape(gridCellModel.getShape2(), (pFieldValue + nFieldValue) / FieldFactor, Color.TRANSPARENT, Color.LIGHTGREEN);//Color.ORANGE, Color.RED);
+                } else {
+                    showCircleShape(gridCellModel.getShape3(), pFieldValue / FieldFactor, Color.TRANSPARENT, Color.LIGHTCORAL);//Color.ORANGE, Color.RED);
+                    showCircleShape(gridCellModel.getShape4(), nFieldValue / FieldFactor, Color.TRANSPARENT, Color.LIGHTBLUE);//Color.AQUA, Color.BLUE);, Color.LIGHTBLUE
+                }
                 showCircleShape(gridCellModel.getShape5(), partValue, Color.TRANSPARENT, Color.ANTIQUEWHITE);//Color.YELLOW, Color.ANTIQUEWHITE);
             }
         }

@@ -1,5 +1,7 @@
 package de.schmiereck.hexWave2.service.hexGrid;
 
+import de.schmiereck.hexWave2.math.ProbabilityVector;
+
 public final class PartService {
 
     private PartService() {
@@ -16,4 +18,24 @@ public final class PartService {
                 default -> null;
             };
     }
+
+    public static int calcProbabilitySumAndResetDirProbability(final Part part) {
+        final ProbabilityVector probabilityVector = part.probabilityVector;
+        int probabilitySum = part.getProbability();
+        for (final Cell.Dir dir : Cell.Dir.values()) {
+            probabilitySum += probabilityVector.getDirProbability(dir);
+            probabilityVector.setDirProbability(dir, 0);
+        }
+        return probabilitySum;
+    }
+
+    public static int calcProbabilitySum(final Part part) {
+        final ProbabilityVector probabilityVector = part.probabilityVector;
+        int probabilitySum = part.getProbability();
+        for (final Cell.Dir dir : Cell.Dir.values()) {
+            probabilitySum += probabilityVector.getDirProbability(dir);
+        }
+        return probabilitySum;
+    }
+
 }
