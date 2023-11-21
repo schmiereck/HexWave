@@ -35,6 +35,8 @@ public class ProbabilityService_WHEN_ {
 
         Assertions.assertEquals (6, calcProbabilityByLimit(max,  1)); // x.x.x.x.x.x.
 
+        Assertions.assertEquals( 0, calcProbabilityByLimit(max,  12*12)); // x...........
+        Assertions.assertEquals( 0, calcProbabilityByLimit(max,  24)); // x...........
         Assertions.assertEquals( 0, calcProbabilityByLimit(max,  16)); // x...........
 
         Assertions.assertEquals( 0, calcProbabilityByLimit(max,  12)); // x...........
@@ -63,6 +65,8 @@ public class ProbabilityService_WHEN_ {
         Assertions.assertEquals(12, calcProbabilityByLimit(max,-12)); // .xxxxxxxxxxx
 
         Assertions.assertEquals(12, calcProbabilityByLimit(max, -16)); // .xxxxxxxxxxx
+        Assertions.assertEquals(12, calcProbabilityByLimit(max, -24)); // .xxxxxxxxxxx
+        Assertions.assertEquals(12, calcProbabilityByLimit(max, -12*12)); // .xxxxxxxxxxx
     }
 
     @Test

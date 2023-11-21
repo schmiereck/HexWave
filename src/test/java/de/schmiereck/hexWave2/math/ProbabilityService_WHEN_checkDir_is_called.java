@@ -93,6 +93,7 @@ public class ProbabilityService_WHEN_checkDir_is_called {
             final int prob = ProbabilityService.calcProbByPercent(MaxPercent, MaxProp, percent);
 
             final ProbabilityVector probabilityVector = new ProbabilityVector();
+            ProbabilityService.initProbabilityLimit(probabilityVector, MaxProp);
             ProbabilityService.setProbabilityLimit(probabilityVector, Cell.Dir.AP, prob);
             //ProbabilityService.setProbabilityLimit(probabilityVector, Cell.Dir.AN, -prop);
 

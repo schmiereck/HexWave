@@ -169,12 +169,15 @@ public class HexWave2Controller implements Initializable
         //this.mainPane.setContent(mainGroup);
         this.initZoomPane2(this.mainPane, mainGroup);
 
-        this.mainPane.setOnMouseClicked( e -> {
+        this.mainPane.setOnMouseClicked(event -> {
+            final Point2D sceneCoords = new Point2D(event.getSceneX(), event.getSceneY());
+            final Point2D anchorPaneCoords = mainGroup.sceneToLocal(sceneCoords);
+
             final Rectangle rect = new Rectangle(10.0D, 10.0D, Color.DARKSLATEGRAY);
-            rect.setX(e.getX());
-            rect.setY(e.getY());
+            rect.setX(anchorPaneCoords.getX());
+            rect.setY(anchorPaneCoords.getY());
             mainGroup.getChildren().add(rect);
-            e.consume();
+            event.consume();
         });
 
         this.updateView();
