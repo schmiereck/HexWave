@@ -1,5 +1,8 @@
 package de.schmiereck.hexWave2.math;
 
+import static de.schmiereck.hexWave2.MainConfig3.MaxPercent;
+import static de.schmiereck.hexWave2.MainConfig3.MaxProb;
+
 import de.schmiereck.hexWave2.service.hexGrid.Cell;
 
 /**
@@ -25,9 +28,6 @@ import de.schmiereck.hexWave2.service.hexGrid.Cell;
  *    90  -xxxxxxxxx -xxxxxxxxx  xxxxxxxxx
  */
 public class ProbabilityService {
-
-    final static int MaxPercent = 100;
-    final static int MaxProb = 32;
 
     public static void initProbabilityLimit(final ProbabilityVector probabilityVector, final int maxLimit) {
         for (int dirPos = 0; dirPos < Cell.Dir.values().length; dirPos++) {

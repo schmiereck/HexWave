@@ -293,7 +293,8 @@ public class HexGridService {
                                         //sourcePart.getProbability()
                                         //1
                                         //6*6*6
-                                        6*6*2 + ((6*6 * sourcePart.getProbability()) / MainConfig3.InitialBallPartProbability)
+                                        ((6*6 * sourcePart.getProbability()) / MainConfig3.InitialBallPartProbability)
+                                        //6*6*2 + ((6*6 * sourcePart.getProbability()) / MainConfig3.InitialBallPartProbability)
                                         //6*6 + ((6*6 * sourcePart.getProbability()) / MainConfig3.InitialBallPartProbability)
                                         //((6 * sourcePart.getProbability()) / MainConfig3.InitialBallPartProbability)
                                 );
