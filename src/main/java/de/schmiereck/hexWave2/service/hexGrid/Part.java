@@ -12,6 +12,7 @@ public class Part implements Serializable {
 
     public final ProbabilityVector probabilityVector;
     private int probability;
+    private int[] probabilityDirArr = new int[Cell.Dir.values().length];
 
     public Part(final Particle particle,
                 final Cell.Dir rotationDir, final ProbabilityVector probabilityVector, final int probability) {
@@ -31,6 +32,14 @@ public class Part implements Serializable {
 
     public int getProbability() {
         return this.probability;
+    }
+
+    public void setDirProbability(final Cell.Dir dir, final int probability) {
+        this.probabilityDirArr[dir.ordinal()] = probability;
+    }
+
+    public int getDirProbability(final Cell.Dir dir) {
+        return this.probabilityDirArr[dir.ordinal()];
     }
 
 }

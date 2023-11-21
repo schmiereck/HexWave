@@ -18,6 +18,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.geometry.Side;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -28,6 +29,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
@@ -71,9 +73,10 @@ public class HexWave2Controller implements Initializable
     @Override
     public void initialize(final URL url, final ResourceBundle resourceBundle) {
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBallPoint);
-        //MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBallPotential);
+        MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBallPotential);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.MovingBall);
-        MainConfig3.initConfig(MainConfig3.ConfigEnum.InteractingBalls);
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.InteractingBallsNP);
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.InteractingBallsNN);
 
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.BouncingBall);
 
@@ -165,6 +168,14 @@ public class HexWave2Controller implements Initializable
 
         //this.mainPane.setContent(mainGroup);
         this.initZoomPane2(this.mainPane, mainGroup);
+
+        this.mainPane.setOnMouseClicked( e -> {
+            final Rectangle rect = new Rectangle(10.0D, 10.0D, Color.DARKSLATEGRAY);
+            rect.setX(e.getX());
+            rect.setY(e.getY());
+            mainGroup.getChildren().add(rect);
+            e.consume();
+        });
 
         this.updateView();
     }

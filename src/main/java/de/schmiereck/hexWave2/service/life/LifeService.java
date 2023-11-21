@@ -46,7 +46,8 @@ public class LifeService {
         final ProbabilityVector probabilityVector =
         switch (ballStartVelocityA) {
             case 0 -> ProbabilityService.createVector(0, 0, 0, 0, 0, 0);
-            case 1 -> ProbabilityService.createVector(16, 16, 16, 16, 16, 16);
+            //case 1 -> ProbabilityService.createVector(16, 16, 16, 16, 16, 16);
+            case 1 -> ProbabilityService.createVector(6, 6, 6, 6, 6, 6);
             case 2 -> ProbabilityService.createVector(20, 16, 16, 16, 16, 16);
             case 3 -> ProbabilityService.createVector(95, 0, 0, 5, 0, 0);
             case 4 -> ProbabilityService.createVector(100, 0, 0, 0, 0, 0);

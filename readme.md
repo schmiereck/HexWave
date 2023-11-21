@@ -171,3 +171,8 @@ m(v) = m0 * (c / (c - v))
   * https://de.wikipedia.org/wiki/Fermion
 * Standardmodell der Elementarteilchen
   * https://de.wikipedia.org/wiki/Datei:Standard_Model_of_Elementary_Particles-de.svg
+
+# Plan
+* Feld spürt nur andere Felder
+  * Verdrängen (gleiche) oder auslöschen (unterschiedliche)
+* Partikel spürt nur Feld (sein eigenes?)

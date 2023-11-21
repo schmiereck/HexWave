@@ -27,7 +27,13 @@ import de.schmiereck.hexWave2.service.hexGrid.Cell;
 public class ProbabilityService {
 
     final static int MaxPercent = 100;
-    final static int MaxProp = 32;
+    final static int MaxProb = 32;
+
+    public static void initProbabilityLimit(final ProbabilityVector probabilityVector, final int maxProb) {
+        for (int dirPos = 0; dirPos < Cell.Dir.values().length; dirPos++) {
+            probabilityVector.limitArr[dirPos] = maxProb;
+        }
+    }
 
     public static void calcNext(final ProbabilityVector probabilityVector) {
         //probabilityVector.apCnt = calcCnt(probabilityVector.apCnt, probabilityVector.apLimit);
@@ -47,9 +53,25 @@ public class ProbabilityService {
             probabilityVector.cntArr[dirPos] = calcCnt(probabilityVector.cntArr[dirPos], limit);
             if (checkDir(probabilityVector, dir)) {
                 //probabilityVector.stepLimitSum += Math.abs(limit);
-                probabilityVector.stepLimitSum += calcAbsLimitValue2(limit);
+                //probabilityVector.stepLimitSum += calcAbsLimitValue2(limit);
+                probabilityVector.stepLimitSum += calcProbabilityByLimit(MaxProb, limit);
             }
         }
+    }
+
+    public final static int calcProbabilityByLimit(final int maxProb, final int limit) {
+        final int retValue;
+
+        if (limit > 0) {
+            retValue = ((maxProb) / (limit + 1));
+        } else {
+            if (limit < 0) {
+                retValue = ((maxProb) + ((maxProb) / (limit + -1)));
+            } else {
+                throw new RuntimeException("Unexpected 0 limit for probability.");
+            }
+        }
+        return retValue;
     }
 
     private static int calcCnt(final int cnt, final int limit) {
@@ -168,14 +190,14 @@ public class ProbabilityService {
     public static ProbabilityVector createVector(final int apPerc, final int bpPerc, final int cpPerc, final int anPerc, final int bnPerc, final int cnPerc) { // , int probability
         final ProbabilityVector retProbabilityVector = new ProbabilityVector();
 
-        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.AP, calcProbByPercent(MaxPercent, MaxProp, apPerc));
-        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.AN, calcProbByPercent(MaxPercent, MaxProp, anPerc));
+        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.AP, calcProbByPercent(MaxPercent, MaxProb, apPerc));
+        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.AN, calcProbByPercent(MaxPercent, MaxProb, anPerc));
 
-        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.BP, calcProbByPercent(MaxPercent, MaxProp, bpPerc));
-        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.BN, calcProbByPercent(MaxPercent, MaxProp, bnPerc));
+        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.BP, calcProbByPercent(MaxPercent, MaxProb, bpPerc));
+        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.BN, calcProbByPercent(MaxPercent, MaxProb, bnPerc));
 
-        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.CP, calcProbByPercent(MaxPercent, MaxProp, cpPerc));
-        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.CN, calcProbByPercent(MaxPercent, MaxProp, cnPerc));
+        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.CP, calcProbByPercent(MaxPercent, MaxProb, cpPerc));
+        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.CN, calcProbByPercent(MaxPercent, MaxProb, cnPerc));
 
         //retProbabilityVector.setProbability(probability);
 
@@ -214,7 +236,8 @@ public class ProbabilityService {
 
     public static int calcAbsLimitValue2(final ProbabilityVector probabilityVector, final Cell.Dir dir) {
         final int limit = calcLimit(probabilityVector, dir);
-        return calcAbsLimitValue2(limit);
+        //return calcAbsLimitValue2(limit);
+        return calcProbabilityByLimit(MaxProb, limit);
     }
 
     private static int calcAbsLimitValue2(final int limit) {
@@ -224,7 +247,56 @@ public class ProbabilityService {
         } else {
             cnt = -1;
         }
-        final int limit2 = (limit - MaxProp) / 2;
+        final int limit2 = (limit - MaxProb) / 2;
         return Math.abs(limit2);
+    }
+
+    public static void calcMoveVector(final ProbabilityVector probabilityVector, final int aDiff, final int bDiff, final int cDiff) {
+        //probabilityVector.limitArr[Cell.Dir.AP.ordinal()] += aDiff;
+        //probabilityVector.limitArr[Cell.Dir.AN.ordinal()] -= aDiff;
+        calcMoveLimitByDiff(probabilityVector, Cell.Dir.AP, aDiff);
+        calcMoveLimitByDiff(probabilityVector, Cell.Dir.AN, -aDiff);
+        calcMoveLimitByDiff(probabilityVector, Cell.Dir.BP, bDiff);
+        calcMoveLimitByDiff(probabilityVector, Cell.Dir.BN, -bDiff);
+        calcMoveLimitByDiff(probabilityVector, Cell.Dir.CP, cDiff);
+        calcMoveLimitByDiff(probabilityVector, Cell.Dir.CN, -cDiff);
+    }
+
+    private static void calcMoveLimitByDiff(final ProbabilityVector probabilityVector, final Cell.Dir dir, final int diff) {
+        final int limit = probabilityVector.limitArr[dir.ordinal()];
+        if (limit > 0) {
+            final int newLimit = limit - diff;
+            if (newLimit < 0) {
+                probabilityVector.limitArr[dir.ordinal()] = (newLimit - 1);
+            } else {
+                if (newLimit > 0) {
+                    probabilityVector.limitArr[dir.ordinal()] = newLimit;
+                } else {
+                    probabilityVector.limitArr[dir.ordinal()] = -1;
+                }
+            }
+        } else {
+            if (limit < 0) {
+                final int newLimit = limit + diff;
+                if (newLimit > 0) {
+                    probabilityVector.limitArr[dir.ordinal()] = (newLimit + 1);
+                } else {
+                    if (newLimit < 0) {
+                        probabilityVector.limitArr[dir.ordinal()] = newLimit;
+                    } else {
+                        probabilityVector.limitArr[dir.ordinal()] = 1;
+                    }
+                }
+            }
+        }
+    }
+
+    public static void combineCntArr(final ProbabilityVector aProbabilityVector, final ProbabilityVector bProbabilityVector) {
+        for (int dirPos = 0; dirPos < Cell.Dir.values().length; dirPos++) {
+            //aProbabilityVector.cntArr[dirPos] = (aProbabilityVector.cntArr[dirPos] + bProbabilityVector.cntArr[dirPos]) / 2;
+            //aProbabilityVector.cntArr[dirPos] = (aProbabilityVector.cntArr[dirPos] + bProbabilityVector.cntArr[dirPos]);
+            //aProbabilityVector.cntArr[dirPos] = Math.max(aProbabilityVector.cntArr[dirPos], bProbabilityVector.cntArr[dirPos]);
+            aProbabilityVector.cntArr[dirPos] = Math.min(aProbabilityVector.cntArr[dirPos], bProbabilityVector.cntArr[dirPos]);
+        }
     }
 }

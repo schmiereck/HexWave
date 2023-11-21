@@ -10,6 +10,15 @@ public final class GridNodeService {
     private GridNodeService() {
     }
 
+    static List<Part> searchParticlePartListByParticle(final GridNode gridNode, final int cellArrPos, final Particle particle) {
+        final List<Part> partList = gridNode.getPartList(cellArrPos);
+
+        return partList.stream().
+                filter(part ->
+                        (part.getParticle() == particle)).
+                toList();
+    }
+
     static List<Part> searchParticlePartListByParticleAndTypes(final GridNode gridNode, final int cellArrPos, final Particle particle,
                                                                final Particle.PartType partType, final Particle.PartSubType partSubType) {
         final List<Part> partList = gridNode.getPartList(cellArrPos);

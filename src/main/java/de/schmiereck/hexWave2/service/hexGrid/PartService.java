@@ -8,9 +8,13 @@ public final class PartService {
     }
 
     public static Particle.PartSubType calcOppositeSubType(final Particle particle) {
+        return calcOppositeSubType(particle.getPartType(), particle.getPartSubType());
+    }
+
+    public static Particle.PartSubType calcOppositeSubType(final Particle.PartType partType, final Particle.PartSubType partSubType) {
         return
-            switch (particle.getPartType()) {
-                case Field -> switch (particle.getPartSubType()) {
+            switch (partType) {
+                case Field -> switch (partSubType) {
                     case FieldN -> Particle.PartSubType.FieldP;
                     case FieldP -> Particle.PartSubType.FieldN;
                     default -> null;
@@ -23,17 +27,24 @@ public final class PartService {
         final ProbabilityVector probabilityVector = part.probabilityVector;
         int probabilitySum = part.getProbability();
         for (final Cell.Dir dir : Cell.Dir.values()) {
-            probabilitySum += probabilityVector.getDirProbability(dir);
-            probabilityVector.setDirProbability(dir, 0);
+            probabilitySum += part.getDirProbability(dir);
+            part.setDirProbability(dir, 0);
         }
         return probabilitySum;
+    }
+
+    public static void calcResetDirProbability(final Part part) {
+        final ProbabilityVector probabilityVector = part.probabilityVector;
+        for (final Cell.Dir dir : Cell.Dir.values()) {
+            part.setDirProbability(dir, 0);
+        }
     }
 
     public static int calcProbabilitySum(final Part part) {
         final ProbabilityVector probabilityVector = part.probabilityVector;
         int probabilitySum = part.getProbability();
         for (final Cell.Dir dir : Cell.Dir.values()) {
-            probabilitySum += probabilityVector.getDirProbability(dir);
+            probabilitySum += part.getDirProbability(dir);
         }
         return probabilitySum;
     }

@@ -44,16 +44,7 @@ public class ProbabilityVector {
      */
     //public int apCnt, anCnt, bpCnt, bnCnt, cpCnt, cnCnt;
     public int[] cntArr =  new int[Cell.Dir.values().length];
-    private int[] probabilityDirArr = new int[Cell.Dir.values().length];
     public int stepLimitSum;
-
-    public void setDirProbability(final Cell.Dir dir, final int probability) {
-        this.probabilityDirArr[dir.ordinal()] = probability;
-    }
-
-    public int getDirProbability(final Cell.Dir dir) {
-        return this.probabilityDirArr[dir.ordinal()];
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -62,9 +53,10 @@ public class ProbabilityVector {
         ProbabilityVector that = (ProbabilityVector) o;
         return //this.probability == that.probability &&
                 //this.stepLimitSum == that.stepLimitSum &&
-                Arrays.equals(this.limitArr, that.limitArr) &&
-                Arrays.equals(this.cntArr, that.cntArr);
-                //Arrays.equals(this.probabilityDirArr, that.probabilityDirArr);
+                Arrays.equals(this.limitArr, that.limitArr)// &&
+                //Arrays.equals(this.cntArr, that.cntArr)
+                //Arrays.equals(this.probabilityDirArr, that.probabilityDirArr)
+                ;
     }
 
     @Override
@@ -72,7 +64,7 @@ public class ProbabilityVector {
         int result;// = Objects.hash(this.probability);//, this.stepLimitSum);
         result = //31 * result +
                 Arrays.hashCode(this.limitArr);
-        result = 31 * result + Arrays.hashCode(this.cntArr);
+        //result = 31 * result + Arrays.hashCode(this.cntArr);
         //result = 31 * result + Arrays.hashCode(this.probabilityDirArr);
         return result;
     }
