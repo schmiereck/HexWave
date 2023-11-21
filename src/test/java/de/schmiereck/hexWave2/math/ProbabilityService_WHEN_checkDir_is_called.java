@@ -11,21 +11,33 @@ import org.junit.jupiter.api.Test;
 public class ProbabilityService_WHEN_checkDir_is_called {
 
     @Test
-    public void GIVEN_limit_0_THEN_check_is_allways_true() {
+    public void GIVEN_limit_MAX_THEN_check_is_allways_true() {
+        final int MaxLimit = 32;
         final ProbabilityVector probabilityVector = new ProbabilityVector();
-        ProbabilityService.setProbabilityLimit(probabilityVector, Cell.Dir.AP, 0);
-        ProbabilityService.setProbabilityLimit(probabilityVector, Cell.Dir.AN, 0);
+        ProbabilityService.initProbabilityLimit(probabilityVector, MaxLimit);
+        ProbabilityService.setProbabilityLimit(probabilityVector, Cell.Dir.AP, -MaxLimit);
+        ProbabilityService.setProbabilityLimit(probabilityVector, Cell.Dir.AN, MaxLimit);
 
-        for (int pos = 0; pos < 32; pos++) {
-            Assertions.assertTrue(ProbabilityService.checkDir(probabilityVector, Cell.Dir.AP));
-            Assertions.assertTrue(ProbabilityService.checkDir(probabilityVector, Cell.Dir.AN));
+        for (int pos = 0; pos < 32*2; pos++) {
+            if (pos % 33 == 0) {
+                Assertions.assertFalse(ProbabilityService.checkDir(probabilityVector, Cell.Dir.AP), "pos:%d".formatted(pos));
+            } else {
+                Assertions.assertTrue(ProbabilityService.checkDir(probabilityVector, Cell.Dir.AP), "pos:%d".formatted(pos));
+            }
+            if (pos % 33 == 0) {
+                Assertions.assertTrue(ProbabilityService.checkDir(probabilityVector, Cell.Dir.AN), "pos:%d".formatted(pos));
+            } else {
+                Assertions.assertFalse(ProbabilityService.checkDir(probabilityVector, Cell.Dir.AN), "pos:%d".formatted(pos));
+            }
             ProbabilityService.calcNext(probabilityVector);
         }
     }
 
     @Test
     public void GIVEN_limit_1_THEN_check_50_percent_true() {
+        final int MaxLimit = 32;
         final ProbabilityVector probabilityVector = new ProbabilityVector();
+        ProbabilityService.initProbabilityLimit(probabilityVector, MaxLimit);
         ProbabilityService.setProbabilityLimit(probabilityVector, Cell.Dir.AP, 1);
         ProbabilityService.setProbabilityLimit(probabilityVector, Cell.Dir.AN, -1);
 
@@ -53,7 +65,9 @@ public class ProbabilityService_WHEN_checkDir_is_called {
 
     @Test
     public void GIVEN_limit_7_THEN_check_90_percent_true() {
+        final int MaxLimit = 32;
         final ProbabilityVector probabilityVector = new ProbabilityVector();
+        ProbabilityService.initProbabilityLimit(probabilityVector, MaxLimit);
         ProbabilityService.setProbabilityLimit(probabilityVector, Cell.Dir.AP, 7);
         ProbabilityService.setProbabilityLimit(probabilityVector, Cell.Dir.AN, -7);
 
@@ -90,18 +104,18 @@ public class ProbabilityService_WHEN_checkDir_is_called {
 
         for (int percent = 0; percent <= MaxPercent; percent++) {
         //int percent = 99; {
-            final int prob = ProbabilityService.calcProbByPercent(MaxPercent, MaxProp, percent);
+            final int limit = ProbabilityService.calcLimitByPercent(MaxPercent, MaxProp, percent);
 
             final ProbabilityVector probabilityVector = new ProbabilityVector();
             ProbabilityService.initProbabilityLimit(probabilityVector, MaxProp);
-            ProbabilityService.setProbabilityLimit(probabilityVector, Cell.Dir.AP, prob);
+            ProbabilityService.setProbabilityLimit(probabilityVector, Cell.Dir.AP, limit);
             //ProbabilityService.setProbabilityLimit(probabilityVector, Cell.Dir.AN, -prop);
 
             for (int pos = 0; pos < ExpectedSize; pos++) {
-                if (prob >= 0) {
-                    expectedApArr[pos] = (pos % (prob + 1)) == 0;
+                if (limit >= 0) {
+                    expectedApArr[pos] = (pos % (limit + 1)) == 0;
                 } else {
-                    expectedApArr[pos] = (pos % (prob - 1)) != 0;
+                    expectedApArr[pos] = (pos % (limit - 1)) != 0;
                 }
                 //expectedAnArr[pos] = !expectedApArr[pos];
             }
@@ -109,10 +123,10 @@ public class ProbabilityService_WHEN_checkDir_is_called {
             final long apCount = Stream.of(expectedApArr).filter(b -> b).count();
             //final long anCount = Stream.of(expectedAnArr).filter(b -> b).count();
 
-            final int absLimitValue = ProbabilityService.calcAbsLimitValue(probabilityVector, Cell.Dir.AP);
+            final int probabilityValue = ProbabilityService.calcProbabilityValue(probabilityVector, Cell.Dir.AP);
 
-            System.out.printf("AP: percent:%3d (%3.1f%%): prop:%3d: LimitValue:%3d: %s\n",
-                    percent, (apCount * 100.0D / ExpectedSize), prob, absLimitValue, Arrays.toString(Arrays.copyOf(expectedApArr, MaxProp)));
+            System.out.printf("AP: percent:%3d (%3.1f%%): limit:%3d: probability:%3d: %s\n",
+                    percent, (apCount * 100.0D / ExpectedSize), limit, probabilityValue, Arrays.toString(Arrays.copyOf(expectedApArr, MaxProp)));
             //System.out.printf("AN: percent:%3d (%3.1f%%): prop:%3d: %s\n", percent, (anCount * 100.0D / ExpectedSize), prop, Arrays.toString(expectedAnArr));
             for (int pos = 0; pos < ExpectedSize; pos++) {
                 Assertions.assertEquals(expectedApArr[pos], ProbabilityService.checkDir(probabilityVector, Cell.Dir.AP), "AP: percent:%d, pos:%d".formatted(percent, pos));

@@ -18,7 +18,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
-import javafx.geometry.Side;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -72,8 +71,9 @@ public class HexWave2Controller implements Initializable
 
     @Override
     public void initialize(final URL url, final ResourceBundle resourceBundle) {
-        //MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBallPoint);
-        MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBallPotential);
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBall);
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBallWithField);
+        MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBallWithPotential);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.MovingBall);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.InteractingBallsNP);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.InteractingBallsNN);

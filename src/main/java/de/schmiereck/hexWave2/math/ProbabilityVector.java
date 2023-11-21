@@ -32,18 +32,23 @@ import java.util.Objects;
 public class ProbabilityVector {
     /**
      * Limit.
-     * 0: Every time.
-     * {@link Integer#MAX_VALUE}: As rare as possible.
-     * -x: Every time but not if 0.
+     * <li>{@link Integer#MIN_VALUE}: Every time.</li>
+     * <li>1 or -1: 50%</li>
+     * <li>{@link Integer#MAX_VALUE}: As rare as possible.</li>
      */
-    //public int apLimit, anLimit, bpLimit, bnLimit, cpLimit, cnLimit;
     public int[] limitArr =  new int[Cell.Dir.values().length];
 
     /**
      * Counter.
+     * Increases every Step and reset if reached {@link #limitArr}.
      */
-    //public int apCnt, anCnt, bpCnt, bnCnt, cpCnt, cnCnt;
     public int[] cntArr =  new int[Cell.Dir.values().length];
+
+    /**
+     * Temporarily Sum of all reached limits in this step.
+     * @see ProbabilityService#calcNext(ProbabilityVector)
+     * @see ProbabilityService#calcProbabilityByLimit(int, int)
+     */
     public int stepLimitSum;
 
     @Override

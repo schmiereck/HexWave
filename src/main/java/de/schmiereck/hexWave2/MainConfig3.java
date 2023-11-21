@@ -5,8 +5,10 @@ import de.schmiereck.hexWave2.service.hexGrid.Particle;
 public class MainConfig3 {
 
     public enum ConfigEnum {
-        StaticBallPoint,
-        StaticBallPotential,
+        StaticBall,
+        StaticBallWithField,
+        StaticBallWithPotential,
+        StaticBallWithPotentialAndField,
         MovingBall,
         BouncingBall,
         InteractingBallsNP,
@@ -62,20 +64,40 @@ public class MainConfig3 {
             case LifeEnvironment -> {
                 // Defaults.
             }
-            case StaticBallPoint -> {
+            case StaticBall -> {
                 useBall = true;
-                BallStartXPos = new int[] { 36 };
-                BallStartYPos = new int[] { 20 };
+                BallStartXPos = new int[] { 42 };
+                BallStartYPos = new int[] { 22 };
+                BallStartVelocityA = new int[] { 0 };
+                BallPartSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.ParticleE };
+                BallFieldSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.Nothing };
+                UseWalls = false;
+                UseExtraWalls = false;
+            }
+            case StaticBallWithField -> {
+                useBall = true;
+                BallStartXPos = new int[] { 42 };
+                BallStartYPos = new int[] { 22 };
                 BallStartVelocityA = new int[] { 0 };
                 BallPartSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.ParticleE };
                 BallFieldSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.FieldN };
                 UseWalls = false;
                 UseExtraWalls = false;
             }
-            case StaticBallPotential -> {
+            case StaticBallWithPotential -> {
                 useBall = true;
-                BallStartXPos = new int[] { 36 };
-                BallStartYPos = new int[] { 20 };
+                BallStartXPos = new int[] { 42 };
+                BallStartYPos = new int[] { 22 };
+                BallStartVelocityA = new int[] { 1 };
+                BallPartSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.ParticleE };
+                BallFieldSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.Nothing };
+                UseWalls = false;
+                UseExtraWalls = false;
+            }
+            case StaticBallWithPotentialAndField -> {
+                useBall = true;
+                BallStartXPos = new int[] { 42 };
+                BallStartYPos = new int[] { 22 };
                 BallStartVelocityA = new int[] { 1 };
                 BallPartSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.ParticleE };
                 BallFieldSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.FieldN };

@@ -206,7 +206,8 @@ public class HexGridService {
                 final int finPosY = posY;
 
                 gridNode.getPartList(this.actCellArrPos).stream().
-                        filter(part -> part.getParticle().getPartType() == Particle.PartType.Particle).
+                        filter(part -> (part.getParticle().getPartType() == Particle.PartType.Particle) &&
+                                (Objects.nonNull(part.getParticle().getFieldParticle()))).
                         forEach(part -> {
                             final Particle fieldParticle = part.getParticle().getFieldParticle();
                             final int[] actNeighbourFieldProbabilitySumArr = new int[Cell.Dir.values().length];
@@ -272,7 +273,8 @@ public class HexGridService {
                 final List<Part> newFieldList = new ArrayList<>();
 
                 gridNode.getPartList(cellArrPos).stream().
-                        filter(sourcePart -> sourcePart.getParticle().getPartType() == Particle.PartType.Particle).
+                        filter(sourcePart -> (sourcePart.getParticle().getPartType() == Particle.PartType.Particle) &&
+                                (Objects.nonNull(sourcePart.getParticle().getFieldParticle()))).
                         forEach(sourcePart -> {
                             final Particle fieldParticle = sourcePart.getParticle().getFieldParticle();
                             for (final Cell.Dir dir : Cell.Dir.values()) {
@@ -402,7 +404,8 @@ public class HexGridService {
             for (int posX = 0; posX < this.hexGrid.getNodeCountX(); posX++) {
                 final GridNode gridNode = this.getGridNode(posX, posY);
 
-                gridNode.getPartList(this.actCellArrPos).stream().forEach(sourcePart -> {
+                gridNode.getPartList(this.actCellArrPos).stream().
+                        forEach(sourcePart -> {
                     final int newSourceProbability;
                     //final int sourceProbability = sourcePart.getProbability() * sourcePart.getCount();
                     final int sourceProbability = sourcePart.getProbability();
@@ -453,7 +456,7 @@ public class HexGridService {
             for (final Cell.Dir dir : Cell.Dir.values()) {
                 final int dirProbability;
                 if (ProbabilityService.checkDir(sourcePart.probabilityVector, dir)) {
-                    final int limit = ProbabilityService.calcAbsLimitValue2(sourcePart.probabilityVector, dir);
+                    final int limit = ProbabilityService.calcProbabilityValue(sourcePart.probabilityVector, dir);
                     dirProbability = (limit * sourceProbability) / stepLimitSum;
                 } else {
                     dirProbability = 0;

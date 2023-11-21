@@ -55,7 +55,12 @@ public class LifeService {
             case 6 -> ProbabilityService.createVector(50, 10, 10, 2, 5, 5);
             default -> ProbabilityService.createVector(0, 0, 0, 0, 0, 0);
         };
-        final Particle fieldParticle = new Particle(Particle.PartType.Field, fieldSubType, null);
+        final Particle fieldParticle;
+        if (fieldSubType == Particle.PartSubType.Nothing) {
+            fieldParticle = null;
+        } else {
+            fieldParticle = new Particle(Particle.PartType.Field, fieldSubType, null);
+        }
         final Particle ballParticle = new Particle(Particle.PartType.Particle, partSubType, fieldParticle);
         final Part ballPart = new Part(ballParticle,
                 Cell.Dir.AP,
