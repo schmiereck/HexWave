@@ -1,6 +1,6 @@
 package de.schmiereck.hexWave2.math;
 
-import static de.schmiereck.hexWave2.math.ProbabilityService.MaxProb;
+import static de.schmiereck.hexWave2.MainConfig3.MaxProb;
 import static de.schmiereck.hexWave2.math.ProbabilityService.calcProbabilityByLimit;
 
 import de.schmiereck.hexWave2.service.hexGrid.Cell;

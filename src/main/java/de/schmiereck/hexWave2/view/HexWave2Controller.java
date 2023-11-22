@@ -74,9 +74,9 @@ public class HexWave2Controller implements Initializable
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBall);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBallWithField);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBallWithPotential);
-        MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBallWithPotentialAndField);
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBallWithPotentialAndField);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.MovingBall);
-        //MainConfig3.initConfig(MainConfig3.ConfigEnum.InteractingBallsNP);
+        MainConfig3.initConfig(MainConfig3.ConfigEnum.InteractingBallsNP);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.InteractingBallsNN);
 
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.BouncingBall);
@@ -168,18 +168,27 @@ public class HexWave2Controller implements Initializable
         //this.mainPane.getChildren().add(zoomPane);
 
         //this.mainPane.setContent(mainGroup);
-        this.initZoomPane2(this.mainPane, mainGroup);
+
+        final ObjectProperty<Point2D> dragLastMouseCoordinates = new SimpleObjectProperty<>();
+        final ObjectProperty<Boolean> dragOperation = new SimpleObjectProperty<>();
+        dragOperation.set(Boolean.FALSE);
 
         this.mainPane.setOnMouseClicked(event -> {
-            final Point2D sceneCoords = new Point2D(event.getSceneX(), event.getSceneY());
-            final Point2D anchorPaneCoords = mainGroup.sceneToLocal(sceneCoords);
+            if (dragOperation.get() == Boolean.FALSE) {
+                final Point2D sceneCoords = new Point2D(event.getSceneX(), event.getSceneY());
+                final Point2D anchorPaneCoords = mainGroup.sceneToLocal(sceneCoords);
 
-            final Rectangle rect = new Rectangle(10.0D, 10.0D, Color.DARKSLATEGRAY);
-            rect.setX(anchorPaneCoords.getX());
-            rect.setY(anchorPaneCoords.getY());
-            mainGroup.getChildren().add(rect);
-            event.consume();
+                final Rectangle rect = new Rectangle(10.0D, 10.0D, Color.DARKSLATEGRAY);
+                rect.setX(anchorPaneCoords.getX());
+                rect.setY(anchorPaneCoords.getY());
+                mainGroup.getChildren().add(rect);
+                event.consume();
+            } else {
+                dragOperation.set(Boolean.FALSE);
+            }
         });
+
+        this.initZoomPane2(this.mainPane, mainGroup, dragLastMouseCoordinates, dragOperation);
 
         this.updateView();
     }
@@ -410,7 +419,7 @@ public class HexWave2Controller implements Initializable
     /**
      * https://stackoverflow.com/questions/16680295/javafx-correct-scaling
      */
-    private void initZoomPane2(final ScrollPane scrollPane, final Group group) {
+    private void initZoomPane2(final ScrollPane scrollPane, final Group group, final ObjectProperty<Point2D> dragLastMouseCoordinates, final ObjectProperty<Boolean> dragOperation) {
         final double SCALE_DELTA = 1.1;
 
         final StackPane zoomPane = new StackPane();
@@ -426,8 +435,8 @@ public class HexWave2Controller implements Initializable
 
         scrollPane.viewportBoundsProperty().addListener(new ChangeListener<Bounds>() {
             @Override
-            public void changed(ObservableValue<? extends Bounds> observable,
-                                Bounds oldValue, Bounds newValue) {
+            public void changed(final ObservableValue<? extends Bounds> observable,
+                                final Bounds oldValue, final Bounds newValue) {
                 zoomPane.setMinSize(newValue.getWidth(), newValue.getHeight());
             }
         });
@@ -437,18 +446,18 @@ public class HexWave2Controller implements Initializable
 
         zoomPane.setOnScroll(new EventHandler<ScrollEvent>() {
             @Override
-            public void handle(ScrollEvent event) {
+            public void handle(final ScrollEvent event) {
                 event.consume();
 
                 if (event.getDeltaY() == 0) {
                     return;
                 }
 
-                double scaleFactor = (event.getDeltaY() > 0) ? SCALE_DELTA
+                final double scaleFactor = (event.getDeltaY() > 0) ? SCALE_DELTA
                         : 1 / SCALE_DELTA;
 
                 // amount of scrolling in each direction in scrollContent coordinate units
-                Point2D scrollOffset = figureScrollOffset(scrollContent, scrollPane);
+                final Point2D scrollOffset = figureScrollOffset(scrollContent, scrollPane);
 
                 group.setScaleX(group.getScaleX() * scaleFactor);
                 group.setScaleY(group.getScaleY() * scaleFactor);
@@ -460,57 +469,72 @@ public class HexWave2Controller implements Initializable
         });
 
         // Panning via drag....
-        final ObjectProperty<Point2D> lastMouseCoordinates = new SimpleObjectProperty<Point2D>();
+        //final ObjectProperty<Point2D> dragLastMouseCoordinates = new SimpleObjectProperty<Point2D>();
+
         scrollContent.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
-            public void handle(MouseEvent event) {
-                lastMouseCoordinates.set(new Point2D(event.getX(), event.getY()));
+            public void handle(final MouseEvent event) {
+                dragLastMouseCoordinates.set(new Point2D(event.getX(), event.getY()));
+                event.consume();
+            }
+        });
+
+        scrollContent.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(final MouseEvent event) {
+                //dragLastMouseCoordinates.set(null);
+                event.consume();
             }
         });
 
         scrollContent.setOnMouseDragged(new EventHandler<MouseEvent>() {
             @Override
-            public void handle(MouseEvent event) {
-                double deltaX = event.getX() - lastMouseCoordinates.get().getX();
-                double extraWidth = scrollContent.getLayoutBounds().getWidth() - scrollPane.getViewportBounds().getWidth();
-                double deltaH = deltaX * (scrollPane.getHmax() - scrollPane.getHmin()) / extraWidth;
-                double desiredH = scrollPane.getHvalue() - deltaH;
-                scrollPane.setHvalue(Math.max(0, Math.min(scrollPane.getHmax(), desiredH)));
+            public void handle(final MouseEvent event) {
+                dragOperation.setValue(Boolean.TRUE);
+                final Point2D lastMousePoint = dragLastMouseCoordinates.get();
+                if (Objects.nonNull(lastMousePoint)) {
+                    final double deltaX = event.getX() - lastMousePoint.getX();
+                    final double extraWidth = scrollContent.getLayoutBounds().getWidth() - scrollPane.getViewportBounds().getWidth();
+                    final double deltaH = deltaX * (scrollPane.getHmax() - scrollPane.getHmin()) / extraWidth;
+                    final double desiredH = scrollPane.getHvalue() - deltaH;
+                    scrollPane.setHvalue(Math.max(0, Math.min(scrollPane.getHmax(), desiredH)));
 
-                double deltaY = event.getY() - lastMouseCoordinates.get().getY();
-                double extraHeight = scrollContent.getLayoutBounds().getHeight() - scrollPane.getViewportBounds().getHeight();
-                double deltaV = deltaY * (scrollPane.getHmax() - scrollPane.getHmin()) / extraHeight;
-                double desiredV = scrollPane.getVvalue() - deltaV;
-                scrollPane.setVvalue(Math.max(0, Math.min(scrollPane.getVmax(), desiredV)));
+                    final double deltaY = event.getY() - lastMousePoint.getY();
+                    final double extraHeight = scrollContent.getLayoutBounds().getHeight() - scrollPane.getViewportBounds().getHeight();
+                    final double deltaV = deltaY * (scrollPane.getHmax() - scrollPane.getHmin()) / extraHeight;
+                    final double desiredV = scrollPane.getVvalue() - deltaV;
+                    scrollPane.setVvalue(Math.max(0, Math.min(scrollPane.getVmax(), desiredV)));
+                    event.consume();
+                }
             }
         });
     }
 
-    private Point2D figureScrollOffset(Node scrollContent, ScrollPane scroller) {
-        double extraWidth = scrollContent.getLayoutBounds().getWidth() - scroller.getViewportBounds().getWidth();
-        double hScrollProportion = (scroller.getHvalue() - scroller.getHmin()) / (scroller.getHmax() - scroller.getHmin());
-        double scrollXOffset = hScrollProportion * Math.max(0, extraWidth);
-        double extraHeight = scrollContent.getLayoutBounds().getHeight() - scroller.getViewportBounds().getHeight();
-        double vScrollProportion = (scroller.getVvalue() - scroller.getVmin()) / (scroller.getVmax() - scroller.getVmin());
-        double scrollYOffset = vScrollProportion * Math.max(0, extraHeight);
+    private Point2D figureScrollOffset(final Node scrollContent, final ScrollPane scroller) {
+        final double extraWidth = scrollContent.getLayoutBounds().getWidth() - scroller.getViewportBounds().getWidth();
+        final double hScrollProportion = (scroller.getHvalue() - scroller.getHmin()) / (scroller.getHmax() - scroller.getHmin());
+        final double scrollXOffset = hScrollProportion * Math.max(0, extraWidth);
+        final double extraHeight = scrollContent.getLayoutBounds().getHeight() - scroller.getViewportBounds().getHeight();
+        final double vScrollProportion = (scroller.getVvalue() - scroller.getVmin()) / (scroller.getVmax() - scroller.getVmin());
+        final double scrollYOffset = vScrollProportion * Math.max(0, extraHeight);
         return new Point2D(scrollXOffset, scrollYOffset);
     }
 
-    private void repositionScroller(Node scrollContent, ScrollPane scroller, double scaleFactor, Point2D scrollOffset) {
-        double scrollXOffset = scrollOffset.getX();
-        double scrollYOffset = scrollOffset.getY();
-        double extraWidth = scrollContent.getLayoutBounds().getWidth() - scroller.getViewportBounds().getWidth();
+    private void repositionScroller(final Node scrollContent, final ScrollPane scroller, final double scaleFactor, final Point2D scrollOffset) {
+        final double scrollXOffset = scrollOffset.getX();
+        final double scrollYOffset = scrollOffset.getY();
+        final double extraWidth = scrollContent.getLayoutBounds().getWidth() - scroller.getViewportBounds().getWidth();
         if (extraWidth > 0) {
-            double halfWidth = scroller.getViewportBounds().getWidth() / 2;
-            double newScrollXOffset = (scaleFactor - 1) *  halfWidth + scaleFactor * scrollXOffset;
+            final double halfWidth = scroller.getViewportBounds().getWidth() / 2;
+            final double newScrollXOffset = (scaleFactor - 1) *  halfWidth + scaleFactor * scrollXOffset;
             scroller.setHvalue(scroller.getHmin() + newScrollXOffset * (scroller.getHmax() - scroller.getHmin()) / extraWidth);
         } else {
             scroller.setHvalue(scroller.getHmin());
         }
-        double extraHeight = scrollContent.getLayoutBounds().getHeight() - scroller.getViewportBounds().getHeight();
+        final double extraHeight = scrollContent.getLayoutBounds().getHeight() - scroller.getViewportBounds().getHeight();
         if (extraHeight > 0) {
-            double halfHeight = scroller.getViewportBounds().getHeight() / 2;
-            double newScrollYOffset = (scaleFactor - 1) * halfHeight + scaleFactor * scrollYOffset;
+            final double halfHeight = scroller.getViewportBounds().getHeight() / 2;
+            final double newScrollYOffset = (scaleFactor - 1) * halfHeight + scaleFactor * scrollYOffset;
             scroller.setVvalue(scroller.getVmin() + newScrollYOffset * (scroller.getVmax() - scroller.getVmin()) / extraHeight);
         } else {
             scroller.setHvalue(scroller.getHmin());

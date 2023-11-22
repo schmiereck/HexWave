@@ -37,7 +37,7 @@ public class MainConfig3 {
 
     public static final int InitialBallPartMass = 8;
     public static final double InitialBallPartEnergy = 1.0D / 2.0D;
-    public static final int InitialBallPartProbability = 6 * 6 * 6;
+    public static final int InitialBallPartProbability = MaxProb; //6 * 6 * 6;
 
     public static final int InitialWallPartMass = 0;
     public static final double InitialWallPartEnergy = 0.0D;
@@ -120,8 +120,8 @@ public class MainConfig3 {
             }
             case InteractingBallsNP -> {
                 useBall = true;
-                BallStartXPos = new int[] { 38, 45 - 2 };
-                BallStartYPos = new int[] { 20, 20 };
+                BallStartXPos = new int[] { 42 - 2, 42 + 2 };
+                BallStartYPos = new int[] { 22, 22 };
                 BallStartVelocityA = new int[] { 0, 0 };
                 BallPartSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.ParticleE, Particle.PartSubType.ParticleE };
                 BallFieldSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.FieldN, Particle.PartSubType.FieldP };
@@ -130,8 +130,8 @@ public class MainConfig3 {
             }
             case InteractingBallsNN -> {
                 useBall = true;
-                BallStartXPos = new int[] { 38, 45 - 2 };
-                BallStartYPos = new int[] { 20, 20 };
+                BallStartXPos = new int[] { 42 - 2, 42 + 2 };
+                BallStartYPos = new int[] { 22, 22 };
                 BallStartVelocityA = new int[] { 0, 0 };
                 BallPartSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.ParticleE, Particle.PartSubType.ParticleE };
                 BallFieldSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.FieldN, Particle.PartSubType.FieldN };

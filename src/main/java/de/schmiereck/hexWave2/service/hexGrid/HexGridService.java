@@ -188,8 +188,6 @@ public class HexGridService {
         }
     }
 
-    final boolean enableFunctionA = false;
-
     private void calcGrid() {
         //--------------------------------------------------------------------------------------------------------------
         // Precalculation of Act-Grid
@@ -206,26 +204,29 @@ public class HexGridService {
                 final int finPosY = posY;
 
                 gridNode.getPartList(this.actCellArrPos).stream().
-                        filter(part -> (part.getParticle().getPartType() == Particle.PartType.Particle) &&
-                                (Objects.nonNull(part.getParticle().getFieldParticle()))).
-                        forEach(part -> {
-                            final Particle fieldParticle = part.getParticle().getFieldParticle();
-                            final int[] actNeighbourFieldProbabilitySumArr = new int[Cell.Dir.values().length];
-                            for (final Cell.Dir dir : Cell.Dir.values()) {
-                                final GridNode neighbourGridNode = this.getNeighbourGridNode(finPosX, finPosY, dir);
-                                //this.searchActParticlePartListByParticle(neighbourGridNode, fieldParticle);
-                                actNeighbourFieldProbabilitySumArr[dir.ordinal()] =
-                                        this.calcActTargetFieldProbabilitySumByTypes(neighbourGridNode, fieldParticle.getPartType(), fieldParticle.getPartSubType());
-                            }
-                            final int aDiff = actNeighbourFieldProbabilitySumArr[Cell.Dir.AP.ordinal()] - actNeighbourFieldProbabilitySumArr[Cell.Dir.AN.ordinal()];
-                            final int bDiff = actNeighbourFieldProbabilitySumArr[Cell.Dir.BP.ordinal()] - actNeighbourFieldProbabilitySumArr[Cell.Dir.BN.ordinal()];
-                            final int cDiff = actNeighbourFieldProbabilitySumArr[Cell.Dir.CP.ordinal()] - actNeighbourFieldProbabilitySumArr[Cell.Dir.CN.ordinal()];
-                            if (aDiff != 0 || bDiff != 0 || cDiff != 0) {
-                                final int f = -32;
-                                //TODO ProbabilityService.calcMoveVector(part.probabilityVector, aDiff / f, bDiff / f, cDiff / f);
-                                ProbabilityService.calcMoveVector(part.probabilityVector, aDiff / f, bDiff / f, cDiff / f);
-                            }
-                });
+                    filter(part -> (part.getParticle().getPartType() == Particle.PartType.Particle) &&
+                            (Objects.nonNull(part.getParticle().getFieldParticle()))).
+                            forEach(part -> {
+                                final Particle fieldParticle = part.getParticle().getFieldParticle();
+                                final int[] actNeighbourFieldProbabilitySumArr = new int[Cell.Dir.values().length];
+                                for (final Cell.Dir dir : Cell.Dir.values()) {
+                                    final GridNode neighbourGridNode = this.getNeighbourGridNode(finPosX, finPosY, dir);
+                                    //this.searchActParticlePartListByParticle(neighbourGridNode, fieldParticle);
+                                    actNeighbourFieldProbabilitySumArr[dir.ordinal()] =
+                                            //this.calcActTargetFieldProbabilitySumByTypes(neighbourGridNode, fieldParticle.getPartType(), fieldParticle.getPartSubType());
+                                            this.calcActTargetFieldProbabilitySumByTypesAndOtherParticles(neighbourGridNode, part.getParticle().getFieldParticle(), fieldParticle.getPartType(), fieldParticle.getPartSubType())
+                                            -
+                                            this.calcActTargetFieldProbabilitySumByOppositeTypesAndOtherParticles(neighbourGridNode, part.getParticle().getFieldParticle(), fieldParticle.getPartType(), fieldParticle.getPartSubType());
+                                }
+                                final int aDiff = actNeighbourFieldProbabilitySumArr[Cell.Dir.AP.ordinal()] - actNeighbourFieldProbabilitySumArr[Cell.Dir.AN.ordinal()];
+                                final int bDiff = actNeighbourFieldProbabilitySumArr[Cell.Dir.BP.ordinal()] - actNeighbourFieldProbabilitySumArr[Cell.Dir.BN.ordinal()];
+                                final int cDiff = actNeighbourFieldProbabilitySumArr[Cell.Dir.CP.ordinal()] - actNeighbourFieldProbabilitySumArr[Cell.Dir.CN.ordinal()];
+                                if (aDiff != 0 || bDiff != 0 || cDiff != 0) {
+                                    final int f = -MainConfig3.MaxProb;//-32;
+                                    //TODO ProbabilityService.calcMoveVector(part.probabilityVector, aDiff / f, bDiff / f, cDiff / f);
+                                    ProbabilityService.calcMoveVector(part.probabilityVector, aDiff / f, bDiff / f, cDiff / f);
+                                }
+                            });
             }
         }
 
@@ -290,10 +291,10 @@ public class HexGridService {
                                         ProbabilityService.createVector(apPerc, bpPerc, cpPerc, anPerc, bnPerc, cnPerc),
                                         //ProbabilityService.createFieldVector(dir),
 
-                                        //sourcePart.getProbability()
+                                        sourcePart.getProbability()
                                         //1
                                         //6*6*6
-                                        ((6*6 * sourcePart.getProbability()) / MainConfig3.InitialBallPartProbability)
+                                        //((6*6*6 * sourcePart.getProbability()) / MainConfig3.InitialBallPartProbability)
                                         //6*6*2 + ((6*6 * sourcePart.getProbability()) / MainConfig3.InitialBallPartProbability)
                                         //6*6 + ((6*6 * sourcePart.getProbability()) / MainConfig3.InitialBallPartProbability)
                                         //((6 * sourcePart.getProbability()) / MainConfig3.InitialBallPartProbability)
@@ -325,7 +326,8 @@ public class HexGridService {
                     final GridNode sourceGridNode = this.getNeighbourGridNode(posX, posY, dir);
 
                     final Cell.Dir sourceDir = DirUtils.calcOppositeDir(dir);
-                    sourceGridNode.getPartList(this.actCellArrPos).stream().forEach(sourcePart -> {
+                    sourceGridNode.getPartList(this.actCellArrPos).stream().
+                            forEach(sourcePart -> {
                         final int transferDirProbability;
                         final int actSourceDirProbability = sourcePart.getDirProbability(sourceDir);
 
@@ -340,18 +342,22 @@ public class HexGridService {
                             transferDirProbability = 0;
                         }
 
-                        final int leftDirProbability = actSourceDirProbability - transferDirProbability;
+                        // Transfer Probability in this direction available?
+                        if (transferDirProbability > 0) {
+                            final int leftDirProbability = actSourceDirProbability - transferDirProbability;
 
-                        if ((transferDirProbability > 0) &&
-                                this.checkProbabilityTransfer(sourcePart, sourceDir)) {
-                            //final Optional<Part> optionalPart = this.searchNextParticlePart(targetGridNode, sourcePart.getParticle(), sourcePart.probabilityVector, transferDirProbability);
-                            this.transferProbabilityToNextByNewPart(sourcePart, targetGridNode, transferDirProbability);
-
-                            if (enableFunctionA)
-                                sourcePart.setDirProbability(sourceDir, leftDirProbability);
-                        } else {
-                            if (!enableFunctionA)
+                            // Source-Part is ready for transfer?
+                            if (this.checkProbabilityTransfer(sourcePart, sourceDir)) {
+                                //final Optional<Part> optionalPart = this.searchNextParticlePart(targetGridNode, sourcePart.getParticle(), sourcePart.probabilityVector, transferDirProbability);
+                                this.transferProbabilityToNextByNewPart(sourcePart, targetGridNode, transferDirProbability);
                                 this.transferProbabilityToNextByNewPart(sourcePart, sourceGridNode, leftDirProbability);
+                            } else {
+                                // No transfer, DirProbability stay in Next-SourceGridNode.
+                                this.transferProbabilityToNextByNewPart(sourcePart, sourceGridNode, actSourceDirProbability);
+                            }
+                        } else {
+                            // No transfer, DirProbability stay in Next-SourceGridNode.
+                            this.transferProbabilityToNextByNewPart(sourcePart, sourceGridNode, actSourceDirProbability);
                         }
                     });
                 }
@@ -368,19 +374,15 @@ public class HexGridService {
                         //filter(sourcePart -> sourcePart.getParticle().getPartType() == Particle.PartType.Life).
                         forEach(sourcePart -> {
                             final int sourcePartProbability;
-                            if (enableFunctionA) {
-                                sourcePartProbability = PartService.calcProbabilitySumAndResetDirProbability(sourcePart);
-                            }
-                            else {
-                                PartService.calcResetDirProbability(sourcePart);
-                                sourcePartProbability = sourcePart.getProbability();
-                            }
+
+                            //sourcePartProbability = PartService.calcProbabilitySumAndResetDirProbability(sourcePart);
+                            sourcePartProbability = sourcePart.getProbability();
 
                             if (sourcePartProbability > 0) {
-                                this.transferProbabilityToNextByCopyPart(sourcePart, gridNode, sourcePartProbability);
+                                PartService.calcResetDirProbability(sourcePart);
+                                this.transferProbabilityToNextByCopyPart(gridNode, sourcePart, sourcePartProbability);
                             }
                         });
-                //if (enableFunctionA)
                 gridNode.getPartList(this.nextCellArrPos).stream().
                         //filter(sourcePart -> sourcePart.getParticle().getPartType() == Particle.PartType.Life).
                                 forEach(sourcePart -> {
@@ -486,7 +488,7 @@ public class HexGridService {
         }
     }
 
-    private void transferProbabilityToNextByCopyPart(final Part sourcePart, final GridNode gridNode, final int sourcePartProbability) {
+    private void transferProbabilityToNextByCopyPart(final GridNode gridNode, final Part sourcePart, final int sourcePartProbability) {
         //final Optional<Part> optionalPart = this.searchNextParticlePart(gridNode, sourcePart.getParticle(), sourcePartProbability);
         final Optional<Part> optionalPart = this.searchNextParticlePart(gridNode, sourcePart.getParticle(), sourcePart.probabilityVector);
         if (optionalPart.isPresent()) {
@@ -531,7 +533,7 @@ public class HexGridService {
 
         // c) Opposite Field-Type of other Particles in the Target-Node:
         //final int targetOppositeFieldDirProbabilitySum = this.calcTargetOppositeFieldDirProbabilitySum(targetGridNode, sourceFieldPart, dir);
-        final int targetOppositeFieldDirProbabilitySum = this.calcActTargetOppositeFieldProbabilitySum(targetGridNode,
+        final int targetOppositeFieldDirProbabilitySum = this.calcActTargetFieldProbabilitySumByOppositeTypes(targetGridNode,
                 sourcePartType, sourcePartSubType);
 
         // Add the fields in the target and
@@ -593,9 +595,14 @@ public class HexGridService {
         return targetOppositeFieldDirProbabilitySum;
     }
 
-    private int calcActTargetOppositeFieldProbabilitySum(final GridNode targetGridNode, final Particle.PartType partType, final Particle.PartSubType partSubType) {
+    private int calcActTargetFieldProbabilitySumByOppositeTypes(final GridNode targetGridNode, final Particle.PartType partType, final Particle.PartSubType partSubType) {
         final Particle.PartSubType oppositeSubType = PartService.calcOppositeSubType(partType, partSubType);
         return this.calcActTargetFieldProbabilitySumByTypes(targetGridNode, partType, oppositeSubType);
+    }
+
+    private int calcActTargetFieldProbabilitySumByOppositeTypesAndOtherParticles(final GridNode targetGridNode, final Particle excludeParticle, final Particle.PartType partType, final Particle.PartSubType partSubType) {
+        final Particle.PartSubType oppositeSubType = PartService.calcOppositeSubType(partType, partSubType);
+        return this.calcActTargetFieldProbabilitySumByTypesAndOtherParticles(targetGridNode, excludeParticle, partType, oppositeSubType);
     }
 
     private int calcActTargetFieldProbabilitySumByTypes(final GridNode targetGridNode,
