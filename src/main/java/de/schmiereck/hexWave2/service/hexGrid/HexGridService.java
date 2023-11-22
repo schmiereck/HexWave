@@ -222,13 +222,15 @@ public class HexGridService {
                                 final int bDiff = actNeighbourFieldProbabilitySumArr[Cell.Dir.BP.ordinal()] - actNeighbourFieldProbabilitySumArr[Cell.Dir.BN.ordinal()];
                                 final int cDiff = actNeighbourFieldProbabilitySumArr[Cell.Dir.CP.ordinal()] - actNeighbourFieldProbabilitySumArr[Cell.Dir.CN.ordinal()];
                                 if (aDiff != 0 || bDiff != 0 || cDiff != 0) {
-                                    final int f = -MainConfig3.MaxProb;//-32;
+                                    final int f = -MainConfig3.MaxProb / 2;//-1;//-MainConfig3.MaxProb;//-32;
                                     //TODO ProbabilityService.calcMoveVector(part.probabilityVector, aDiff / f, bDiff / f, cDiff / f);
                                     ProbabilityService.calcMoveVector(part.probabilityVector, aDiff / f, bDiff / f, cDiff / f);
                                 }
                             });
             }
         }
+
+        this.calcActGridNext();
 
         // Transfer probability distribution:
         // Distribute Probability to the possible DirProbabilities depending on probabilityVector.
@@ -345,6 +347,9 @@ public class HexGridService {
                         // Transfer Probability in this direction available?
                         if (transferDirProbability > 0) {
                             final int leftDirProbability = actSourceDirProbability - transferDirProbability;
+                            if (leftDirProbability < 0) {
+                                throw new RuntimeException("leftDirProbability < 0");
+                            }
 
                             // Source-Part is ready for transfer?
                             if (this.checkProbabilityTransfer(sourcePart, sourceDir)) {
@@ -397,7 +402,7 @@ public class HexGridService {
         }
         //--------------------------------------------------------------------------------------------------------------
     }
-
+    static int FieldCutoffValue = 6;
     private void precalcActGrid() {
         //--------------------------------------------------------------------------------------------------------------
         // Normalize probability:
@@ -409,24 +414,27 @@ public class HexGridService {
 
                 gridNode.getPartList(this.actCellArrPos).stream().
                         forEach(sourcePart -> {
-                    final int newSourceProbability;
-                    //final int sourceProbability = sourcePart.getProbability() * sourcePart.getCount();
-                    final int sourceProbability = sourcePart.getProbability();
+                            final int newSourceProbability;
+                            //final int sourceProbability = sourcePart.getProbability() * sourcePart.getCount();
+                            final int sourceProbability = sourcePart.getProbability();
 
-                    // Reduce field probability für every Field-Part.
-                    if ((sourceProbability > 0) &&
-                            (sourcePart.getParticle().getPartType() == Particle.PartType.Field)) {
-                        newSourceProbability = sourceProbability - 1;
-                    } else {
-                        newSourceProbability = sourceProbability;
-                    }
+                            // Reduce field probability für every Field-Part.
+                            if (sourcePart.getParticle().getPartType() == Particle.PartType.Field) {
+                                if (sourceProbability >= FieldCutoffValue) {
+                                    newSourceProbability = sourceProbability - FieldCutoffValue;
+                                } else {
+                                    newSourceProbability = 0;
+                                }
+                            } else {
+                                newSourceProbability = sourceProbability;
+                            }
 
-                    sourcePart.setProbability(newSourceProbability);
-                    //sourcePart.setCount(1);
+                            sourcePart.setProbability(newSourceProbability);
+                            //sourcePart.setCount(1);
 
-                    sourcePart.rotationDir = HexMathUtils.calcNextMoveDir(sourcePart.rotationDir);
-                    ProbabilityService.calcNext(sourcePart.probabilityVector);
-                });
+                            //sourcePart.rotationDir = HexMathUtils.calcNextMoveDir(sourcePart.rotationDir);
+                            //ProbabilityService.calcNext(sourcePart.probabilityVector);
+                        });
 
                 // Group Parts of the same Particle with the same ProbabilityVector.
                 final Map<ParticleProbability, List<Part>> uniquePartMap
@@ -442,6 +450,22 @@ public class HexGridService {
                 gridNode.getPartList(this.actCellArrPos).clear();
                 gridNode.getPartList(this.actCellArrPos).addAll(mergedPartList);
                 this.partCount += mergedPartList.size();
+            }
+        }
+        //--------------------------------------------------------------------------------------------------------------
+    }
+
+    private void calcActGridNext() {
+        //--------------------------------------------------------------------------------------------------------------
+        for (int posY = 0; posY < this.hexGrid.getNodeCountY(); posY++) {
+            for (int posX = 0; posX < this.hexGrid.getNodeCountX(); posX++) {
+                final GridNode gridNode = this.getGridNode(posX, posY);
+
+                gridNode.getPartList(this.actCellArrPos).stream().
+                        forEach(sourcePart -> {
+                            sourcePart.rotationDir = HexMathUtils.calcNextMoveDir(sourcePart.rotationDir);
+                            ProbabilityService.calcNext(sourcePart.probabilityVector);
+                        });
             }
         }
         //--------------------------------------------------------------------------------------------------------------

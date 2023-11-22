@@ -34,14 +34,12 @@ public final class PartService {
     }
 
     public static void calcResetDirProbability(final Part part) {
-        final ProbabilityVector probabilityVector = part.probabilityVector;
         for (final Cell.Dir dir : Cell.Dir.values()) {
             part.setDirProbability(dir, 0);
         }
     }
 
     public static int calcProbabilitySum(final Part part) {
-        final ProbabilityVector probabilityVector = part.probabilityVector;
         int probabilitySum = part.getProbability();
         for (final Cell.Dir dir : Cell.Dir.values()) {
             probabilitySum += part.getDirProbability(dir);

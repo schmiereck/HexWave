@@ -27,6 +27,9 @@ public class Part implements Serializable {
     }
 
     public void setProbability(final int probability) {
+        if (probability < 0) {
+            throw new RuntimeException("probability < 0.");
+        }
         this.probability = probability;
     }
 
@@ -35,6 +38,9 @@ public class Part implements Serializable {
     }
 
     public void setDirProbability(final Cell.Dir dir, final int probability) {
+        if (probability < 0) {
+            throw new RuntimeException("dirProbability < 0.");
+        }
         this.probabilityDirArr[dir.ordinal()] = probability;
     }
 

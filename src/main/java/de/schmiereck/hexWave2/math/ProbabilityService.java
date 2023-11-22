@@ -99,28 +99,10 @@ public class ProbabilityService {
 
     public static boolean checkDir(final ProbabilityVector probabilityVector, final Cell.Dir dir) {
         if (calcLimit(probabilityVector, dir) >= 0) {
-            //return switch (dir) {
-            //    case AP -> probabilityVector.apCnt == 0;
-            //    case AN -> probabilityVector.anCnt == 0;
-            //
-            //    case BP -> probabilityVector.bpCnt == 0;
-            //    case BN -> probabilityVector.bnCnt == 0;
-            //
-            //    case CP -> probabilityVector.cpCnt == 0;
-            //    case CN -> probabilityVector.cnCnt == 0;
-            //};
+            // cnt = 0 --> limit
             return probabilityVector.cntArr[dir.ordinal()] == 0;
         } else {
-            //return switch (dir) {
-            //    case AP -> probabilityVector.apCnt < 0;
-            //    case AN -> probabilityVector.anCnt < 0;
-            //
-            //    case BP -> probabilityVector.bpCnt < 0;
-            //    case BN -> probabilityVector.bnCnt < 0;
-            //
-            //    case CP -> probabilityVector.cpCnt < 0;
-            //    case CN -> probabilityVector.cnCnt < 0;
-            //};
+            // cnt = limit --> 0
             return probabilityVector.cntArr[dir.ordinal()] < 0;
         }
     }
@@ -185,7 +167,7 @@ public class ProbabilityService {
             retProbabilityVector.cntArr[dirPos] = probabilityVector.cntArr[dirPos];
         }
 
-        //retProbabilityVector.setProbability(transferProbability);
+        retProbabilityVector.stepLimitSum = probabilityVector.stepLimitSum;
 
         return retProbabilityVector;
     }
