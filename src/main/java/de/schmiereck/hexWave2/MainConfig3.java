@@ -30,6 +30,8 @@ public class MainConfig3 {
 
     public static int MaxPercent = 100;
     public static int MaxProb = 6 * 6 * 6;
+    //public static int MaxProb = Integer.MAX_VALUE / 6 / 6;
+    public static int FieldCutoffValue = 6;
 
     public static ConfigEnum config;
     public static boolean useBall = false;

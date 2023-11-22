@@ -1,5 +1,7 @@
 package de.schmiereck.hexWave2.service.hexGrid;
 
+import static de.schmiereck.hexWave2.MainConfig3.FieldCutoffValue;
+
 import de.schmiereck.hexWave2.MainConfig3;
 import de.schmiereck.hexWave2.math.ProbabilityService;
 import de.schmiereck.hexWave2.math.ProbabilityVector;
@@ -393,7 +395,7 @@ public class HexGridService {
                                 forEach(sourcePart -> {
                             for (final Cell.Dir dir : Cell.Dir.values()) {
                                 if (sourcePart.getDirProbability(dir) > 0) {
-                                    throw new RuntimeException("DirProbability.");
+                                    throw new RuntimeException("DirProbability not 0.");
                                     //sourcePart.probabilityVector.setDirProbability(dir, 0);
                                 }
                             }
@@ -402,7 +404,6 @@ public class HexGridService {
         }
         //--------------------------------------------------------------------------------------------------------------
     }
-    static int FieldCutoffValue = 6;
     private void precalcActGrid() {
         //--------------------------------------------------------------------------------------------------------------
         // Normalize probability:

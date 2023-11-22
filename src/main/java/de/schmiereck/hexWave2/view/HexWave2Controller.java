@@ -75,9 +75,9 @@ public class HexWave2Controller implements Initializable
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBallWithField);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBallWithPotential);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBallWithPotentialAndField);
-        //MainConfig3.initConfig(MainConfig3.ConfigEnum.MovingBall);
+        MainConfig3.initConfig(MainConfig3.ConfigEnum.MovingBall);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.InteractingBallsNP);
-        MainConfig3.initConfig(MainConfig3.ConfigEnum.InteractingBallsNN);
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.InteractingBallsNN);
 
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.BouncingBall);
 
@@ -373,7 +373,7 @@ public class HexWave2Controller implements Initializable
     }
 
     //final static double FieldFactor = 55.0D;
-    final static double FieldFactor = 9.0D;
+    final static double FieldFactor = 6.0D * 6*2;
 
     //final static double RadiusFactor = 0.1D;
     final static double RadiusFactor = 0.25D;
