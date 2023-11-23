@@ -29,7 +29,7 @@ public class MainConfig3 {
 
 
     public static int MaxPercent = 100;
-    public static int MaxProb = 6 * 6 * 6;
+    public static int MaxImpulseProb = 6 * 6 * 6;
     //public static int MaxProb = Integer.MAX_VALUE / 6 / 6;
     public static int FieldCutoffValue = 6;
 
@@ -39,7 +39,7 @@ public class MainConfig3 {
 
     public static final int InitialBallPartMass = 8;
     public static final double InitialBallPartEnergy = 1.0D / 2.0D;
-    public static final int InitialBallPartProbability = MaxProb; //6 * 6 * 6;
+    public static final int InitialBallPartPotentialProbability = 6 * 6 * 6;
 
     public static final int InitialWallPartMass = 0;
     public static final double InitialWallPartEnergy = 0.0D;

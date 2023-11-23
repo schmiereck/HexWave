@@ -1,6 +1,6 @@
 package de.schmiereck.hexWave2.math;
 
-import static de.schmiereck.hexWave2.MainConfig3.MaxProb;
+import static de.schmiereck.hexWave2.MainConfig3.MaxImpulseProb;
 import static de.schmiereck.hexWave2.math.ProbabilityService.calcProbabilityByLimit;
 
 import de.schmiereck.hexWave2.service.hexGrid.Cell;
@@ -13,19 +13,19 @@ public class ProbabilityService_WHEN_ {
     @Test
     public void GIVEN__THEN_() {
         final ProbabilityVector probabilityVector = new ProbabilityVector();
-        ProbabilityService.initProbabilityLimit(probabilityVector, MaxProb);
+        ProbabilityService.initProbabilityLimit(probabilityVector, MaxImpulseProb);
 
         ProbabilityService.setProbabilityLimit(probabilityVector, Cell.Dir.AP, 1);
-        ProbabilityService.calcNext(probabilityVector);
+        ProbabilityService.calcNext(probabilityVector, MaxImpulseProb);
         Assertions.assertEquals(0, probabilityVector.stepLimitSum);
 
-        ProbabilityService.calcNext(probabilityVector);
+        ProbabilityService.calcNext(probabilityVector, MaxImpulseProb);
         Assertions.assertEquals(16, probabilityVector.stepLimitSum);
 
-        ProbabilityService.calcNext(probabilityVector);
+        ProbabilityService.calcNext(probabilityVector, MaxImpulseProb);
         Assertions.assertEquals(0, probabilityVector.stepLimitSum);
 
-        ProbabilityService.calcNext(probabilityVector);
+        ProbabilityService.calcNext(probabilityVector, MaxImpulseProb);
         Assertions.assertEquals(16, probabilityVector.stepLimitSum);
     }
 

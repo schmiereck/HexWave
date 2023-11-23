@@ -47,7 +47,7 @@ public final class GridNodeService {
         return partList.stream().
                 filter(part ->
                         (part.getParticle() == particle) &&
-                                ProbabilityService.compare(part.probabilityVector, probabilityVector)).
+                                ProbabilityService.compare(part.impulseProbabilityVector, probabilityVector)).
                 findFirst();
     }
 }

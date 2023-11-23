@@ -1,5 +1,8 @@
 package de.schmiereck.hexWave2.service.life;
 
+import static de.schmiereck.hexWave2.MainConfig3.MaxImpulseProb;
+import static de.schmiereck.hexWave2.MainConfig3.MaxPercent;
+
 import de.schmiereck.hexWave2.MainConfig3;
 import de.schmiereck.hexWave2.math.ProbabilityService;
 import de.schmiereck.hexWave2.math.ProbabilityVector;
@@ -41,19 +44,19 @@ public class LifeService {
                                final Particle.PartSubType partSubType, final Particle.PartSubType fieldSubType) {
         final GridNode gridNode = this.hexGridService.getGridNode(ballXPos, ballYPos);
 
-        final int probability = MainConfig3.InitialBallPartProbability;
+        final int potentialProbability = MainConfig3.InitialBallPartPotentialProbability;
 
-        final ProbabilityVector probabilityVector =
+        final ProbabilityVector impulseProbabilityVector =
         switch (ballStartVelocityA) {
-            case 0 -> ProbabilityService.createVector(0, 0, 0, 0, 0, 0);
+            case 0 -> ProbabilityService.createVector(MaxPercent, MaxImpulseProb, 0, 0, 0, 0, 0, 0);
             //case 1 -> ProbabilityService.createVector(16, 16, 16, 16, 16, 16);
-            case 1 -> ProbabilityService.createVector(6, 6, 6, 6, 6, 6);
-            case 2 -> ProbabilityService.createVector(20, 16, 16, 16, 16, 16);
-            case 3 -> ProbabilityService.createVector(95, 0, 0, 5, 0, 0);
-            case 4 -> ProbabilityService.createVector(100, 0, 0, 0, 0, 0);
-            case 5 -> ProbabilityService.createVector(25, 0, 0, 0, 0, 0);
-            case 6 -> ProbabilityService.createVector(49, 6, 6, 0, 6, 6);
-            default -> ProbabilityService.createVector(0, 0, 0, 0, 0, 0);
+            case 1 -> ProbabilityService.createVector(MaxPercent, MaxImpulseProb, 6, 6, 6, 6, 6, 6);
+            case 2 -> ProbabilityService.createVector(MaxPercent, MaxImpulseProb, 20, 16, 16, 16, 16, 16);
+            case 3 -> ProbabilityService.createVector(MaxPercent, MaxImpulseProb, 95, 0, 0, 5, 0, 0);
+            case 4 -> ProbabilityService.createVector(MaxPercent, MaxImpulseProb, 100, 0, 0, 0, 0, 0);
+            case 5 -> ProbabilityService.createVector(MaxPercent, MaxImpulseProb, 25, 0, 0, 0, 0, 0);
+            case 6 -> ProbabilityService.createVector(MaxPercent, MaxImpulseProb, 49, 6, 6, 0, 6, 6);
+            default -> ProbabilityService.createVector(MaxPercent, MaxImpulseProb, 0, 0, 0, 0, 0, 0);
         };
         final Particle fieldParticle;
         if (fieldSubType == Particle.PartSubType.Nothing) {
@@ -64,15 +67,15 @@ public class LifeService {
         final Particle ballParticle = new Particle(Particle.PartType.Particle, partSubType, fieldParticle);
         final Part ballPart = new Part(ballParticle,
                 Cell.Dir.AP,
-                probabilityVector,
-                probability);
-                //ProbabilityService.createVector(, probability));
-                //ProbabilityService.createVector(, probability));
-                //ProbabilityService.createVector(, probability));
-                //ProbabilityService.createVector(55, 10, 20, 5, 5, 5, probability));
-                //ProbabilityService.createVector(40, 15, 30, 5, 5, 5, probability));
-                //ProbabilityService.createVector(60, 15, 15, 5, 5, 5, probability));
-                //ProbabilityService.createVector(60, 0, 40, 0, 0, 0, probability));
+                impulseProbabilityVector,
+                potentialProbability);
+                //ProbabilityService.createVector(, potentialProbability));
+                //ProbabilityService.createVector(, potentialProbability));
+                //ProbabilityService.createVector(, potentialProbability));
+                //ProbabilityService.createVector(55, 10, 20, 5, 5, 5, potentialProbability));
+                //ProbabilityService.createVector(40, 15, 30, 5, 5, 5, potentialProbability));
+                //ProbabilityService.createVector(60, 15, 15, 5, 5, 5, potentialProbability));
+                //ProbabilityService.createVector(60, 0, 40, 0, 0, 0, potentialProbability));
 
         //ballPart.getHexParticle().getVelocityHexVector().a = ballStartVelocityA;
 
@@ -144,7 +147,7 @@ public class LifeService {
         final Particle wallParticle = new Particle(Particle.PartType.Wall, Particle.PartSubType.ParticleWall, fieldParticle);
         final Part wallPart = new Part(wallParticle,
                 Cell.Dir.AP,
-                ProbabilityService.createVector(0, 0, 0, 0, 0, 0),
+                ProbabilityService.createVector(MaxPercent, MaxImpulseProb, 0, 0, 0, 0, 0, 0),
                 probability);
         this.addPart(wallGridNode, wallPart);
     }

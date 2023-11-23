@@ -1,6 +1,5 @@
 package de.schmiereck.hexWave2.service.hexGrid;
 
-import de.schmiereck.hexWave2.math.HexParticle;
 import de.schmiereck.hexWave2.math.ProbabilityVector;
 
 import java.io.Serializable;
@@ -10,42 +9,42 @@ public class Part implements Serializable {
 
     public Cell.Dir rotationDir;
 
-    public final ProbabilityVector probabilityVector;
-    private int probability;
-    private int[] probabilityDirArr = new int[Cell.Dir.values().length];
+    public final ProbabilityVector impulseProbabilityVector;
+    private int potentialProbability;
+    private int[] potentialProbabilityDirArr = new int[Cell.Dir.values().length];
 
     public Part(final Particle particle,
-                final Cell.Dir rotationDir, final ProbabilityVector probabilityVector, final int probability) {
+                final Cell.Dir rotationDir, final ProbabilityVector impulseProbabilityVector, final int potentialProbability) {
         this.particle = particle;
         this.rotationDir = rotationDir;
-        this.probabilityVector = probabilityVector;
-        this.probability = probability;
+        this.impulseProbabilityVector = impulseProbabilityVector;
+        this.potentialProbability = potentialProbability;
     }
 
     public Particle getParticle() {
         return this.particle;
     }
 
-    public void setProbability(final int probability) {
-        if (probability < 0) {
+    public void setPotentialProbability(final int potentialProbability) {
+        if (potentialProbability < 0) {
             throw new RuntimeException("probability < 0.");
         }
-        this.probability = probability;
+        this.potentialProbability = potentialProbability;
     }
 
-    public int getProbability() {
-        return this.probability;
+    public int getPotentialProbability() {
+        return this.potentialProbability;
     }
 
     public void setDirProbability(final Cell.Dir dir, final int probability) {
         if (probability < 0) {
             throw new RuntimeException("dirProbability < 0.");
         }
-        this.probabilityDirArr[dir.ordinal()] = probability;
+        this.potentialProbabilityDirArr[dir.ordinal()] = probability;
     }
 
     public int getDirProbability(final Cell.Dir dir) {
-        return this.probabilityDirArr[dir.ordinal()];
+        return this.potentialProbabilityDirArr[dir.ordinal()];
     }
 
 }

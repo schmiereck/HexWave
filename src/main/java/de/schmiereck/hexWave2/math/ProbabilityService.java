@@ -1,7 +1,7 @@
 package de.schmiereck.hexWave2.math;
 
 import static de.schmiereck.hexWave2.MainConfig3.MaxPercent;
-import static de.schmiereck.hexWave2.MainConfig3.MaxProb;
+import static de.schmiereck.hexWave2.MainConfig3.MaxImpulseProb;
 
 import de.schmiereck.hexWave2.service.hexGrid.Cell;
 
@@ -35,7 +35,7 @@ public class ProbabilityService {
         }
     }
 
-    public static void calcNext(final ProbabilityVector probabilityVector) {
+    public static void calcNext(final ProbabilityVector probabilityVector, final int maxProb) {
         //probabilityVector.apCnt = calcCnt(probabilityVector.apCnt, probabilityVector.apLimit);
         //probabilityVector.anCnt = calcCnt(probabilityVector.anCnt, probabilityVector.anLimit);
 
@@ -54,7 +54,7 @@ public class ProbabilityService {
             if (checkDir(probabilityVector, dir)) {
                 //probabilityVector.stepLimitSum += Math.abs(limit);
                 //probabilityVector.stepLimitSum += calcAbsLimitValue2(limit);
-                probabilityVector.stepLimitSum += calcProbabilityByLimit(MaxProb, limit);
+                probabilityVector.stepLimitSum += calcProbabilityByLimit(maxProb, limit);
             }
         }
     }
@@ -172,19 +172,17 @@ public class ProbabilityService {
         return retProbabilityVector;
     }
 
-    public static ProbabilityVector createVector(final int apPerc, final int bpPerc, final int cpPerc, final int anPerc, final int bnPerc, final int cnPerc) { // , int probability
+    public static ProbabilityVector createVector(final int maxPercent, final int maxImpulseProb, final int apPerc, final int bpPerc, final int cpPerc, final int anPerc, final int bnPerc, final int cnPerc) { // , int probability
         final ProbabilityVector retProbabilityVector = new ProbabilityVector();
 
-        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.AP, calcLimitByPercent(MaxPercent, MaxProb, apPerc));
-        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.AN, calcLimitByPercent(MaxPercent, MaxProb, anPerc));
+        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.AP, calcLimitByPercent(maxPercent, maxImpulseProb, apPerc));
+        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.AN, calcLimitByPercent(maxPercent, maxImpulseProb, anPerc));
 
-        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.BP, calcLimitByPercent(MaxPercent, MaxProb, bpPerc));
-        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.BN, calcLimitByPercent(MaxPercent, MaxProb, bnPerc));
+        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.BP, calcLimitByPercent(maxPercent, maxImpulseProb, bpPerc));
+        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.BN, calcLimitByPercent(maxPercent, maxImpulseProb, bnPerc));
 
-        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.CP, calcLimitByPercent(MaxPercent, MaxProb, cpPerc));
-        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.CN, calcLimitByPercent(MaxPercent, MaxProb, cnPerc));
-
-        //retProbabilityVector.setProbability(probability);
+        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.CP, calcLimitByPercent(maxPercent, maxImpulseProb, cpPerc));
+        ProbabilityService.setProbabilityLimit(retProbabilityVector, Cell.Dir.CN, calcLimitByPercent(maxPercent, maxImpulseProb, cnPerc));
 
         return retProbabilityVector;
     }
@@ -204,9 +202,9 @@ public class ProbabilityService {
         return equal;
     }
 
-    public static int calcLimitByPercent(final int maxPercent, final int maxProp, final int percent) {
+    public static int calcLimitByPercent(final int maxPercent, final int maxProb, final int percent) {
         final int retLimit;
-        final int limit = (((maxPercent - (percent * 2)) * maxProp) / maxPercent);
+        final int limit = (((maxPercent - (percent * 2)) * maxProb) / maxPercent);
         if (limit == 0) {
             retLimit = 1;
         } else {
@@ -215,10 +213,10 @@ public class ProbabilityService {
         return retLimit;
     }
 
-    public static int calcProbabilityValue(final ProbabilityVector probabilityVector, final Cell.Dir dir) {
+    public static int calcProbabilityValue(final ProbabilityVector probabilityVector, final Cell.Dir dir, final int maxProb) {
         final int limit = calcLimit(probabilityVector, dir);
         //return calcAbsLimitValue2(limit);
-        return calcProbabilityByLimit(MaxProb, limit);
+        return calcProbabilityByLimit(maxProb, limit);
     }
 
     public static void calcMoveVector(final ProbabilityVector probabilityVector, final int aDiff, final int bDiff, final int cDiff) {
