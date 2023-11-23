@@ -1,7 +1,7 @@
 package de.schmiereck.hexWave2.service.life;
 
 import static de.schmiereck.hexWave2.MainConfig3.MaxImpulseProb;
-import static de.schmiereck.hexWave2.MainConfig3.MaxPercent;
+import static de.schmiereck.hexWave2.MainConfig3.MaxImpulsePercent;
 
 import de.schmiereck.hexWave2.MainConfig3;
 import de.schmiereck.hexWave2.math.ProbabilityService;
@@ -48,15 +48,15 @@ public class LifeService {
 
         final ProbabilityVector impulseProbabilityVector =
         switch (ballStartVelocityA) {
-            case 0 -> ProbabilityService.createVector(MaxPercent, MaxImpulseProb, 0, 0, 0, 0, 0, 0);
+            case 0 -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 0, 0, 0, 0, 0, 0);
             //case 1 -> ProbabilityService.createVector(16, 16, 16, 16, 16, 16);
-            case 1 -> ProbabilityService.createVector(MaxPercent, MaxImpulseProb, 6, 6, 6, 6, 6, 6);
-            case 2 -> ProbabilityService.createVector(MaxPercent, MaxImpulseProb, 20, 16, 16, 16, 16, 16);
-            case 3 -> ProbabilityService.createVector(MaxPercent, MaxImpulseProb, 95, 0, 0, 5, 0, 0);
-            case 4 -> ProbabilityService.createVector(MaxPercent, MaxImpulseProb, 100, 0, 0, 0, 0, 0);
-            case 5 -> ProbabilityService.createVector(MaxPercent, MaxImpulseProb, 25, 0, 0, 0, 0, 0);
-            case 6 -> ProbabilityService.createVector(MaxPercent, MaxImpulseProb, 49, 6, 6, 0, 6, 6);
-            default -> ProbabilityService.createVector(MaxPercent, MaxImpulseProb, 0, 0, 0, 0, 0, 0);
+            case 1 -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 6, 6, 6, 6, 6, 6);
+            case 2 -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 20, 16, 16, 16, 16, 16);
+            case 3 -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 95, 0, 0, 5, 0, 0);
+            case 4 -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 100, 0, 0, 0, 0, 0);
+            case 5 -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 25, 0, 0, 0, 0, 0);
+            case 6 -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 49, 6, 6, 0, 6, 6);
+            default -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 0, 0, 0, 0, 0, 0);
         };
         final Particle fieldParticle;
         if (fieldSubType == Particle.PartSubType.Nothing) {
@@ -147,7 +147,7 @@ public class LifeService {
         final Particle wallParticle = new Particle(Particle.PartType.Wall, Particle.PartSubType.ParticleWall, fieldParticle);
         final Part wallPart = new Part(wallParticle,
                 Cell.Dir.AP,
-                ProbabilityService.createVector(MaxPercent, MaxImpulseProb, 0, 0, 0, 0, 0, 0),
+                ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 0, 0, 0, 0, 0, 0),
                 probability);
         this.addPart(wallGridNode, wallPart);
     }

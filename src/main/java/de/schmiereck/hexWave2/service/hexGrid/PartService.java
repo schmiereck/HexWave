@@ -23,26 +23,25 @@ public final class PartService {
             };
     }
 
-    public static int calcProbabilitySumAndResetDirProbability(final Part part) {
-        final ProbabilityVector probabilityVector = part.impulseProbabilityVector;
+    public static int calcProbabilitySumAndResetDirPotentialProbability(final Part part) {
         int probabilitySum = part.getPotentialProbability();
         for (final Cell.Dir dir : Cell.Dir.values()) {
-            probabilitySum += part.getDirProbability(dir);
-            part.setDirProbability(dir, 0);
+            probabilitySum += part.getPotentialProbabilityByDir(dir);
+            part.setPotentialProbabilityForDir(dir, 0);
         }
         return probabilitySum;
     }
 
-    public static void calcResetDirProbability(final Part part) {
+    public static void calcResetDirPotentialProbability(final Part part) {
         for (final Cell.Dir dir : Cell.Dir.values()) {
-            part.setDirProbability(dir, 0);
+            part.setPotentialProbabilityForDir(dir, 0);
         }
     }
 
-    public static int calcProbabilitySum(final Part part) {
+    public static int calcPotentialProbabilitySum(final Part part) {
         int probabilitySum = part.getPotentialProbability();
         for (final Cell.Dir dir : Cell.Dir.values()) {
-            probabilitySum += part.getDirProbability(dir);
+            probabilitySum += part.getPotentialProbabilityByDir(dir);
         }
         return probabilitySum;
     }

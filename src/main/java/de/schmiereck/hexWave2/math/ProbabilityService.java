@@ -1,8 +1,5 @@
 package de.schmiereck.hexWave2.math;
 
-import static de.schmiereck.hexWave2.MainConfig3.MaxPercent;
-import static de.schmiereck.hexWave2.MainConfig3.MaxImpulseProb;
-
 import de.schmiereck.hexWave2.service.hexGrid.Cell;
 
 /**
@@ -59,7 +56,7 @@ public class ProbabilityService {
         }
     }
 
-    public final static int calcProbabilityByLimit(final int maxProb, final int limit) {
+    public static int calcProbabilityByLimit(final int maxProb, final int limit) {
         final int retValue;
 
         if (limit > 0) {

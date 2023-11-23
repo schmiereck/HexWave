@@ -9,7 +9,8 @@ public class MainConfig3 {
         StaticBallWithField,
         StaticBallWithPotential,
         StaticBallWithPotentialAndField,
-        MovingBall,
+        MovingBallWithField,
+        MovingBallWithPotentialAndField,
         BouncingBall,
         InteractingBallsNP,
         InteractingBallsNN,
@@ -28,10 +29,10 @@ public class MainConfig3 {
     public static int HexGridYSize = 3;
 
 
-    public static int MaxPercent = 100;
+    public static int MaxImpulsePercent = 100;
     public static int MaxImpulseProb = 6 * 6 * 6;
     //public static int MaxProb = Integer.MAX_VALUE / 6 / 6;
-    public static int FieldCutoffValue = 6;
+    public static int FieldPotentialCutoffValue = 6;
 
     public static ConfigEnum config;
     public static boolean useBall = false;
@@ -110,7 +111,17 @@ public class MainConfig3 {
                 UseWalls = false;
                 UseExtraWalls = false;
             }
-            case MovingBall -> {
+            case MovingBallWithField -> {
+                useBall = true;
+                BallStartXPos = new int[] { 36 };
+                BallStartYPos = new int[] { 20 };
+                BallStartVelocityA = new int[] { 5 };
+                BallPartSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.ParticleE };
+                BallFieldSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.FieldN };
+                UseWalls = false;
+                UseExtraWalls = false;
+            }
+            case MovingBallWithPotentialAndField -> {
                 useBall = true;
                 BallStartXPos = new int[] { 36 };
                 BallStartYPos = new int[] { 20 };
