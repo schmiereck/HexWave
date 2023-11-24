@@ -173,6 +173,12 @@ m(v) = m0 * (c / (c - v))
   * https://de.wikipedia.org/wiki/Datei:Standard_Model_of_Elementary_Particles-de.svg
 
 # Plan
+TODO elektr. Felder haben Richtung
 * Feld spürt nur andere Felder
   * Verdrängen (gleiche) oder auslöschen (unterschiedliche)
+  * Elektrische Felder beeinflussen sich nicht, sie überlagern sich lediglich.  
+    Auch die gebogenen Feldlinien sind nur ein Resultat der Überlagerung des jeweils pos und neg Feldes.
 * Partikel spürt nur Feld (sein eigenes?)
+* https://www.leifiphysik.de/elektrizitaetslehre/ladungen-elektrisches-feld/grundwissen/potential-und-elektrische-spannung
+* https://www.leifiphysik.de/elektrizitaetslehre/ladungen-elektrisches-feld/grundwissen/elektrisches-feld-und-feldliniendarstellung#:~:text=F%C3%BCr%20die%20elektrische%20Feldst%C3%A4rke%20im,%CE%B5%200%20%E2%8B%85%20%7C%20Q%20%7C%20r
+* https://www.leifiphysik.de/elektrizitaetslehre/ladungen-elektrisches-feld/grundwissen/ueberlagerung-elektrischer-felder

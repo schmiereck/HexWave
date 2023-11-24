@@ -50,6 +50,7 @@ public class ProbabilityVector {
      * @see ProbabilityService#calcProbabilityByLimit(int, int)
      */
     public int stepLimitSum;
+    public int limitSum;
 
     @Override
     public boolean equals(Object o) {

@@ -40,24 +40,21 @@ public class LifeService {
      *     cn  bp
      *
      */
-    public void initializeBall(final int ballXPos, final int ballYPos, final int ballStartVelocityA, final boolean useBallPush,
+    public void initializeBall(final int ballXPos, final int ballYPos, final MainConfig3.StartVelocity ballStartVelocity, final boolean useBallPush,
                                final Particle.PartSubType partSubType, final Particle.PartSubType fieldSubType) {
         final GridNode gridNode = this.hexGridService.getGridNode(ballXPos, ballYPos);
 
         final int potentialProbability = MainConfig3.InitialBallPartPotentialProbability;
 
         final ProbabilityVector impulseProbabilityVector =
-        switch (ballStartVelocityA) {
-            case 0 -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 0, 0, 0, 0, 0, 0);
-            //case 1 -> ProbabilityService.createVector(16, 16, 16, 16, 16, 16);
-            case 1 -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 6, 6, 6, 6, 6, 6);
-            case 2 -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 20, 16, 16, 16, 16, 16);
-            case 3 -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 95, 0, 0, 5, 0, 0);
-            case 4 -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 100, 0, 0, 0, 0, 0);
-            case 5 -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 25, 0, 0, 0, 0, 0);
-            case 6 -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 49, 6, 6, 0, 6, 6);
-            default -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 0, 0, 0, 0, 0, 0);
-        };
+            switch (ballStartVelocity) {
+                case Static -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 0, 0, 0, 0, 0, 0);
+                case StaticPotential -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 6, 6, 6, 6, 6, 6);
+                case MovingRight -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 25, 0, 0, 0, 0, 0);
+                case MovingRightWithPotential -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 45, 6, 6, 6, 6, 6);
+                case MovingLeft -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 0, 0, 0, 25, 0, 0);
+                case MovingLeftWithPotential -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 6, 6, 6, 45, 6, 6);
+            };
         final Particle fieldParticle;
         if (fieldSubType == Particle.PartSubType.Nothing) {
             fieldParticle = null;

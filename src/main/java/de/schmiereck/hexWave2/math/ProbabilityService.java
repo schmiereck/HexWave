@@ -43,6 +43,7 @@ public class ProbabilityService {
         //probabilityVector.cnCnt = calcCnt(probabilityVector.cnCnt, probabilityVector.cnLimit);
 
         probabilityVector.stepLimitSum = 0;
+        probabilityVector.limitSum = 0;
 
         for (int dirPos = 0; dirPos < Cell.Dir.values().length; dirPos++) {
             final Cell.Dir dir = Cell.Dir.values()[dirPos];
@@ -53,6 +54,7 @@ public class ProbabilityService {
                 //probabilityVector.stepLimitSum += calcAbsLimitValue2(limit);
                 probabilityVector.stepLimitSum += calcProbabilityByLimit(maxProb, limit);
             }
+            probabilityVector.limitSum += calcProbabilityByLimit(maxProb, limit);
         }
     }
 
@@ -165,6 +167,7 @@ public class ProbabilityService {
         }
 
         retProbabilityVector.stepLimitSum = probabilityVector.stepLimitSum;
+        retProbabilityVector.limitSum = probabilityVector.limitSum;
 
         return retProbabilityVector;
     }

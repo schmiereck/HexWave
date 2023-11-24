@@ -1,5 +1,8 @@
 package de.schmiereck.hexWave2.view;
 
+import static de.schmiereck.hexWave2.MainConfig3.InitialFieldPartProbabilityFactor;
+import static de.schmiereck.hexWave2.MainConfig3.MaxPotentialProbability;
+
 import de.schmiereck.hexWave2.MainConfig3;
 import de.schmiereck.hexWave2.service.hexGrid.GridNode;
 import de.schmiereck.hexWave2.service.hexGrid.HexGrid;
@@ -71,26 +74,21 @@ public class HexWave2Controller implements Initializable
 
     @Override
     public void initialize(final URL url, final ResourceBundle resourceBundle) {
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.LifeEnvironment);
+
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBall);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBallWithField);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBallWithPotential);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBallWithPotentialAndField);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.MovingBallWithField);
-        MainConfig3.initConfig(MainConfig3.ConfigEnum.MovingBallWithPotentialAndField);
-        //MainConfig3.initConfig(MainConfig3.ConfigEnum.InteractingBallsNP);
-        //MainConfig3.initConfig(MainConfig3.ConfigEnum.InteractingBallsNN);
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.MovingBallWithPotential);
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.MovingBallWithPotentialAndField);
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.InteractingBallsWithFieldsNP);
+        MainConfig3.initConfig(MainConfig3.ConfigEnum.InteractingBallsWithFieldsNN);
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.InteractingBallsWithPotentialAndFieldsNN);
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.InteractingBallsWithPotentialAndFieldsNP);
 
-        //MainConfig3.initConfig(MainConfig3.ConfigEnum.BouncingBall);
-
-        //MainConfig3.initConfig(MainConfig3.ConfigEnum.LifeEnvironment);
-        //MainConfig3.initConfig(MainConfig3.ConfigEnum.BlockedBall);
-        //MainConfig3.initConfig(MainConfig3.ConfigEnum.JumpingBall);
-        //MainConfig3.initConfig(MainConfig3.ConfigEnum.MachineBalls);
-        //MainConfig3.initConfig(MainConfig3.ConfigEnum.CrashBalls);
-        //MainConfig3.initConfig(MainConfig3.ConfigEnum.ShowFields);
-        //MainConfig3.initConfig(MainConfig3.ConfigEnum.OnlySun);
-        //MainConfig3.initConfig(MainConfig3.ConfigEnum.NoMoves);
-        //MainConfig3.initConfig(MainConfig3.ConfigEnum.SlideTop);
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.CollideBallsWithPotentialAndFieldsNN);
 
         this.mainPane.setStyle("-fx-background: black;");
 /*
@@ -126,7 +124,7 @@ public class HexWave2Controller implements Initializable
             this.lifeService.initializeExtraWalls();
         if (MainConfig3.useBall) {
             for (int pos = 0; pos < MainConfig3.BallStartXPos.length; pos++) {
-                this.lifeService.initializeBall(MainConfig3.BallStartXPos[pos], MainConfig3.BallStartYPos[pos], MainConfig3.BallStartVelocityA[pos],
+                this.lifeService.initializeBall(MainConfig3.BallStartXPos[pos], MainConfig3.BallStartYPos[pos], MainConfig3.BallStartVelocity[pos],
                         MainConfig3.useBallPush,
                         MainConfig3.BallPartSubTypeArr[pos], MainConfig3.BallFieldSubTypeArr[pos]);
             }
@@ -363,31 +361,31 @@ public class HexWave2Controller implements Initializable
                 //showCircleShape(gridCellModel.getShape2(), extraValue, Color.WHITE, Color.WHITE);
 
                 if (pFieldValue > 0.0D && nFieldValue > 0.0D) {
-                    showCircleShape(gridCellModel.getShape2(), (pFieldValue + nFieldValue) / FieldFactor, Color.TRANSPARENT, Color.LIGHTGREEN);//Color.ORANGE, Color.RED);
+                    showCircleShape(gridCellModel.getShape2(), (pFieldValue + nFieldValue) * FieldFactor, Color.TRANSPARENT, Color.LIGHTGREEN);//Color.ORANGE, Color.RED);
                 } else {
-                    showCircleShape(gridCellModel.getShape3(), pFieldValue / FieldFactor, Color.TRANSPARENT, Color.LIGHTCORAL);//Color.ORANGE, Color.RED);
-                    showCircleShape(gridCellModel.getShape4(), nFieldValue / FieldFactor, Color.TRANSPARENT, Color.LIGHTBLUE);//Color.AQUA, Color.BLUE);, Color.LIGHTBLUE
+                    showCircleShape(gridCellModel.getShape3(), pFieldValue * FieldFactor, Color.TRANSPARENT, Color.LIGHTCORAL);//Color.ORANGE, Color.RED);
+                    showCircleShape(gridCellModel.getShape4(), nFieldValue * FieldFactor, Color.TRANSPARENT, Color.LIGHTBLUE);//Color.AQUA, Color.BLUE);, Color.LIGHTBLUE
                 }
-                showCircleShape(gridCellModel.getShape5(), partValue, Color.TRANSPARENT, Color.ANTIQUEWHITE);//Color.YELLOW, Color.ANTIQUEWHITE);
+                showCircleShape(gridCellModel.getShape5(), partValue * ParticleFactor, Color.TRANSPARENT, Color.ANTIQUEWHITE);//Color.YELLOW, Color.ANTIQUEWHITE);
             }
         }
     }
 
     //final static double FieldFactor = 55.0D;
-    final static double FieldFactor = 6.0D * 6*2;
+    final static double FieldFactor = 1.0D / ((MaxPotentialProbability * 24.0D) / InitialFieldPartProbabilityFactor);
 
     //final static double RadiusFactor = 0.1D;
-    final static double RadiusFactor = 0.25D;
+    final static double ParticleFactor = 1.0D / (MaxPotentialProbability / (24.0D * 6.0D));
     //final static double RadiusFactor = 0.5D;
 
     private static void showCircleShape(final Circle gridNodeCircle2, final double fieldValue, final Color pColor, final Color nColor) {
         if (fieldValue > 0.0D) {
-            gridNodeCircle2.setRadius(Math.min(fieldValue * RadiusFactor, 12.0D));
+            gridNodeCircle2.setRadius(Math.min(fieldValue, 12.0D));
             gridNodeCircle2.setVisible(true);
             gridNodeCircle2.setStroke(pColor.interpolate(nColor, MathUtils.sigmoid(fieldValue + 0.1D)));
         } else {
             if (fieldValue < 0.0D) {
-                gridNodeCircle2.setRadius(Math.min(-fieldValue * RadiusFactor, 12.0D));
+                gridNodeCircle2.setRadius(Math.min(-fieldValue, 12.0D));
                 gridNodeCircle2.setVisible(true);
                 gridNodeCircle2.setStroke(nColor.interpolate(pColor, MathUtils.sigmoid(-fieldValue + 0.1D)));
             } else {

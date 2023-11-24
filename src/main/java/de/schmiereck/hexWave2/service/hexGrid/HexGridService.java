@@ -201,6 +201,32 @@ public class HexGridService {
         // Add Field for each Life-Part
         this.addFieldsToParticleParts(this.actCellArrPos);
 
+        calcActParticleImpulse();
+
+        this.calcActGridNext();
+
+        // Transfer probability distribution:
+        // Distribute Probability to the possible DirProbabilities depending on probabilityVector.
+        this.transferActProbabilityToActDirProbabilities();
+
+        //--------------------------------------------------------------------------------------------------------------
+        // Transfer rotation:
+        if (MainConfig3.useRotation)
+            transferRotation();
+
+        //--------------------------------------------------------------------------------------------------------------
+        // Transfer probability distribution from Act- to Next-Grid:
+        // Only read from Act and write to Next!
+
+        this.transferFromActToNext();
+
+        // Add Field for each Life-Part
+        //this.addFieldsToParticleParts(this.nextCellArrPos);
+
+        //--------------------------------------------------------------------------------------------------------------
+    }
+
+    private void calcActParticleImpulse() {
         for (int posY = 0; posY < this.hexGrid.getNodeCountY(); posY++) {
             for (int posX = 0; posX < this.hexGrid.getNodeCountX(); posX++) {
                 final GridNode gridNode = this.getGridNode(posX, posY);
@@ -226,35 +252,14 @@ public class HexGridService {
                                 final int bDiff = actNeighbourFieldPotentialProbabilitySumArr[Cell.Dir.BP.ordinal()] - actNeighbourFieldPotentialProbabilitySumArr[Cell.Dir.BN.ordinal()];
                                 final int cDiff = actNeighbourFieldPotentialProbabilitySumArr[Cell.Dir.CP.ordinal()] - actNeighbourFieldPotentialProbabilitySumArr[Cell.Dir.CN.ordinal()];
                                 if (aDiff != 0 || bDiff != 0 || cDiff != 0) {
-                                    final int f = -MainConfig3.MaxImpulseProb / 2;//-1;//-MainConfig3.MaxProb;//-32;
+                                    //final int f = -MainConfig3.MaxImpulseProb / 2;//-1;//-MainConfig3.MaxProb;//-32;
+                                    final int f = -MainConfig3.MaxPotentialProbability;
                                     //TODO ProbabilityService.calcMoveVector(part.probabilityVector, aDiff / f, bDiff / f, cDiff / f);
                                     ProbabilityService.calcMoveVector(part.impulseProbabilityVector, aDiff / f, bDiff / f, cDiff / f);
                                 }
                             });
             }
         }
-
-        this.calcActGridNext();
-
-        // Transfer probability distribution:
-        // Distribute Probability to the possible DirProbabilities depending on probabilityVector.
-        this.transferActProbabilityToActDirProbabilities();
-
-        //--------------------------------------------------------------------------------------------------------------
-        // Transfer rotation:
-        if (MainConfig3.useRotation)
-            transferRotation();
-
-        //--------------------------------------------------------------------------------------------------------------
-        // Transfer probability distribution from Act- to Next-Grid:
-        // Only read from Act and write to Next!
-
-        this.transferFromActToNext();
-
-        // Add Field for each Life-Part
-        //this.addFieldsToParticleParts(this.nextCellArrPos);
-
-        //--------------------------------------------------------------------------------------------------------------
     }
 
     private void transferActProbabilityToActDirProbabilities() {
@@ -299,7 +304,7 @@ public class HexGridService {
                                             ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, apPerc, bpPerc, cpPerc, anPerc, bnPerc, cnPerc),
                                             //ProbabilityService.createFieldVector(dir),
 
-                                            sourcePotentialProbability
+                                            sourcePotentialProbability * MainConfig3.InitialFieldPartProbabilityFactor
                                             //1
                                             //6*6*6
                                             //((6*6*6 * sourcePart.getProbability()) / MainConfig3.InitialBallPartProbability)
@@ -344,12 +349,12 @@ public class HexGridService {
                             // Source-Part is ready for transfer?
                             if (this.checkProbabilityTransfer(sourcePart, sourceDir)) {
                                 //if (actSourceDirPotentialProbability > 0) {
-                                if (sourcePart.getParticle().getPartType() == Particle.PartType.Field) {
-                                    transferDirProbability = this.calcActTransferPotentialProbabilityForField(targetGridNode, sourcePart, actSourceDirPotentialProbability, dir);
-                                } else {
+                                //if (sourcePart.getParticle().getPartType() == Particle.PartType.Field) {
+                                //    transferDirProbability = this.calcActTransferPotentialProbabilityForFieldPart(targetGridNode, sourcePart, actSourceDirPotentialProbability, dir);
+                                //} else {
                                     // Particle:
                                     transferDirProbability = actSourceDirPotentialProbability;
-                                }
+                                //}
                                 //}  else {
                                 //    transferDirProbability = 0;
                                 //}
@@ -491,19 +496,20 @@ public class HexGridService {
     private void transferPotentialProbabilityToDirPotentialProbabilities(final Part sourcePart) {
         final int sourcePotentialProbability = sourcePart.getPotentialProbability();
         final int stepLimitSum = sourcePart.impulseProbabilityVector.stepLimitSum;
+        //final int limitSum = sourcePart.impulseProbabilityVector.limitSum;
 
         if (stepLimitSum > 0) {
+        //if (limitSum > 0) {
             int dirPotentialProbabilitySum = 0;
             for (final Cell.Dir dir : Cell.Dir.values()) {
-                final int dirPotentialProbability;
                 if (ProbabilityService.checkDir(sourcePart.impulseProbabilityVector, dir)) {
                     final int limit = ProbabilityService.calcProbabilityValue(sourcePart.impulseProbabilityVector, dir, MaxImpulseProb);
-                    dirPotentialProbability = (limit * sourcePotentialProbability) / stepLimitSum;
-                } else {
-                    dirPotentialProbability = 0;
+                    final int dirPotentialProbability = (limit * sourcePotentialProbability) / stepLimitSum;
+                    //final int dirPotentialProbability = (limit * sourcePotentialProbability) / limitSum;
+
+                    dirPotentialProbabilitySum += dirPotentialProbability;
+                    sourcePart.setPotentialProbabilityForDir(dir, dirPotentialProbability);
                 }
-                dirPotentialProbabilitySum += dirPotentialProbability;
-                sourcePart.setPotentialProbabilityForDir(dir, dirPotentialProbability);
             }
             sourcePart.setPotentialProbability(sourcePotentialProbability - dirPotentialProbabilitySum);
         }
@@ -554,7 +560,7 @@ public class HexGridService {
      * c) Potential of the opposite Field-Type of other Particles:
      *    ...
      */
-    private int calcActTransferPotentialProbabilityForField(final GridNode targetGridNode, final Part sourceFieldPart, final int sourceDirProbability, final Cell.Dir dir) {
+    private int calcActTransferPotentialProbabilityForFieldPart(final GridNode targetGridNode, final Part sourceFieldPart, final int sourceDirProbability, final Cell.Dir dir) {
         final int transferPotentialProbability;
 
         final Particle sourceFieldParticle = sourceFieldPart.getParticle();
@@ -562,10 +568,14 @@ public class HexGridService {
         final Particle.PartSubType sourcePartSubType = sourceFieldParticle.getPartSubType();
 
         // a) Potential of the same Field of the same Particle in the Target-Node:
+        // Potential in the direction of ???
         //final int targetParticleFieldPotentialProbabilityDirSum = this.calcActTargetFieldPotentialProbabilityDirSumByParticle(targetGridNode,
         //        sourceFieldParticle, sourcePartType, sourcePartSubType, dir);
-        final int targetParticleFieldPotentialProbabilityDirSum = this.calcActTargetFieldPotentialProbabilitySumByTypesAndParticle(targetGridNode,
-                sourceFieldParticle, sourcePartType, sourcePartSubType);
+        // Potential independent of the direction.
+        //final int targetParticleFieldPotentialProbabilityDirSum = this.calcActTargetFieldPotentialProbabilitySumByTypesAndParticle(targetGridNode,
+        //        sourceFieldParticle, sourcePartType, sourcePartSubType);
+        // Do not feel the own field of the particle.
+        final int targetParticleFieldPotentialProbabilityDirSum = 0;
 
         // b) Potential of the same Field-Type of other Particles in the Target-Node:
         //final int targetSameFieldPotentialProbabilitySum = this.calcActTargetSameFieldProbabilitySum(targetGridNode, sourceFieldPart);
