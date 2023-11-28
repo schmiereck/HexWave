@@ -43,6 +43,7 @@ public class ProbabilityVector {
      * Increases every Step and reset if reached {@link #limitArr}.
      */
     public int[] cntArr =  new int[Cell.Dir.values().length];
+    public int[] dirLastExtraPotentialProbabilityArr = new int[Cell.Dir.values().length];
 
     /**
      * Temporarily Sum of all reached limits in this step.
@@ -51,6 +52,7 @@ public class ProbabilityVector {
      */
     public int stepLimitSum;
     public int limitSum;
+    public int limitCnt;
 
     @Override
     public boolean equals(Object o) {

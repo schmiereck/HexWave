@@ -8,6 +8,7 @@ public class Part implements Serializable {
     private final Particle particle;
 
     public Cell.Dir rotationDir;
+    public Cell.Dir lastExtraDir;
 
     public final ProbabilityVector impulseProbabilityVector;
     private int potentialProbability;
@@ -17,6 +18,16 @@ public class Part implements Serializable {
                 final Cell.Dir rotationDir, final ProbabilityVector impulseProbabilityVector, final int potentialProbability) {
         this.particle = particle;
         this.rotationDir = rotationDir;
+        this.lastExtraDir = null;
+        this.impulseProbabilityVector = impulseProbabilityVector;
+        this.potentialProbability = potentialProbability;
+    }
+
+    public Part(final Particle particle,
+                final Cell.Dir rotationDir, final Cell.Dir lastExtraDir, final ProbabilityVector impulseProbabilityVector, final int potentialProbability) {
+        this.particle = particle;
+        this.rotationDir = rotationDir;
+        this.lastExtraDir = lastExtraDir;
         this.impulseProbabilityVector = impulseProbabilityVector;
         this.potentialProbability = potentialProbability;
     }

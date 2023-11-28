@@ -201,7 +201,7 @@ public class HexGridService {
         // Add Field for each Life-Part
         this.addFieldsToParticleParts(this.actCellArrPos);
 
-        calcActParticleImpulse();
+        this.calcActParticleImpulse();
 
         this.calcActGridNext();
 
@@ -346,8 +346,9 @@ public class HexGridService {
                         final int actSourceDirPotentialProbability = sourcePart.getPotentialProbabilityByDir(sourceDir);
 
                         if (actSourceDirPotentialProbability > 0) {
+                            // TODO double checked, remove this.
                             // Source-Part is ready for transfer?
-                            if (this.checkProbabilityTransfer(sourcePart, sourceDir)) {
+                            if (ProbabilityService.checkDir(sourcePart.impulseProbabilityVector, sourceDir)) {
                                 //if (actSourceDirPotentialProbability > 0) {
                                 //if (sourcePart.getParticle().getPartType() == Particle.PartType.Field) {
                                 //    transferDirProbability = this.calcActTransferPotentialProbabilityForFieldPart(targetGridNode, sourcePart, actSourceDirPotentialProbability, dir);
@@ -495,23 +496,116 @@ public class HexGridService {
      */
     private void transferPotentialProbabilityToDirPotentialProbabilities(final Part sourcePart) {
         final int sourcePotentialProbability = sourcePart.getPotentialProbability();
-        final int stepLimitSum = sourcePart.impulseProbabilityVector.stepLimitSum;
+        //final int stepLimitSum = sourcePart.impulseProbabilityVector.stepLimitSum;
         //final int limitSum = sourcePart.impulseProbabilityVector.limitSum;
+        final int stepLimitCnt = sourcePart.impulseProbabilityVector.limitCnt;
 
-        if (stepLimitSum > 0) {
+        //if (stepLimitSum > 0) {
         //if (limitSum > 0) {
+        if (stepLimitCnt > 0) {
+            final int extraPotentialProbability = (sourcePotentialProbability % stepLimitCnt);
+            final int transferDirPotentialProbability = (sourcePotentialProbability / stepLimitCnt);
+
+            Cell.Dir lowestLastExtraDir = null;
+            if (extraPotentialProbability > 0) {
+                final int extraDirPos = Objects.isNull(sourcePart.lastExtraDir) ? 0 : sourcePart.lastExtraDir.ordinal();
+                int lowestLastExtraPotentialProbability = Integer.MAX_VALUE;//sourcePotentialProbability;
+                boolean foundEqual = false;
+                for (int dirPos = 0; dirPos < Cell.Dir.values().length; dirPos++) {
+                    final Cell.Dir dir = Cell.Dir.values()[(dirPos + extraDirPos) % Cell.Dir.values().length];
+
+                    if (ProbabilityService.checkDir(sourcePart.impulseProbabilityVector, dir)) {
+
+                        final int dirLastExtraPotentialProbability = sourcePart.impulseProbabilityVector.dirLastExtraPotentialProbabilityArr[dirPos];
+                        if ((dirLastExtraPotentialProbability == lowestLastExtraPotentialProbability) &&
+                                (dir != sourcePart.lastExtraDir) && (foundEqual == false)) {
+                            lowestLastExtraPotentialProbability = dirLastExtraPotentialProbability;
+                            lowestLastExtraDir = dir;
+                            foundEqual = true;
+                        } else {
+                        if (dirLastExtraPotentialProbability <= lowestLastExtraPotentialProbability) {
+                            lowestLastExtraPotentialProbability = dirLastExtraPotentialProbability;
+                            lowestLastExtraDir = dir;
+                            foundEqual = true;
+                        }
+                        }
+                    }
+                }
+                if (Objects.isNull(lowestLastExtraDir)) throw new RuntimeException("no lowestLastExtraDir foundEqual.");
+                for (int dirPos = 0; dirPos < Cell.Dir.values().length; dirPos++) {
+                    sourcePart.impulseProbabilityVector.dirLastExtraPotentialProbabilityArr[dirPos] -= lowestLastExtraPotentialProbability;
+                }
+            }
             int dirPotentialProbabilitySum = 0;
-            for (final Cell.Dir dir : Cell.Dir.values()) {
+            //for (final Cell.Dir dir : Cell.Dir.values()) {
+            for (int dirPos = 0; dirPos < Cell.Dir.values().length; dirPos++) {
+                final Cell.Dir dir = Cell.Dir.values()[dirPos];
                 if (ProbabilityService.checkDir(sourcePart.impulseProbabilityVector, dir)) {
                     final int limit = ProbabilityService.calcProbabilityValue(sourcePart.impulseProbabilityVector, dir, MaxImpulseProb);
-                    final int dirPotentialProbability = (limit * sourcePotentialProbability) / stepLimitSum;
+                    //final int dirPotentialProbability = (limit * sourcePotentialProbability) / stepLimitSum;
                     //final int dirPotentialProbability = (limit * sourcePotentialProbability) / limitSum;
+                    final int dirPotentialProbability;
+
+                    if ((extraPotentialProbability > 0) && (lowestLastExtraDir == dir)) {
+                        dirPotentialProbability = transferDirPotentialProbability + extraPotentialProbability;
+                        sourcePart.lastExtraDir = dir;
+                        sourcePart.impulseProbabilityVector.dirLastExtraPotentialProbabilityArr[dirPos] += extraPotentialProbability;
+                    } else {
+                        dirPotentialProbability = transferDirPotentialProbability;
+                    }
 
                     dirPotentialProbabilitySum += dirPotentialProbability;
                     sourcePart.setPotentialProbabilityForDir(dir, dirPotentialProbability);
                 }
             }
             sourcePart.setPotentialProbability(sourcePotentialProbability - dirPotentialProbabilitySum);
+            if (sourcePart.getPotentialProbability() != 0) {
+                throw new RuntimeException("PotentialProbability not completely transfered to dirPotentialProbability");
+            }
+            // TODO add left prob to nest lastExtraDir.
+        }
+    }
+
+    /**
+     * Distribute Probability to the possible DirProbabilities depending on probabilityVector.
+     */
+    private void transferPotentialProbabilityToDirPotentialProbabilities2(final Part sourcePart) {
+        final int sourcePotentialProbability = sourcePart.getPotentialProbability();
+        //final int stepLimitSum = sourcePart.impulseProbabilityVector.stepLimitSum;
+        //final int limitSum = sourcePart.impulseProbabilityVector.limitSum;
+        final int stepLimitCnt = sourcePart.impulseProbabilityVector.limitCnt;
+
+        //if (stepLimitSum > 0) {
+        //if (limitSum > 0) {
+        if (stepLimitCnt > 0) {
+            int extraPotentialProbability = (sourcePotentialProbability % stepLimitCnt);
+            final int extraDirPos = Objects.isNull(sourcePart.lastExtraDir) ? 0 : sourcePart.lastExtraDir.ordinal();
+            int dirPotentialProbabilitySum = 0;
+            //for (final Cell.Dir dir : Cell.Dir.values()) {
+            for (int dirPos = 0; dirPos < Cell.Dir.values().length; dirPos++) {
+                final Cell.Dir dir = Cell.Dir.values()[(dirPos + extraDirPos) % Cell.Dir.values().length];
+                if (ProbabilityService.checkDir(sourcePart.impulseProbabilityVector, dir)) {
+                    final int limit = ProbabilityService.calcProbabilityValue(sourcePart.impulseProbabilityVector, dir, MaxImpulseProb);
+                    //final int dirPotentialProbability = (limit * sourcePotentialProbability) / stepLimitSum;
+                    //final int dirPotentialProbability = (limit * sourcePotentialProbability) / limitSum;
+                    final int dirPotentialProbability;
+
+                    if ((extraPotentialProbability > 0) &&
+                            (Objects.isNull(sourcePart.lastExtraDir) || (sourcePart.lastExtraDir != dir))) {
+                        dirPotentialProbability = (sourcePotentialProbability / stepLimitCnt) + extraPotentialProbability;
+                        extraPotentialProbability = 0;
+                        sourcePart.lastExtraDir = dir;
+                    } else {
+                        dirPotentialProbability = (sourcePotentialProbability / stepLimitCnt);
+                    }
+
+                    dirPotentialProbabilitySum += dirPotentialProbability;
+                    sourcePart.setPotentialProbabilityForDir(dir, dirPotentialProbability);
+                }
+            }
+            sourcePart.setPotentialProbability(sourcePotentialProbability - dirPotentialProbabilitySum);
+            if (sourcePart.getPotentialProbability() != 0) throw new RuntimeException("PotentialProbability not completely transfered to dirPotentialProbability");
+            // TODO add left prob to nest lastExtraDir.
         }
     }
 
@@ -527,6 +621,7 @@ public class HexGridService {
                         //HexMathUtils.calcNextMoveDir(sourcePart.rotationDir),
                         //HexMathUtils.calcNextMoveDir(dir),
                         sourcePart.rotationDir,
+                        sourcePart.lastExtraDir,
                         ProbabilityService.createVector(sourcePart.impulseProbabilityVector),
                         transferProbability);
                 targetGridNode.addPart(this.nextCellArrPos, newNextPart);

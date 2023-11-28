@@ -51,6 +51,8 @@ public class LifeService {
                 case Static -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 0, 0, 0, 0, 0, 0);
                 case StaticPotential -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 6, 6, 6, 6, 6, 6);
                 case MovingRight -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 25, 0, 0, 0, 0, 0);
+                case MovingRightTop15 -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 20, 0, 5, 0, 0, 0);
+                case MovingRightTop45 -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 12, 0, 12, 0, 0, 0);
                 case MovingRightWithPotential -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 45, 6, 6, 6, 6, 6);
                 case MovingLeft -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 0, 0, 0, 25, 0, 0);
                 case MovingLeftWithPotential -> ProbabilityService.createVector(MaxImpulsePercent, MaxImpulseProb, 6, 6, 6, 45, 6, 6);

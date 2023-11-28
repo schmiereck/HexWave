@@ -44,6 +44,7 @@ public class ProbabilityService {
 
         probabilityVector.stepLimitSum = 0;
         probabilityVector.limitSum = 0;
+        probabilityVector.limitCnt = 0;
 
         for (int dirPos = 0; dirPos < Cell.Dir.values().length; dirPos++) {
             final Cell.Dir dir = Cell.Dir.values()[dirPos];
@@ -53,6 +54,7 @@ public class ProbabilityService {
                 //probabilityVector.stepLimitSum += Math.abs(limit);
                 //probabilityVector.stepLimitSum += calcAbsLimitValue2(limit);
                 probabilityVector.stepLimitSum += calcProbabilityByLimit(maxProb, limit);
+                probabilityVector.limitCnt++;
             }
             probabilityVector.limitSum += calcProbabilityByLimit(maxProb, limit);
         }
@@ -164,10 +166,12 @@ public class ProbabilityService {
         for (int dirPos = 0; dirPos < Cell.Dir.values().length; dirPos++) {
             retProbabilityVector.limitArr[dirPos] = probabilityVector.limitArr[dirPos];
             retProbabilityVector.cntArr[dirPos] = probabilityVector.cntArr[dirPos];
+            retProbabilityVector.dirLastExtraPotentialProbabilityArr[dirPos] = probabilityVector.dirLastExtraPotentialProbabilityArr[dirPos];
         }
 
         retProbabilityVector.stepLimitSum = probabilityVector.stepLimitSum;
         retProbabilityVector.limitSum = probabilityVector.limitSum;
+        retProbabilityVector.limitCnt = probabilityVector.limitCnt;
 
         return retProbabilityVector;
     }

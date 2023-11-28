@@ -2,6 +2,8 @@ package de.schmiereck.hexWave2;
 
 import static de.schmiereck.hexWave2.MainConfig3.StartVelocity.MovingLeftWithPotential;
 import static de.schmiereck.hexWave2.MainConfig3.StartVelocity.MovingRight;
+import static de.schmiereck.hexWave2.MainConfig3.StartVelocity.MovingRightTop15;
+import static de.schmiereck.hexWave2.MainConfig3.StartVelocity.MovingRightTop45;
 import static de.schmiereck.hexWave2.MainConfig3.StartVelocity.MovingRightWithPotential;
 import static de.schmiereck.hexWave2.MainConfig3.StartVelocity.Static;
 import static de.schmiereck.hexWave2.MainConfig3.StartVelocity.StaticPotential;
@@ -16,6 +18,9 @@ public class MainConfig3 {
         StaticBallWithField,
         StaticBallWithPotential,
         StaticBallWithPotentialAndField,
+        MovingBallToRight,
+        MovingBallToRightTop15,
+        MovingBallToRightTop45,
         MovingBallWithField,
         MovingBallWithPotential,
         MovingBallWithPotentialAndField,
@@ -33,11 +38,12 @@ public class MainConfig3 {
     public static int HexGridYSize = 3;
 
 
-    public static int MaxPotentialProbability = 6 * 6 * 6;
+    public static int MaxPotentialProbability = 6 * 6 * 6 *6*6;
     public static int MaxImpulsePercent = 100;
     public static int MaxImpulseProb = 6 * 6 * 6;
     //public static int MaxProb = Integer.MAX_VALUE / 6 / 6;
-    public static int FieldPotentialCutoffValue = 6;
+    //public static int FieldPotentialCutoffValue = 6;
+    public static int FieldPotentialCutoffValue = MaxPotentialProbability / (36);
     public static final int InitialFieldPartProbabilityFactor = 6;
 
     public static ConfigEnum config;
@@ -73,6 +79,8 @@ public class MainConfig3 {
         Static,
         StaticPotential,
         MovingRight,
+        MovingRightTop15,
+        MovingRightTop45,
         MovingRightWithPotential,
         MovingLeft,
         MovingLeftWithPotential,
@@ -121,6 +129,36 @@ public class MainConfig3 {
                 BallStartVelocity = new StartVelocity[] { StaticPotential };
                 BallPartSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.ParticleE };
                 BallFieldSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.FieldN };
+                UseWalls = false;
+                UseExtraWalls = false;
+            }
+            case MovingBallToRight -> {
+                useBall = true;
+                BallStartXPos = new int[] { 42 };
+                BallStartYPos = new int[] { 22 };
+                BallStartVelocity = new StartVelocity[] { MovingRight };
+                BallPartSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.ParticleE };
+                BallFieldSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.Nothing };
+                UseWalls = false;
+                UseExtraWalls = false;
+            }
+            case MovingBallToRightTop15 -> {
+                useBall = true;
+                BallStartXPos = new int[] { 42 };
+                BallStartYPos = new int[] { 22 };
+                BallStartVelocity = new StartVelocity[] { MovingRightTop15 };
+                BallPartSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.ParticleE };
+                BallFieldSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.Nothing };
+                UseWalls = false;
+                UseExtraWalls = false;
+            }
+            case MovingBallToRightTop45 -> {
+                useBall = true;
+                BallStartXPos = new int[] { 42 };
+                BallStartYPos = new int[] { 22 };
+                BallStartVelocity = new StartVelocity[] { MovingRightTop45 };
+                BallPartSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.ParticleE };
+                BallFieldSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.Nothing };
                 UseWalls = false;
                 UseExtraWalls = false;
             }
