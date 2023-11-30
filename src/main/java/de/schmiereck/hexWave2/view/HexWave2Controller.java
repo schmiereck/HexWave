@@ -80,11 +80,12 @@ public class HexWave2Controller implements Initializable
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBallWithField);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBallWithPotential);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.StaticBallWithPotentialAndField);
-        MainConfig3.initConfig(MainConfig3.ConfigEnum.MovingBallToRight);
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.MovingBallToRight);
+        //MainConfig3.initConfig(MainConfig3.ConfigEnum.MovingBallToRightTop5);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.MovingBallToRightTop15);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.MovingBallToRightTop45);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.MovingBallWithField);
-        //MainConfig3.initConfig(MainConfig3.ConfigEnum.MovingBallWithPotential);
+        MainConfig3.initConfig(MainConfig3.ConfigEnum.MovingBallWithPotential);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.MovingBallWithPotentialAndField);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.InteractingBallsWithFieldsNP);
         //MainConfig3.initConfig(MainConfig3.ConfigEnum.InteractingBallsWithFieldsNN);

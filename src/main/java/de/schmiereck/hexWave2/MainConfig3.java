@@ -2,6 +2,7 @@ package de.schmiereck.hexWave2;
 
 import static de.schmiereck.hexWave2.MainConfig3.StartVelocity.MovingLeftWithPotential;
 import static de.schmiereck.hexWave2.MainConfig3.StartVelocity.MovingRight;
+import static de.schmiereck.hexWave2.MainConfig3.StartVelocity.MovingRightTop5;
 import static de.schmiereck.hexWave2.MainConfig3.StartVelocity.MovingRightTop15;
 import static de.schmiereck.hexWave2.MainConfig3.StartVelocity.MovingRightTop45;
 import static de.schmiereck.hexWave2.MainConfig3.StartVelocity.MovingRightWithPotential;
@@ -19,6 +20,7 @@ public class MainConfig3 {
         StaticBallWithPotential,
         StaticBallWithPotentialAndField,
         MovingBallToRight,
+        MovingBallToRightTop5,
         MovingBallToRightTop15,
         MovingBallToRightTop45,
         MovingBallWithField,
@@ -38,7 +40,8 @@ public class MainConfig3 {
     public static int HexGridYSize = 3;
 
 
-    public static int MaxPotentialProbability = 6 * 6 * 6 *6*6;
+    public static int MaxPotentialProbability = 6 * 6 * 6;
+    //public static int MaxPotentialProbability = 6 * 6 * 6 * 6 * 6 * 6;
     public static int MaxImpulsePercent = 100;
     public static int MaxImpulseProb = 6 * 6 * 6;
     //public static int MaxProb = Integer.MAX_VALUE / 6 / 6;
@@ -79,6 +82,7 @@ public class MainConfig3 {
         Static,
         StaticPotential,
         MovingRight,
+        MovingRightTop5,
         MovingRightTop15,
         MovingRightTop45,
         MovingRightWithPotential,
@@ -137,6 +141,16 @@ public class MainConfig3 {
                 BallStartXPos = new int[] { 42 };
                 BallStartYPos = new int[] { 22 };
                 BallStartVelocity = new StartVelocity[] { MovingRight };
+                BallPartSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.ParticleE };
+                BallFieldSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.Nothing };
+                UseWalls = false;
+                UseExtraWalls = false;
+            }
+            case MovingBallToRightTop5 -> {
+                useBall = true;
+                BallStartXPos = new int[] { 42 };
+                BallStartYPos = new int[] { 22 };
+                BallStartVelocity = new StartVelocity[] { MovingRightTop5 };
                 BallPartSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.ParticleE };
                 BallFieldSubTypeArr = new Particle.PartSubType[] { Particle.PartSubType.Nothing };
                 UseWalls = false;
