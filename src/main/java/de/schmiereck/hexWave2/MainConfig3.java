@@ -34,8 +34,6 @@ public class MainConfig3 {
         CollideBallsWithPotentialAndFieldsNN,
     }
 
-    public static boolean useGridNodeAreaRef = false;
-
     public static int HexGridXSize = 12;//10;
     public static int HexGridYSize = 3;
 

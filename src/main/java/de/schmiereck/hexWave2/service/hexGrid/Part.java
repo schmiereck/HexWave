@@ -13,6 +13,7 @@ public class Part implements Serializable {
     public final ProbabilityVector impulseProbabilityVector;
     private int potentialProbability;
     private int[] dirPotentialProbabilityArr = new int[Cell.Dir.values().length];
+    private int dirPotentialProbability;
 
     public Part(final Particle particle,
                 final Cell.Dir rotationDir, final ProbabilityVector impulseProbabilityVector, final int potentialProbability) {
@@ -56,6 +57,17 @@ public class Part implements Serializable {
 
     public int getPotentialProbabilityByDir(final Cell.Dir dir) {
         return this.dirPotentialProbabilityArr[dir.ordinal()];
+    }
+
+    public void setDirPotentialProbability(final int probability) {
+        if (probability < 0) {
+            throw new RuntimeException("dirProbability < 0.");
+        }
+        this.dirPotentialProbability = probability;
+    }
+
+    public int getDirPotentialProbability() {
+        return this.dirPotentialProbability;
     }
 
 }

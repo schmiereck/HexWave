@@ -55,10 +55,10 @@ public class ProbabilityVector {
     public int limitCnt;
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ProbabilityVector that = (ProbabilityVector) o;
+        final ProbabilityVector that = (ProbabilityVector) o;
         return //this.probability == that.probability &&
                 //this.stepLimitSum == that.stepLimitSum &&
                 Arrays.equals(this.limitArr, that.limitArr)// &&

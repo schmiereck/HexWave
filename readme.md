@@ -182,3 +182,9 @@ TODO elektr. Felder haben Richtung
 * https://www.leifiphysik.de/elektrizitaetslehre/ladungen-elektrisches-feld/grundwissen/potential-und-elektrische-spannung
 * https://www.leifiphysik.de/elektrizitaetslehre/ladungen-elektrisches-feld/grundwissen/elektrisches-feld-und-feldliniendarstellung#:~:text=F%C3%BCr%20die%20elektrische%20Feldst%C3%A4rke%20im,%CE%B5%200%20%E2%8B%85%20%7C%20Q%20%7C%20r
 * https://www.leifiphysik.de/elektrizitaetslehre/ladungen-elektrisches-feld/grundwissen/ueberlagerung-elektrischer-felder
+
+# Special-Infos
+* Eine Weltformel ohne Quantengravitation - Spektrum der Wissenschaft 
+   https://www.spektrum.de/news/eine-weltformel-ohne-quantengravitation/2201277
+* Ist die Raumzeit gequantelt? - Neue Experimente sollen Vereinbarkeit von Gravitation und Quantenphysik testen - scinexx.de 
+  https://www.scinexx.de/?p=278997

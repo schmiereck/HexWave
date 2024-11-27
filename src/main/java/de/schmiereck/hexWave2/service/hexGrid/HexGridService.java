@@ -102,65 +102,6 @@ public class HexGridService {
         this.maxAreaDistance = maxAreaDistance;
 
         this.hexGrid = new HexGrid(sizeX, sizeY, this.getMaxAreaDistance());
-
-        if (MainConfig3.useGridNodeAreaRef)
-            for (int posY = 0; posY < this.hexGrid.getNodeCountY(); posY++) {
-                for (int posX = 0; posX < this.hexGrid.getNodeCountX(); posX++) {
-                    final GridNode gridNode = this.getGridNode(posX, posY);
-
-                    for (final Cell.Dir dir : Cell.Dir.values()) {
-                        final Cell.Dir leftDir = DirUtils.calcDirByRotOffset(dir, -2);
-                        final Cell.Dir rightDir = DirUtils.calcDirByRotOffset(dir, 2);
-
-                        // Iterator all Areas.
-                        for (int areaDistance = 0; areaDistance < GridNodeArea.calcGridNodeArrSizeForMaxAreaDistance(this.getMaxAreaDistance()); areaDistance++) {
-                            //final int startAreaDistancePos = 0;
-                            final int startAreaDistancePos = areaDistance;
-                            for (int areaDistancePos = startAreaDistancePos; areaDistancePos <= (areaDistance); areaDistancePos++) {
-                                final GridNode neighbourareaDistanceGridNode = this.getNeighbourGridNode(gridNode, dir, areaDistancePos);
-
-                                // Set Middle Node.
-                                gridNode.setGridNodeAreaArr(dir, areaDistance, areaDistancePos, 0, neighbourareaDistanceGridNode,
-                                        calcGridNodeAreaRefValue(areaDistance, areaDistancePos, 0, this.getMaxAreaDistance()));
-
-                                // Set Left&Right Nodes.
-                                for (int gridNodePos = 1; gridNodePos <= areaDistancePos; gridNodePos++) {
-                                    final GridNode leftNeighbourGridNode = this.getNeighbourGridNode(neighbourareaDistanceGridNode, leftDir, gridNodePos);
-                                    final GridNode rightNeighbourGridNode = this.getNeighbourGridNode(neighbourareaDistanceGridNode, rightDir, gridNodePos);
-
-                                    // 1: (1, 2), 2: (3, 4), 3: (5, 6), ...
-                                    gridNode.setGridNodeAreaArr(dir, areaDistance, areaDistancePos, gridNodePos * 2 - 1, leftNeighbourGridNode,
-                                            calcGridNodeAreaRefValue(areaDistance, areaDistancePos, gridNodePos, this.getMaxAreaDistance()));
-                                    gridNode.setGridNodeAreaArr(dir, areaDistance, areaDistancePos, gridNodePos * 2, rightNeighbourGridNode,
-                                            calcGridNodeAreaRefValue(areaDistance, areaDistancePos, gridNodePos, this.getMaxAreaDistance()));
-                                }
-                            }
-                        }
-                    }
-                }
-        }
-    }
-
-    public static double calcGridNodeAreaRefValue(final int areaDistance, final int areaDistancePos, final int gridNodePos, final int maxAreaDistance) {
-        final int areaNodeCount = GridNodeArea.calcGridNodeSizeForAreaDistance(areaDistance);
-
-        final double areaDistanceValue = (((maxAreaDistance + 1) - areaDistance) / (double)maxAreaDistance);
-
-        //final double distanceValue = (areaDistancePos / (double)MAX_AREA_DISTANCE);
-        //final double distanceValue = (areaDistancePos / (double)areaNodeCount);
-        final double distanceValue = ((areaDistancePos + 1) / (double)areaDistance);
-
-        //final double posValue = (MAX_AREA_DISTANCE / ((gridNodePos / 2.0D) + 1.0D)) / MAX_AREA_DISTANCE;
-        //final double posValue = ((MAX_AREA_DISTANCE - (gridNodePos / 2))) / (double)MAX_AREA_DISTANCE;
-        final double posValue = (((areaDistancePos + 1) - (gridNodePos))) / (double)(areaDistancePos);
-        //final double posValue = (((areaNodeCount / 2) - (gridNodePos / 2))) / (double)(areaNodeCount / 2);
-
-        //final double value = 1.0D;
-        //final double value = distanceValue * posValue;
-        //final double value = areaDistanceValue;
-        final double value = areaDistanceValue * distanceValue * posValue;
-        //System.out.printf("value:%f\n", value);
-        return value;
     }
 
     public GridNode getGridNode(int posX, int posY) {
@@ -182,7 +123,8 @@ public class HexGridService {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             ParticleProbability that = (ParticleProbability) o;
-            return Objects.equals(this.particle, that.particle) &&
+            return this.particle.getPartType() == Particle.PartType.Field &&
+                    Objects.equals(this.particle, that.particle) &&
                     Objects.equals(this.probabilityVector, that.probabilityVector);
         }
 
@@ -349,36 +291,33 @@ public class HexGridService {
                             // TODO double checked, remove this.
                             // Source-Part is ready for transfer?
                             if (ProbabilityService.checkDir(sourcePart.impulseProbabilityVector, sourceDir)) {
-                                //if (actSourceDirPotentialProbability > 0) {
-                                //if (sourcePart.getParticle().getPartType() == Particle.PartType.Field) {
-                                //    transferDirProbability = this.calcActTransferPotentialProbabilityForFieldPart(targetGridNode, sourcePart, actSourceDirPotentialProbability, dir);
-                                //} else {
-                                    // Particle:
+                                if (sourcePart.getParticle().getPartType() == Particle.PartType.Field) {
+                                    // Field:
+                                    //transferDirProbability = this.calcActTransferPotentialProbabilityForFieldPart(targetGridNode, sourcePart, actSourceDirPotentialProbability, dir);
                                     transferDirProbability = actSourceDirPotentialProbability;
-                                //}
-                                //}  else {
-                                //    transferDirProbability = 0;
-                                //}
 
-                                // Transfer Probability in this direction available?
-                                if (transferDirProbability > 0) {
-                                    final int leftDirProbability = actSourceDirPotentialProbability - transferDirProbability;
-                                    if (leftDirProbability < 0) {
-                                        throw new RuntimeException("leftDirProbability < 0");
+                                    // Transfer Probability in this direction available?
+                                    if (transferDirProbability > 0) {
+                                        final int leftDirProbability = actSourceDirPotentialProbability - transferDirProbability;
+                                        if (leftDirProbability < 0) {
+                                            throw new RuntimeException("leftDirProbability < 0");
+                                        }
+
+                                        // Source-Part is ready for transfer?
+                                        //if (this.checkProbabilityTransfer(sourcePart, sourceDir)) {
+                                        //final Optional<Part> optionalPart = this.searchNextParticlePart(targetGridNode, sourcePart.getParticle(), sourcePart.probabilityVector, transferDirProbability);
+                                        this.transferProbabilityToNextByNewPart(sourcePart, targetGridNode, transferDirProbability);
+                                        this.transferProbabilityToNextByNewPart(sourcePart, sourceGridNode, leftDirProbability);
                                     }
-
-                                    // Source-Part is ready for transfer?
-                                    //if (this.checkProbabilityTransfer(sourcePart, sourceDir)) {
-                                    //final Optional<Part> optionalPart = this.searchNextParticlePart(targetGridNode, sourcePart.getParticle(), sourcePart.probabilityVector, transferDirProbability);
-                                    this.transferProbabilityToNextByNewPart(sourcePart, targetGridNode, transferDirProbability);
-                                    this.transferProbabilityToNextByNewPart(sourcePart, sourceGridNode, leftDirProbability);
                                     //} else {
                                     //    // No transfer, DirProbability stay in Next-SourceGridNode.
                                     //    this.transferProbabilityToNextByNewPart(sourcePart, sourceGridNode, actSourceDirPotentialProbability);
                                     //}
                                 } else {
+                                    // Particle:
                                     // No transfer, DirProbability stay in Next-SourceGridNode.
-                                    this.transferProbabilityToNextByNewPart(sourcePart, sourceGridNode, actSourceDirPotentialProbability);
+                                    //??? sourcePart.getDirPotentialProbability() + sourcePart.getPotentialProbability()
+                                    this.transferProbabilityToNextByNewPart(sourcePart, targetGridNode, sourcePart.getDirPotentialProbability());
                                 }
                             } else {
                                 // No transfer, DirProbability stay in Next-SourceGridNode.
@@ -423,6 +362,7 @@ public class HexGridService {
         }
         //--------------------------------------------------------------------------------------------------------------
     }
+
     private void precalcActGrid() {
         //--------------------------------------------------------------------------------------------------------------
         // Normalize probability:
@@ -558,11 +498,11 @@ public class HexGridService {
                     sourcePart.setPotentialProbabilityForDir(dir, dirPotentialProbability);
                 }
             }
+            sourcePart.setDirPotentialProbability(dirPotentialProbabilitySum);
             sourcePart.setPotentialProbability(sourcePotentialProbability - dirPotentialProbabilitySum);
             if (sourcePart.getPotentialProbability() != 0) {
                 throw new RuntimeException("PotentialProbability not completely transfered to dirPotentialProbability");
             }
-            // TODO add left prob to nest lastExtraDir.
         }
     }
 
@@ -603,6 +543,7 @@ public class HexGridService {
                     sourcePart.setPotentialProbabilityForDir(dir, dirPotentialProbability);
                 }
             }
+            sourcePart.setDirPotentialProbability(dirPotentialProbabilitySum);
             sourcePart.setPotentialProbability(sourcePotentialProbability - dirPotentialProbabilitySum);
             if (sourcePart.getPotentialProbability() != 0) throw new RuntimeException("PotentialProbability not completely transfered to dirPotentialProbability");
             // TODO add left prob to nest lastExtraDir.
@@ -944,10 +885,6 @@ public class HexGridService {
 
     public int retrieveStepCount() {
         return this.stepCount;
-    }
-
-    public GridNodeArea retrieveActGridNodeArea(final int posX, final int posY, final Cell.Dir dir, final int areaDistance) {
-        return this.getGridNode(posX, posY).getGridNodeArea(dir, areaDistance);
     }
 
     public double retrieveActGridNodePartValue(final int posX, final int posY) {
