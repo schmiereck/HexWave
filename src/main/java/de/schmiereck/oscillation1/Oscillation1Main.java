@@ -15,27 +15,29 @@ public class Oscillation1Main {
         final OPart oPart = new OPart();
         oPart.state = 0;
 
+        final List<Integer> amplitudeStateValueList = new ArrayList<>();
         final List<Integer> amplitudeSinusValueList = new ArrayList<>();
         final List<Integer> amplitudeSpeedValueList = new ArrayList<>();
-        final List<Integer> amplitudeParabelValueList = new ArrayList<>();
+        final List<Integer> amplitudeOscillatorValueList = new ArrayList<>();
 
         for (int i = 0; i < (Max2State * 4 + 1); i++) {
             final int amplitudeSinusValue = (int)(Math.sin((double) oPart.state / Max2State * Math.PI) * MaxAmplitude);
             final int amplitudeSpeedValue = calcAmplitudeValue(oPart.state);
             final int realSpeedState = calcRealState(oPart.state);
-            final int amplitudeParabelValue = calcAmplitude2Value(oPart.state);
+            final int amplitudeOscillatorValue = calcAmplitude2Value(oPart.state); // Parabel
             final int realParabelState = calcReal2State(oPart.state);
+            amplitudeStateValueList.add(oPart.state);
             amplitudeSinusValueList.add(amplitudeSinusValue);
             amplitudeSpeedValueList.add(amplitudeSpeedValue);
-            amplitudeParabelValueList.add(amplitudeParabelValue);
-            System.out.printf("i:%d \t- state:%2d,  " +
-                            "\t- real-stateSpeed:%2d, \tamplitudeSpeed:%4d, " +
-                            "\t- real-stateParabel:%2d, \tamplitudeParabel:%4d, " +
+            amplitudeOscillatorValueList.add(amplitudeOscillatorValue);
+            System.out.printf("i:%d \t- state:%3d,  " +
+                            "\t- real-stateSpeed:%3d, \tamplitudeSpeed:%4d, " +
+                            "\t- real-stateOscillator:%3d, \tamplitudeOscillator:%4d, " +
                             " \tamplitudeSinus:%4d" +
                             "%n",
                     i, oPart.state,
                     realSpeedState, amplitudeSpeedValue,
-                    realParabelState, amplitudeParabelValue,
+                    realParabelState, amplitudeOscillatorValue,
                     amplitudeSinusValue);
             calcNextState(oPart);
         }
@@ -44,9 +46,10 @@ public class Oscillation1Main {
 
         final List<AmplitudeGraph> amplitudeGraphList = new ArrayList<>();
 
-        amplitudeGraphList.add(new AmplitudeGraph(amplitudeSinusValueList, Color.GRAY));
-        amplitudeGraphList.add(new AmplitudeGraph(amplitudeSpeedValueList, Color.GREEN));
-        amplitudeGraphList.add(new AmplitudeGraph(amplitudeParabelValueList, Color.BLUE));
+        amplitudeGraphList.add(new AmplitudeGraph("State", Color.BLACK, amplitudeStateValueList));
+        amplitudeGraphList.add(new AmplitudeGraph("Sinus", Color.GRAY, amplitudeSinusValueList));
+        amplitudeGraphList.add(new AmplitudeGraph("Speed", Color.GREEN, amplitudeSpeedValueList));
+        amplitudeGraphList.add(new AmplitudeGraph("Oscillator", Color.BLUE, amplitudeOscillatorValueList));
 
         final AmplitudeGraphPanel panel = new AmplitudeGraphPanel(amplitudeGraphList);
 

@@ -4,11 +4,13 @@ import java.awt.*;
 import java.util.List;
 
 public class AmplitudeGraph {
-    final List<Integer> amplitudeValueList;
+    final String name;
     final Color lineColor;
+    final List<Integer> amplitudeValueList;
 
-    public AmplitudeGraph(final List<Integer> amplitudeValueList, final Color lineColor) {
-        this.amplitudeValueList = amplitudeValueList;
+    public AmplitudeGraph(final String name, final Color lineColor, final List<Integer> amplitudeValueList) {
+        this.name = name;
         this.lineColor = lineColor;
+        this.amplitudeValueList = amplitudeValueList;
     }
 }
