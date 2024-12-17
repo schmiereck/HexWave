@@ -42,7 +42,7 @@ public class Oscillation1Main {
             calcNextState(oPart);
         }
 
-        final JFrame frame = new JFrame("Amplitude Graph");
+        final JFrame frame = new JFrame("Oscillator Amplitude Graph");
 
         final List<AmplitudeGraph> amplitudeGraphList = new ArrayList<>();
 
