@@ -5,6 +5,9 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * see: https://codebase64.org/doku.php?id=base:generating_approximate_sines_in_assembly
+ */
 public class Oscillation1Main {
     //public static int MaxState = 3;
     public static int MaxState = 12;
