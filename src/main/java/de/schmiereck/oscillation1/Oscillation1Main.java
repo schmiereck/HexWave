@@ -10,9 +10,9 @@ import java.util.List;
  */
 public class Oscillation1Main {
     //public static int MaxState = 3;
-    public static int MaxState = 12;
-    public static int Max2State = MaxState * 2;
-    public static int MaxAmplitude = MaxState * MaxState;
+    public static int MaxOscillationState = 12;
+    public static int MaxState = MaxOscillationState * 2;
+    public static int MaxAmplitude = MaxOscillationState * MaxOscillationState;
 
     public static void main(final String[] args) {
         final OPart oPart = new OPart();
@@ -23,8 +23,8 @@ public class Oscillation1Main {
         final List<Integer> amplitudeSpeedValueList = new ArrayList<>();
         final List<Integer> amplitudeOscillatorValueList = new ArrayList<>();
 
-        for (int i = 0; i < (Max2State * 4 + 1); i++) {
-            final int amplitudeSinusValue = (int)(Math.sin((double) oPart.state / Max2State * Math.PI) * MaxAmplitude);
+        for (int i = 0; i < (MaxState * 4 + 1); i++) {
+            final int amplitudeSinusValue = (int)(Math.sin((double) oPart.state / MaxState * Math.PI) * MaxAmplitude);
             final int amplitudeSpeedValue = calcAmplitudeValue(oPart.state);
             final int realSpeedState = calcRealState(oPart.state);
             final int amplitudeOscillatorValue = calcAmplitude2Value(oPart.state); // Parabel
@@ -88,16 +88,16 @@ public class Oscillation1Main {
     private static int calcRealState(final int state) {
         final int realState;
         if (state < 0) {
-            if (state < -MaxState) {
-                realState = -Max2State - state;
+            if (state < -MaxOscillationState) {
+                realState = -MaxState - state;
             } else {
                 realState = state;
             }
         } else {
-            if (state <= MaxState) {
+            if (state <= MaxOscillationState) {
                 realState = state;
             } else {
-                realState = Max2State - state;
+                realState = MaxState - state;
             }
         }
         return realState;
@@ -106,24 +106,24 @@ public class Oscillation1Main {
     private static int calcReal2State(final int state) {
         final int realState;
         if (state < 0) {
-            if (state < -MaxState) {
-                realState = state - -MaxState;
+            if (state < -MaxOscillationState) {
+                realState = state - -MaxOscillationState;
             } else {
-                realState = -MaxState - state;
+                realState = -MaxOscillationState - state;
             }
         } else {
-            if (state <= MaxState) {
-                realState = MaxState - state;
+            if (state <= MaxOscillationState) {
+                realState = MaxOscillationState - state;
             } else {
-                realState = state - MaxState;
+                realState = state - MaxOscillationState;
             }
         }
         return realState;
     }
 
     private static void calcNextState(final OPart oPart) {
-        if (oPart.state >= Max2State) {
-            oPart.state = -Max2State;
+        if (oPart.state >= MaxState) {
+            oPart.state = -MaxState;
         }
         oPart.state++;
     }
