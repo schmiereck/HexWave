@@ -20,8 +20,8 @@ public class AmplitudeGraphPanel extends JPanel {
         final Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        final int width = getWidth();
-        final int height = getHeight();
+        final int width = this.getWidth();
+        final int height = this.getHeight();
         final int padding = 25;
         final int labelPadding = 25;
 
@@ -167,7 +167,7 @@ public class AmplitudeGraphPanel extends JPanel {
         }
     }
 
-    private int calcMinAmplitudeValue(final List<AmplitudeGraph> amplitudeGraphList) {
+    private static int calcMinAmplitudeValue(final List<AmplitudeGraph> amplitudeGraphList) {
         //final AmplitudeGraph amplitudeGraph = amplitudeGraphList.get(0);
         //final List<Integer> amplitudeValues = amplitudeGraph.amplitudeValueList;
         //return amplitudeValues.stream().min(Integer::compareTo).orElse(0);
@@ -177,7 +177,7 @@ public class AmplitudeGraphPanel extends JPanel {
                 min(Integer::compareTo).orElse(0);
     }
 
-    private int calcMaxAmplitudeValue(final List<AmplitudeGraph> amplitudeGraphList) {
+    private static int calcMaxAmplitudeValue(final List<AmplitudeGraph> amplitudeGraphList) {
         //final AmplitudeGraph amplitudeGraph = amplitudeGraphList.get(0);
         //final List<Integer> amplitudeValues = amplitudeGraph.amplitudeValueList;
         //return amplitudeValues.stream().max(Integer::compareTo).orElse(0);
@@ -187,7 +187,7 @@ public class AmplitudeGraphPanel extends JPanel {
                 max(Integer::compareTo).orElse(0);
     }
 
-    private int calcMaxAmplitudeValueListSize(final List<AmplitudeGraph> amplitudeGraphList) {
+    private static int calcMaxAmplitudeValueListSize(final List<AmplitudeGraph> amplitudeGraphList) {
         //final AmplitudeGraph amplitudeGraph = this.amplitudeGraphList.get(0);
         //final List<Integer> amplitudeValues = amplitudeGraph.amplitudeValueList;
         //final int amplitudeValueListSize = amplitudeValues.size();
