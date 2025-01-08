@@ -126,29 +126,32 @@ public class MoveField2DMain {
             calcNextField(field.moveField, maxFieldValue, maxOscillationFieldValue, maxAmplitude);
         }
         final MoveField[] sourceFieldArr = fieldArr.getFieldArr();
+        // TODO Manage two Arrays (shadow array) for source and target fields to avoid copying.
         final MoveField[] copyFieldArr = Arrays.copyOf(sourceFieldArr, sourceFieldArr.length);
         for (int pos = 0; pos < sourceFieldArr.length; pos++) {
-            final MoveField field = sourceFieldArr[pos];
+            final MoveField sourceField = sourceFieldArr[pos];
 
             // There is something with some probability and
-            // the move-field-counter is zero?
-            if ((field.probability > 0) &&
-                    ((field.moveField.value == 0) && (field.moveField.freqCnt == 0)) &&
-                    (field.moveField.freqCntMax != 0)) {
+            // the move-sourceField-counter is zero?
+            if ((sourceField.probability > 0) &&
+                    ((sourceField.moveField.value == 0) && (sourceField.moveField.freqCnt == 0)) &&
+                    (sourceField.moveField.freqCntMax != 0)) {
                 // Move to right?
-                if (field.moveField.freqCntMax > 0) {
-                    copyFieldArr[pos] = retrieveField(sourceFieldArr, pos + 1);
-                    submitField(copyFieldArr, pos + 1, field);
+                if (sourceField.moveField.freqCntMax > 0) {
+                    final MoveField targetSourceField = retrieveField(sourceFieldArr, pos + 1);
+                    submitField(copyFieldArr, pos, targetSourceField);
+                    submitField(copyFieldArr, pos + 1, sourceField);
                     pos++;
                 } else {
                     // Move to left?
-                    if (field.moveField.freqCntMax < 0) {
-                        copyFieldArr[pos] = sourceFieldArr[pos - 1];
-                        copyFieldArr[pos - 1] = field;
+                    if (sourceField.moveField.freqCntMax < 0) {
+                        final MoveField targetSourceField = retrieveField(sourceFieldArr, pos - 1);
+                        submitField(copyFieldArr, pos, targetSourceField);
+                        submitField(copyFieldArr, pos - 1, sourceField);
                     }
                 }
             } else {
-                copyFieldArr[pos] = sourceFieldArr[pos];
+                submitField(copyFieldArr, pos, sourceField);
             }
         }
         fieldArr.setFieldArr(copyFieldArr);
