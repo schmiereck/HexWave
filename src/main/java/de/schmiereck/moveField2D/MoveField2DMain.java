@@ -49,13 +49,22 @@ public class MoveField2DMain {
 
                         field.probability = 1;
                     } else {
-                        field.probability = 0;
+                        if (posHolder.value == ((fieldArr.getLength() / 4) * 4)) {
+                            field.moveField.freqCnt = 0;
+                            field.moveField.freqCntMax = -1;
+                            field.moveField.value = 0;
+                            field.moveField.outValue = 0;
+
+                            field.probability = 1;
+                        } else {
+                            field.probability = 0;
+                        }
                     }
                 }
             }
         });
 
-        final JFrame frame = new JFrame("Field-2D Graph");
+        final JFrame frame = new JFrame("Move Field-2D Graph");
 
         //final Field2DGraphPanel panel = new Field2DGraphPanel(fieldArrDto, maxFieldValue);
         final MoveField2DGraphPanel panel = new MoveField2DGraphPanel(fieldArrDto, maxAmplitude);
@@ -121,14 +130,18 @@ public class MoveField2DMain {
         for (int pos = 0; pos < sourceFieldArr.length; pos++) {
             final MoveField field = sourceFieldArr[pos];
 
+            // There is something with some probability and
+            // the move-field-counter is zero?
             if ((field.probability > 0) &&
                     ((field.moveField.value == 0) && (field.moveField.freqCnt == 0)) &&
                     (field.moveField.freqCntMax != 0)) {
+                // Move to right?
                 if (field.moveField.freqCntMax > 0) {
                     copyFieldArr[pos] = retrieveField(sourceFieldArr, pos + 1);
                     submitField(copyFieldArr, pos + 1, field);
                     pos++;
                 } else {
+                    // Move to left?
                     if (field.moveField.freqCntMax < 0) {
                         copyFieldArr[pos] = sourceFieldArr[pos - 1];
                         copyFieldArr[pos - 1] = field;
