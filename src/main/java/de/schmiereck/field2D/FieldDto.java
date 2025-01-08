@@ -1,7 +1,7 @@
-package de.schmiereck.field2d;
+package de.schmiereck.field2D;
 
 public class FieldDto {
-    int value;
+    public int value;
     public int outValue;
 
     public FieldDto() {

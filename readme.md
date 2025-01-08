@@ -182,6 +182,8 @@ TODO elektr. Felder haben Richtung
 * https://www.leifiphysik.de/elektrizitaetslehre/ladungen-elektrisches-feld/grundwissen/potential-und-elektrische-spannung
 * https://www.leifiphysik.de/elektrizitaetslehre/ladungen-elektrisches-feld/grundwissen/elektrisches-feld-und-feldliniendarstellung#:~:text=F%C3%BCr%20die%20elektrische%20Feldst%C3%A4rke%20im,%CE%B5%200%20%E2%8B%85%20%7C%20Q%20%7C%20r
 * https://www.leifiphysik.de/elektrizitaetslehre/ladungen-elektrisches-feld/grundwissen/ueberlagerung-elektrischer-felder
+* Visualization of Quantum Physics (Quantum Mechanics) - YouTube  
+  https://youtu.be/p7bzE1E5PMY
 
 # Special-Infos
 * Eine Weltformel ohne Quantengravitation - Spektrum der Wissenschaft 

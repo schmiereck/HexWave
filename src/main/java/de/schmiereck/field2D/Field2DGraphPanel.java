@@ -1,10 +1,9 @@
-package de.schmiereck.field2d;
+package de.schmiereck.field2D;
 
 import de.schmiereck.oscillation1.Holder;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
 
 public class Field2DGraphPanel extends JPanel {
     private final FieldArrDto fieldArrDto;

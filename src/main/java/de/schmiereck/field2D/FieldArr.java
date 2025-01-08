@@ -1,4 +1,4 @@
-package de.schmiereck.field2d;
+package de.schmiereck.field2D;
 
 import java.util.Arrays;
 import java.util.stream.Stream;

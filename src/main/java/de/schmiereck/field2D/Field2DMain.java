@@ -1,6 +1,5 @@
-package de.schmiereck.field2d;
+package de.schmiereck.field2D;
 
-import de.schmiereck.oscillation1.AmplitudeGraphPanel;
 import de.schmiereck.oscillation1.Holder;
 
 import javax.swing.*;
@@ -16,8 +15,8 @@ public class Field2DMain {
 
         final FieldArr fieldArr = new FieldArr(64);
         final FieldArrDto fieldArrDto = new FieldArrDto(fieldArr.getLength());
-        final Holder<Integer> posHolder = new Holder<>(0);
 
+        final Holder<Integer> posHolder = new Holder<>(0);
         fieldArr.stream().forEach(field -> {
             posHolder.value++;
 
