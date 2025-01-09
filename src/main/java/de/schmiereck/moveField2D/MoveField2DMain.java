@@ -128,26 +128,30 @@ public class MoveField2DMain {
         final MoveField[] sourceFieldArr = fieldArr.getFieldArr();
         // TODO Manage two Arrays (shadow array) for source and target fields to avoid copying.
         final MoveField[] copyFieldArr = Arrays.copyOf(sourceFieldArr, sourceFieldArr.length);
+
         for (int pos = 0; pos < sourceFieldArr.length; pos++) {
             final MoveField sourceField = sourceFieldArr[pos];
 
-            // There is something with some probability and
+            // Is there something with some probability and
             // the move-sourceField-counter is zero?
             if ((sourceField.probability > 0) &&
                     ((sourceField.moveField.value == 0) && (sourceField.moveField.freqCnt == 0)) &&
                     (sourceField.moveField.freqCntMax != 0)) {
+                final int targetPos;
                 // Move to right?
                 if (sourceField.moveField.freqCntMax > 0) {
-                    final MoveField targetSourceField = retrieveField(sourceFieldArr, pos + 1);
+                    targetPos = pos + 1;
+                    final MoveField targetSourceField = retrieveField(sourceFieldArr, targetPos);
                     submitField(copyFieldArr, pos, targetSourceField);
-                    submitField(copyFieldArr, pos + 1, sourceField);
+                    submitField(copyFieldArr, targetPos, sourceField);
                     pos++;
                 } else {
                     // Move to left?
                     if (sourceField.moveField.freqCntMax < 0) {
-                        final MoveField targetSourceField = retrieveField(sourceFieldArr, pos - 1);
+                        targetPos = pos - 1;
+                        final MoveField targetSourceField = retrieveField(sourceFieldArr, targetPos);
                         submitField(copyFieldArr, pos, targetSourceField);
-                        submitField(copyFieldArr, pos - 1, sourceField);
+                        submitField(copyFieldArr, targetPos, sourceField);
                     }
                 }
             } else {
@@ -181,15 +185,15 @@ public class MoveField2DMain {
     }
 
     private static void calcNextField(final Field field, final int maxFieldValue, final int maxOscillationFieldValue, final int maxAmplitude) {
-        if (reachedFreqCntMax(field)) {
+        if (checkFreqCntMaxReached(field)) {
             resetFreqCnt(field);
 
-            final int value = field.value++;
+            final int value = field.value + 1;
             final int nextValue;
-            if (field.value >= maxFieldValue) {
+            if (value >= maxFieldValue) {
                 nextValue = -maxFieldValue;
             } else {
-                nextValue = value + 1;
+                nextValue = value;
             }
             field.value = nextValue;
             //field.outValue = calcAmplitude2Value(nextValue, maxOscillationFieldValue, maxAmplitude) / 4;
@@ -199,7 +203,7 @@ public class MoveField2DMain {
         }
     }
 
-    private static boolean reachedFreqCntMax(final Field field) {
+    private static boolean checkFreqCntMaxReached(final Field field) {
         final boolean ret;
         if (field.freqCntMax > 0) {
             if (field.freqCnt >= field.freqCntMax) {
