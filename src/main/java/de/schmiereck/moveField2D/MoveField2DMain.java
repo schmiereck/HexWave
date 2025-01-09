@@ -81,7 +81,7 @@ public class MoveField2DMain {
         final int calcFPS = 15*2; // Frames per second
         final ReentrantLock lock = new ReentrantLock();
 
-        Thread calculationThread = new Thread(() -> {
+        final Thread calculationThread = new Thread(() -> {
             while (true) {
                 // Calculate next field values.
                 calcNextFieldArrValue(fieldArr, maxFieldValue, maxOscillationFieldValue, maxAmplitude);
