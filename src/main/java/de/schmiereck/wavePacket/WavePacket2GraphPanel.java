@@ -5,12 +5,12 @@ import de.schmiereck.oscillation1.Holder;
 import javax.swing.*;
 import java.awt.*;
 
-public class WavePacketGraphPanel extends JPanel {
+public class WavePacket2GraphPanel extends JPanel {
     final Holder<Integer> t;
     final double[] uRender;
     private final double maxFieldValue;
 
-    public WavePacketGraphPanel(Holder<Integer> t, double[] uRender, final double maxFieldValue) {
+    public WavePacket2GraphPanel(Holder<Integer> t, double[] uRender, final double maxFieldValue) {
         this.t = t;
         this.uRender = uRender;
         this.maxFieldValue = maxFieldValue;
