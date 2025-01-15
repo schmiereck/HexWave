@@ -1,6 +1,7 @@
 package de.schmiereck.wavePacket;
 
-import de.schmiereck.fdtd.FDTDGraphPanel;
+import de.schmiereck.fdtd.cell.FDTDCell;
+import de.schmiereck.fdtd.cell.FDTDCellDto;
 import de.schmiereck.oscillation1.Holder;
 
 import javax.swing.*;
@@ -11,10 +12,14 @@ public class WavePacket2Simulation {
 
     // Parameter der Simulation
     static final int GRID_SIZE = 200;      // Anzahl der Zellen
-    static final double TIME_STEP = 0.01; // Zeitschritt Δt
     static final double SPACE_STEP = 0.1; // Raumgitter Δx
     static final double C = 1.0;          // Wellenausbreitungsgeschwindigkeit
-    static final double MAX = 10.0;          // Maximum Amplitude
+    static final double MAX = 5.0;          // Maximum Amplitude
+
+    static final double WAVE_SPEED = 1.0; // Wellengeschwindigkeit
+    static final double CFL = 0.9;        // CFL-Zahl (muss <= 1 sein)
+    static final double TIME_STEP = 0.01; // Zeitschritt Δt
+    //static final double TIME_STEP = CFL * SPACE_STEP / WAVE_SPEED; // Zeitschritt Δt
 
     // Felder für die Wellenpakete (real und imaginär)
     static double[] realPart = new double[GRID_SIZE]; // Reelle Komponente
@@ -24,9 +29,13 @@ public class WavePacket2Simulation {
     static double[] realNext = new double[GRID_SIZE];
     static double[] imagNext = new double[GRID_SIZE];
 
-    static double[] uRender = new double[GRID_SIZE];  // Zustand für Rendering.
+    static WavePacket2Dto[] wavePacket2DtoArr = new WavePacket2Dto[GRID_SIZE];  // Zustand für Rendering.
 
     public static void main(String[] args) {
+        for (int pos = 0; pos < wavePacket2DtoArr.length; pos++) {
+            wavePacket2DtoArr[pos] = new WavePacket2Dto();
+        }
+
         // Initialisierung der Wellenpakete
         initializeWavePacket();
 
@@ -34,7 +43,7 @@ public class WavePacket2Simulation {
 
         final Holder<Integer> t = new Holder<>(0);
 
-        final WavePacket2GraphPanel panel = new WavePacket2GraphPanel(t, uRender, MAX);
+        final WavePacket2GraphPanel panel = new WavePacket2GraphPanel(t, wavePacket2DtoArr, MAX);
 
         panel.setPreferredSize(new Dimension(800, 600));
 
@@ -52,7 +61,7 @@ public class WavePacket2Simulation {
 //        }
 
         final int showFPS = 15*2; // Frames per second
-        final int calcFPS = 15*20; // Frames per second
+        final int calcFPS = 15*40; // Frames per second
         final ReentrantLock lock = new ReentrantLock();
 
         final Thread calculationThread = new Thread(() -> {
@@ -69,7 +78,9 @@ public class WavePacket2Simulation {
                     //System.arraycopy(uCurrent, 0, uRender, 0, GRID_SIZE);
                     for (int pos = 0; pos < GRID_SIZE; pos++) {
                         double amplitude = Math.sqrt(realPart[pos] * realPart[pos] + imagPart[pos] * imagPart[pos]);
-                        uRender[pos] = amplitude;
+                        wavePacket2DtoArr[pos].amplitude = amplitude;
+                        wavePacket2DtoArr[pos].realPart = realPart[pos];
+                        wavePacket2DtoArr[pos].imagPart = imagPart[pos];
                     }
                 } finally {
                     lock.unlock();
@@ -124,6 +135,7 @@ public class WavePacket2Simulation {
     // Simuliere den nächsten Zeitschritt
     static void simulateNextStep() {
         double c2 = (C * TIME_STEP / SPACE_STEP) * (C * TIME_STEP / SPACE_STEP);
+        //double c2 = (WAVE_SPEED * TIME_STEP / SPACE_STEP) * (WAVE_SPEED * TIME_STEP / SPACE_STEP);
 
         for (int i = 1; i < GRID_SIZE - 1; i++) {
             // Update der realen Komponente
@@ -140,6 +152,32 @@ public class WavePacket2Simulation {
         realNext[GRID_SIZE - 1] = realNext[GRID_SIZE - 2];
         imagNext[0] = imagNext[1];
         imagNext[GRID_SIZE - 1] = imagNext[GRID_SIZE - 2];
+
+        // Zustände aktualisieren
+        System.arraycopy(realNext, 0, realPart, 0, GRID_SIZE);
+        System.arraycopy(imagNext, 0, imagPart, 0, GRID_SIZE);
+    }
+
+    // Simuliere den nächsten Zeitschritt
+    static void simulateNextStep2() {
+        //double c2 = (C * TIME_STEP / SPACE_STEP) * (C * TIME_STEP / SPACE_STEP);
+        double c2 = (WAVE_SPEED * TIME_STEP / SPACE_STEP) * (WAVE_SPEED * TIME_STEP / SPACE_STEP);
+
+        for (int i = 1; i < GRID_SIZE - 1; i++) {
+            // Update der realen Komponente
+            realNext[i] = realPart[i]
+                    - c2 * (imagPart[i + 1] - 2 * imagPart[i] + imagPart[i - 1]);
+
+            // Update der imaginären Komponente
+            imagNext[i] = imagPart[i]
+                    + c2 * (realPart[i + 1] - 2 * realPart[i] + realPart[i - 1]);
+        }
+
+        // Ränder: Periodische Randbedingungen für eine durchlaufende Welle
+        realNext[0] = realNext[GRID_SIZE - 2];
+        imagNext[0] = imagNext[GRID_SIZE - 2];
+        realNext[GRID_SIZE - 1] = realNext[1];
+        imagNext[GRID_SIZE - 1] = imagNext[1];
 
         // Zustände aktualisieren
         System.arraycopy(realNext, 0, realPart, 0, GRID_SIZE);

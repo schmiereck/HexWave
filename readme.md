@@ -186,7 +186,9 @@ TODO elektr. Felder haben Richtung
   https://youtu.be/p7bzE1E5PMY
 
 # Special-Infos
-* Eine Weltformel ohne Quantengravitation - Spektrum der Wissenschaft 
+* Universum aus brodelnden Schleifen - scinexx.de  
+  https://www.scinexx.de/dossier/universum-aus-brodelnden-schleifen/
+* Eine Weltformel ohne Quantengravitation - Spektrum der Wissenschaft   
    https://www.spektrum.de/news/eine-weltformel-ohne-quantengravitation/2201277
-* Ist die Raumzeit gequantelt? - Neue Experimente sollen Vereinbarkeit von Gravitation und Quantenphysik testen - scinexx.de 
+* Ist die Raumzeit gequantelt? - Neue Experimente sollen Vereinbarkeit von Gravitation und Quantenphysik testen - scinexx.de   
   https://www.scinexx.de/?p=278997

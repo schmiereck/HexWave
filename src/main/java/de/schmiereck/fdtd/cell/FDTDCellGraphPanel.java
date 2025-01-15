@@ -102,15 +102,15 @@ public class FDTDCellGraphPanel  extends JPanel {
 //        });
         for (int pos = 0; pos < this.cellDtoArr.length; pos++) {
             final double v = this.cellDtoArr[pos].uCurrent;// * maxAmplitudeValue;
-            drawGraph(g2d, xScale, yScale, padding, labelPadding, maxAmplitudeValue, pointWidth, pos, v);
+            drawGraph(g2d, xScale, yScale, padding, labelPadding, maxAmplitudeValue, pointWidth, pos, this.cellDtoArr[pos]);
         }
     }
 
     private void drawGraph(Graphics2D g2d, double xScale, double yScale, int padding, int labelPadding, int maxAmplitudeValue, int pointWidth,
-                           final int pos, final double v) {
+                           final int pos, final FDTDCellDto cellDto) {
         final int x = (int) (pos * xScale + padding + labelPadding);
         {
-            final int y = (int) ((maxAmplitudeValue - v) * yScale + padding);
+            final int y = (int) ((maxAmplitudeValue - cellDto.uCurrent) * yScale + padding);
 
             final int pw = pointWidth + 4;
             final int xPoint = x - pw / 2;
@@ -118,6 +118,27 @@ public class FDTDCellGraphPanel  extends JPanel {
             final int wPoint = pw;
             final int hPoint = pw;
             g2d.setColor(Color.ORANGE);
+            g2d.drawOval(xPoint, yPoint, wPoint, hPoint);
+        }
+        {
+            final int y = (int) ((maxAmplitudeValue - cellDto.uNext) * yScale + padding);
+
+            final int xPoint = x - pointWidth / 2;
+            final int yPoint = y - pointWidth / 2;
+            final int wPoint = pointWidth;
+            final int hPoint = pointWidth;
+            g2d.setColor(Color.RED);
+            g2d.fillOval(xPoint, yPoint, wPoint, hPoint);
+        }
+        {
+            final int y = (int) ((maxAmplitudeValue - cellDto.uPrevious) * yScale + padding);
+
+            final int pw = pointWidth + 2;
+            final int xPoint = x - pw / 2;
+            final int yPoint = y - pw / 2;
+            final int wPoint = pw;
+            final int hPoint = pw;
+            g2d.setColor(Color.BLUE);
             g2d.drawOval(xPoint, yPoint, wPoint, hPoint);
         }
     }

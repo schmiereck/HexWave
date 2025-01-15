@@ -7,7 +7,7 @@ import java.awt.*;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static de.schmiereck.fdtd.cell.FDTDUtils.copyToRenderBuffer;
-import static de.schmiereck.fdtd.cell.FDTDUtils.updateNextState;
+import static de.schmiereck.fdtd.cell.FDTDUtils.updateCurrentFromNextState;
 
 public class FDTDCellSimulation {
 
@@ -49,7 +49,7 @@ public class FDTDCellSimulation {
 //        }
 
         final int showFPS = 15*2; // Frames per second
-        final int calcFPS = 15*3; // Frames per second
+        final int calcFPS = 15*1; // Frames per second
         final ReentrantLock lock = new ReentrantLock();
 
         final Thread calculationThread = new Thread(() -> {
@@ -99,6 +99,9 @@ public class FDTDCellSimulation {
     // Initialisiere die Welle (z. B. ein Wellenpaket in der Mitte)
     static void initializeWave(final FDTDCell[] cellArr) {
         initializeWave2(cellArr);
+        //initializeWave21(cellArr);
+        //initializeWave6(cellArr);
+        //initializeWaveX(cellArr);
     }
 
     static void initializeWaveX(final FDTDCell[] cellArr) {
@@ -140,6 +143,15 @@ public class FDTDCellSimulation {
         }
     }
 
+    static void initializeWave21(final FDTDCell[] cellArr) {
+        final int gs = GRID_SIZE / 4;
+        {
+            final int center = gs * 1;
+            final int width = gs * 2;
+            initializeWave(cellArr, center, width);
+        }
+    }
+
     static void initializeWave6(final FDTDCell[] cellArr) {
         final int gs = GRID_SIZE / 6;
         {
@@ -166,12 +178,17 @@ public class FDTDCellSimulation {
 
     // Berechne den nächsten Zeitschritt der Welle
     static void simulateNextStep(final FDTDCell[] cellArr) {
-        double c2 = 1;//(C * TIME_STEP / SPACE_STEP) * (C * TIME_STEP / SPACE_STEP);
-
         for (int pos = 1; pos < GRID_SIZE - 1; pos++) {
-            cellArr[pos].uNext =
-                    (int)(2 * cellArr[pos].uCurrent - cellArr[pos].uPrevious
-                    + c2 * (cellArr[pos + 1].uCurrent - 2 * cellArr[pos].uCurrent + cellArr[pos - 1].uCurrent));
+            //final int current = 2 * cellArr[pos].uCurrent;
+            final int current = cellArr[pos].uCurrent;
+            final int currentR = cellArr[pos + 1].uCurrent;
+            final int currentL = cellArr[pos - 1].uCurrent;
+            final int previous = cellArr[pos].uPrevious;
+
+            // zweite Ableitung der Wellenfunktion (approximiert durch currentR - current + currentL)
+            final int currentWave = currentR - current + currentL;
+
+            cellArr[pos].uNext =  current - previous + currentWave;
         }
 
         // Ränder: Reflexive Randbedingungen
@@ -181,7 +198,7 @@ public class FDTDCellSimulation {
         // Zustände aktualisieren
         //System.arraycopy(uCurrent, 0, uPrevious, 0, GRID_SIZE);
         //System.arraycopy(uNext, 0, uCurrent, 0, GRID_SIZE);
-        updateNextState(cellArr);
+        updateCurrentFromNextState(cellArr);
     }
 
 }

@@ -7,12 +7,12 @@ import java.awt.*;
 
 public class WavePacket2GraphPanel extends JPanel {
     final Holder<Integer> t;
-    final double[] uRender;
+    final WavePacket2Dto[] wavePacket2DtoArr;
     private final double maxFieldValue;
 
-    public WavePacket2GraphPanel(Holder<Integer> t, double[] uRender, final double maxFieldValue) {
+    public WavePacket2GraphPanel(Holder<Integer> t, WavePacket2Dto[] wavePacket2DtoArr, final double maxFieldValue) {
         this.t = t;
-        this.uRender = uRender;
+        this.wavePacket2DtoArr = wavePacket2DtoArr;
         this.maxFieldValue = maxFieldValue;
     }
 
@@ -29,7 +29,7 @@ public class WavePacket2GraphPanel extends JPanel {
         final int padding = 25;
         final int labelPadding = 25;
 
-        final int amplitudeValueListSize = this.uRender.length;
+        final int amplitudeValueListSize = this.wavePacket2DtoArr.length;
 
         final int maxAmplitudeValue = (int)this.maxFieldValue;
         final int minAmplitudeValue = (int)-this.maxFieldValue;
@@ -100,17 +100,29 @@ public class WavePacket2GraphPanel extends JPanel {
 //            final int pos = index.value++;
 //            drawGraph(g2d, xScale, yScale, padding, labelPadding, maxAmplitudeValue, pointWidth, pos, fieldDto);
 //        });
-        for (int pos = 0; pos < this.uRender.length; pos++) {
-            final double v = this.uRender[pos] * maxAmplitudeValue;
-            drawGraph(g2d, xScale, yScale, padding, labelPadding, maxAmplitudeValue, pointWidth, pos, v);
+        for (int pos = 0; pos < this.wavePacket2DtoArr.length; pos++) {
+            final WavePacket2Dto wavePacket2Dto = this.wavePacket2DtoArr[pos];
+//            final double v = wavePacket2Dto * maxAmplitudeValue;
+            drawGraph(g2d, xScale, yScale, padding, labelPadding, maxAmplitudeValue, pointWidth, pos, wavePacket2Dto);
         }
     }
 
     private void drawGraph(Graphics2D g2d, double xScale, double yScale, int padding, int labelPadding, int maxAmplitudeValue, int pointWidth,
-                           final int pos, final double v) {
+                           final int pos, final WavePacket2Dto wavePacket2Dto) {
         final int x = (int) (pos * xScale + padding + labelPadding);
+//        {
+//            final int y = (int) ((maxAmplitudeValue - v) * yScale + padding);
+//
+//            final int pw = pointWidth + 4;
+//            final int xPoint = x - pw / 2;
+//            final int yPoint = y - pw / 2;
+//            final int wPoint = pw;
+//            final int hPoint = pw;
+//            g2d.setColor(Color.ORANGE);
+//            g2d.drawOval(xPoint, yPoint, wPoint, hPoint);
+//        }
         {
-            final int y = (int) ((maxAmplitudeValue - v) * yScale + padding);
+            final int y = (int) ((maxAmplitudeValue - wavePacket2Dto.amplitude) * yScale + padding);
 
             final int pw = pointWidth + 4;
             final int xPoint = x - pw / 2;
@@ -118,6 +130,27 @@ public class WavePacket2GraphPanel extends JPanel {
             final int wPoint = pw;
             final int hPoint = pw;
             g2d.setColor(Color.ORANGE);
+            g2d.drawOval(xPoint, yPoint, wPoint, hPoint);
+        }
+        {
+            final int y = (int) ((maxAmplitudeValue - wavePacket2Dto.realPart) * yScale + padding);
+
+            final int xPoint = x - pointWidth / 2;
+            final int yPoint = y - pointWidth / 2;
+            final int wPoint = pointWidth;
+            final int hPoint = pointWidth;
+            g2d.setColor(Color.RED);
+            g2d.fillOval(xPoint, yPoint, wPoint, hPoint);
+        }
+        {
+            final int y = (int) ((maxAmplitudeValue - wavePacket2Dto.imagPart) * yScale + padding);
+
+            final int pw = pointWidth + 2;
+            final int xPoint = x - pw / 2;
+            final int yPoint = y - pw / 2;
+            final int wPoint = pw;
+            final int hPoint = pw;
+            g2d.setColor(Color.BLUE);
             g2d.drawOval(xPoint, yPoint, wPoint, hPoint);
         }
     }

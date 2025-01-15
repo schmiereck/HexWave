@@ -5,4 +5,6 @@ public class FDTDCellDto {
      * Zustand zur aktuellen Zeit t.
      */
     int uCurrent;
+    int uNext;
+    int uPrevious;
 }
