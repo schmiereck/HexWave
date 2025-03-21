@@ -20,28 +20,74 @@ public class Oscillation1Main {
 
         final List<Integer> amplitudeStateValueList = new ArrayList<>();
         final List<Integer> amplitudeSinusValueList = new ArrayList<>();
+        final List<Integer> amplitudeCoshValueList = new ArrayList<>();
+        final List<Integer> amplitudeSinhApproxValueList = new ArrayList<>();
         final List<Integer> amplitudeSpeedValueList = new ArrayList<>();
         final List<Integer> amplitudeOscillatorValueList = new ArrayList<>();
 
         for (int i = 0; i < (MaxState * 4 + 1); i++) {
-            final int amplitudeSinusValue = (int)(Math.sin((double) oPart.state / MaxState * Math.PI) * MaxAmplitude);
+            final double xx = ((double) oPart.state) / MaxState;
+            final int amplitudeSinusValue = (int)(Math.sin(xx * Math.PI) * MaxAmplitude);
+
+            // https://slideplayer.com/slide/5289327/
+            // https://en.wikipedia.org/wiki/Hyperbolic_functions
+            // cosh(x) = (e pow(x) + (e pow(-x)) / 2
+            //final int amplitudeCoshValue = (int)
+            //        (
+            //        (
+            //                Math.pow(Math.E, (xx * Math.PI)) +
+            //                Math.pow(Math.E, -(xx * Math.PI))
+            //        ) / 2
+            //        );
+            final int amplitudeCoshValue = (int)
+                    (((
+                    (
+                            //Math.pow(Math.E, (xx * Math.PI * 1.8D) +
+                            //Math.pow(Math.E, -(xx * Math.PI * 1.8D)
+                            Math.pow(Math.E, xx) +
+                            Math.pow(Math.E, -xx)
+                    ) / 2
+                    ) - 1) * MaxAmplitude);
+            //double x = xx * Math.PI;
+            //// Bhaskara-I-Formel für 0 bis π
+            //double absX = Math.abs(x);
+            //double sign = (x < 0) ? -1.0 : 1.0;
+            //final int amplitudeSinhApproxValue = (int)
+            //        (
+            //        (
+            //                sign * (16.0 * absX * (Math.PI - absX)) / (5.0 * Math.PI * Math.PI - 4.0 * absX * (Math.PI - absX))
+            //        ) * MaxAmplitude
+            //        );
+            final int amplitudeSinhApproxValue = (int)
+                    (((
+                    (
+                            Math.pow(Math.E, xx * Math.PI) -
+                            Math.pow(Math.E, -xx * Math.PI)
+                    ) / 2
+                    )) * 12);
             final int amplitudeSpeedValue = calcAmplitudeValue(oPart.state);
             final int realSpeedState = calcRealState(oPart.state);
             final int amplitudeOscillatorValue = calcAmplitude2Value(oPart.state); // Parabel
             final int realParabelState = calcReal2State(oPart.state);
             amplitudeStateValueList.add(oPart.state);
             amplitudeSinusValueList.add(amplitudeSinusValue);
+            amplitudeCoshValueList.add(amplitudeCoshValue);
+            amplitudeSinhApproxValueList.add(amplitudeSinhApproxValue);
             amplitudeSpeedValueList.add(amplitudeSpeedValue);
             amplitudeOscillatorValueList.add(amplitudeOscillatorValue);
             System.out.printf("i:%d \t- state:%3d,  " +
                             "\t- real-stateSpeed:%3d, \tamplitudeSpeed:%4d, " +
                             "\t- real-stateOscillator:%3d, \tamplitudeOscillator:%4d, " +
-                            " \tamplitudeSinus:%4d" +
+                            " \tSinus:%4d" +
+                            " \tCosh:%4d" +
+                            " \tSinhApprox:%4d" +
                             "%n",
                     i, oPart.state,
                     realSpeedState, amplitudeSpeedValue,
                     realParabelState, amplitudeOscillatorValue,
-                    amplitudeSinusValue);
+                    amplitudeSinusValue,
+                    amplitudeCoshValue,
+                    amplitudeSinhApproxValue);
             calcNextState(oPart);
         }
 
@@ -51,6 +97,8 @@ public class Oscillation1Main {
 
         amplitudeGraphList.add(new AmplitudeGraph("State", Color.BLACK, amplitudeStateValueList));
         amplitudeGraphList.add(new AmplitudeGraph("Sinus", Color.GRAY, amplitudeSinusValueList));
+        amplitudeGraphList.add(new AmplitudeGraph("Cosh", Color.ORANGE, amplitudeCoshValueList));
+        amplitudeGraphList.add(new AmplitudeGraph("SinhApprox", Color.PINK, amplitudeSinhApproxValueList));
         amplitudeGraphList.add(new AmplitudeGraph("Speed", Color.GREEN, amplitudeSpeedValueList));
         amplitudeGraphList.add(new AmplitudeGraph("Oscillator", Color.BLUE, amplitudeOscillatorValueList));
 

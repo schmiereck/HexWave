@@ -147,7 +147,13 @@ public class AmplitudeGraphPanel extends JPanel {
 
         // Draw the line
         g2d.setColor(lineColor);
-        g2d.setStroke(new BasicStroke(2f));
+        final float width;
+        if (Color.GRAY == lineColor) {
+            width = 5F;
+        } else {
+            width = 2F;
+        }
+        g2d.setStroke(new BasicStroke(width));
         for (int i = 0; i < graphPoints.size() - 1; i++) {
             final int x1 = graphPoints.get(i).x;
             final int y1 = graphPoints.get(i).y;
