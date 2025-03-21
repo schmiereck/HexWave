@@ -48,7 +48,7 @@ public class FDTDCellGraphPanel  extends JPanel {
 
         // Create hatch marks and grid lines for y-axis.
         // Find out how many divisions to make, to show labels roundet on ten based positions depending on numberYDivisions.
-        final int yTileCount = 10;
+        final int yTileCount = amplitudeRange > 10 ? 10 : (amplitudeRange > 5 ? 5 : 1);
         final int yTileEvery = (amplitudeRange / yTileCount);
         final int yTileEvery2 = yTileEvery > 10 ? (yTileEvery / 5) : 1;
         for (int i = 0; i < amplitudeRange + 1; i++) {

@@ -13,7 +13,10 @@ public class FDTDCellSimulation {
 
     // Parameter der Simulation
     static final int GRID_SIZE = 120;      // Anzahl der Zellen
-    static final int MAX = 1000;          // Maximum Amplitude
+    static final int MAX = 100;          // Maximum Amplitude
+    //static final int MAX = 3;          // Maximum Amplitude
+    //static final int MAX = 2;          // Maximum Amplitude
+    //static final int MAX = 1;          // Maximum Amplitude
 
     public static void main(String[] args) {
         // Felder für die Zustände der Welle
