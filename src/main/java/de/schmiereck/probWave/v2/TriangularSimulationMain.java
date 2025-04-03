@@ -3,7 +3,7 @@ package de.schmiereck.probWave.v2;
 import javax.swing.*;
 import java.awt.*;
 
-public class TriangularSimulation { // Renamed
+public class TriangularSimulationMain { // Renamed
 
     // --- Configuration --- (Can remain similar)
     private static final int GRID_WIDTH = 20;
@@ -19,8 +19,14 @@ public class TriangularSimulation { // Renamed
     private Thread simulationThread;
     private Thread viewUpdateThread;
 
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            TriangularSimulationMain sim = new TriangularSimulationMain(); // Create TriangularSimulation
+            sim.start();
+        });
+    }
 
-    public TriangularSimulation() {
+    public TriangularSimulationMain() {
         // 1. Create Grid (TriangularGrid) and Service
         TriangularGrid grid = new TriangularGrid(GRID_WIDTH, GRID_HEIGHT, MIN_STATE_VALUE, MAX_STATE_VALUE);
         simulationService = new SimulationService(grid, CALCULATION_DELAY_MS); // Service uses the grid
@@ -91,12 +97,5 @@ public class TriangularSimulation { // Renamed
             System.err.println("Interrupted during shutdown wait.");
         }
         System.out.println("Shutdown complete.");
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            TriangularSimulation sim = new TriangularSimulation(); // Create TriangularSimulation
-            sim.start();
-        });
     }
 }

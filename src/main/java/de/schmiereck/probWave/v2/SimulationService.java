@@ -56,8 +56,14 @@ public class SimulationService implements Runnable {
         stateLock.lock();
         try {
             // Iterate over VertexNode
-            for (VertexNode node : grid.getAllNodes()) {
-                calculateNextState(node);
+            //for (VertexNode node : this.grid.getAllNodes()) {
+            //    calculateNextState(node);
+            //}
+            for (int xPos = 0; xPos < this.grid.getWidth(); xPos++) {
+                for (int yPos = 0; yPos < this.grid.getHeight(); yPos++) {
+                    final VertexNode node = this.grid.getNode(xPos, yPos);
+                    this.calculateNextState(node);
+                }
             }
         } finally {
             stateLock.unlock();
@@ -66,8 +72,14 @@ public class SimulationService implements Runnable {
         stateLock.lock();
         try {
             // Iterate over VertexNode
-            for (VertexNode node : grid.getAllNodes()) {
-                node.advanceState();
+            //for (VertexNode node : grid.getAllNodes()) {
+            //    node.advanceState();
+            //}
+            for (int xPos = 0; xPos < this.grid.getWidth(); xPos++) {
+                for (int yPos = 0; yPos < this.grid.getHeight(); yPos++) {
+                    final VertexNode node = this.grid.getNode(xPos, yPos);
+                    node.advanceState();
+                }
             }
         } finally {
             stateLock.unlock();
@@ -76,7 +88,7 @@ public class SimulationService implements Runnable {
 
     // Method signature uses VertexNode now, logic remains the same
     private void calculateNextState(VertexNode node) {
-        List<VertexNode> neighbors = grid.getNeighbors(node);
+        //List<VertexNode> neighbors = grid.getNeighbors(node);
 
         // --- State Value Calculation (Example: Simple cycle) ---
         int nextStateValue = node.getStateValue() + 1;
@@ -95,24 +107,46 @@ public class SimulationService implements Runnable {
 
     public SimulationStateDto getSimulationStateDto() {
         // Use VertexNodeStateDto
-        Map<Point, VertexNodeStateDto> nodeStatesSnapshot = new HashMap<>();
+        //Map<Point, VertexNodeStateDto> nodeStatesSnapshot = new HashMap<>();
+        VertexNodeStateDto[][] nodeStateSnapshotArr = new VertexNodeStateDto[this.grid.getWidth()][this.grid.getHeight()];
         stateLock.lock();
         try {
             // Iterate over VertexNode
-            for (VertexNode node : grid.getAllNodes()) {
-                nodeStatesSnapshot.put(node.getCoords(),
-                        new VertexNodeStateDto( // Create VertexNodeStateDto
-                                node.getQ(),
-                                node.getR(),
-                                node.getStateValue(),
-                                node.getProbabilityAngle(),
-                                node.getVelocityAngle()
-                        )
-                );
+            //for (VertexNode node : grid.getAllNodes()) {
+            //    nodeStatesSnapshot.put(node.getCoords(),
+            //            new VertexNodeStateDto( // Create VertexNodeStateDto
+            //                    node.getQ(),
+            //                    node.getR(),
+            //                    node.getStateValue(),
+            //                    node.getProbabilityAngle(),
+            //                    node.getVelocityAngle()
+            //            )
+            //    );
+            //}
+            for (int xPos = 0; xPos < this.grid.getWidth(); xPos++) {
+                for (int yPos = 0; yPos < this.grid.getHeight(); yPos++) {
+                    final VertexNode node = this.grid.getNode(xPos, yPos);
+                    //nodeStatesSnapshot.put(node.getCoords(),
+                    //        new VertexNodeStateDto( // Create VertexNodeStateDto
+                    //                node.getQ(),
+                    //                node.getR(),
+                    //                node.getStateValue(),
+                    //                node.getProbabilityAngle(),
+                    //                node.getVelocityAngle()
+                    //        )
+                    //);
+                    nodeStateSnapshotArr[xPos][yPos] = new VertexNodeStateDto( // Create VertexNodeStateDto
+                            node.getQ(),
+                            node.getR(),
+                            node.getStateValue(),
+                            node.getProbabilityAngle(),
+                            node.getVelocityAngle()
+                    );
+                }
             }
         } finally {
             stateLock.unlock();
         }
-        return new SimulationStateDto(nodeStatesSnapshot, grid.getMinValue(), grid.getMaxValue());
+        return new SimulationStateDto(nodeStateSnapshotArr, grid.getMinValue(), grid.getMaxValue());
     }
 }
