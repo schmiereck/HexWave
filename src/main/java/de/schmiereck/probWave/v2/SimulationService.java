@@ -19,46 +19,43 @@ public class SimulationService implements Runnable {
     private final Lock stateLock = new ReentrantLock();
 
     // Constructor takes TriangularGrid
-    public SimulationService(TriangularGrid grid, long calculationDelayMs) {
+    public SimulationService(final TriangularGrid grid, final long calculationDelayMs) {
         this.grid = grid;
         this.calculationDelayMs = calculationDelayMs;
     }
 
     public void stopSimulation() {
-        running = false;
+        this.running = false;
     }
 
     @Override
     public void run() {
         System.out.println("Simulation Service started.");
-        while (running) {
+        while (this.running) {
             try {
-                long startTime = System.nanoTime();
+                final long startTime = System.nanoTime();
                 updateGridState();
-                long endTime = System.nanoTime();
-                long durationNs = endTime - startTime;
-                long sleepTime = calculationDelayMs - (durationNs / 1_000_000);
+                final long endTime = System.nanoTime();
+                final long durationNs = endTime - startTime;
+                final long sleepTime = calculationDelayMs - (durationNs / 1_000_000);
                 if (sleepTime > 0) Thread.sleep(sleepTime);
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 Thread.currentThread().interrupt();
-                running = false;
+                this.running = false;
                 System.out.println("Simulation Service interrupted.");
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 System.err.println("Error in simulation loop: " + e.getMessage());
                 e.printStackTrace();
-                running = false;
+                this.running = false;
             }
         }
         System.out.println("Simulation Service stopped.");
     }
 
     private void updateGridState() {
-        stateLock.lock();
+        this.stateLock.lock();
         try {
             // Iterate over VertexNode
-            //for (VertexNode node : this.grid.getAllNodes()) {
-            //    calculateNextState(node);
-            //}
             for (int xPos = 0; xPos < this.grid.getWidth(); xPos++) {
                 for (int yPos = 0; yPos < this.grid.getHeight(); yPos++) {
                     final VertexNode node = this.grid.getNode(xPos, yPos);
@@ -66,15 +63,12 @@ public class SimulationService implements Runnable {
                 }
             }
         } finally {
-            stateLock.unlock();
+            this.stateLock.unlock();
         }
 
-        stateLock.lock();
+        this.stateLock.lock();
         try {
             // Iterate over VertexNode
-            //for (VertexNode node : grid.getAllNodes()) {
-            //    node.advanceState();
-            //}
             for (int xPos = 0; xPos < this.grid.getWidth(); xPos++) {
                 for (int yPos = 0; yPos < this.grid.getHeight(); yPos++) {
                     final VertexNode node = this.grid.getNode(xPos, yPos);
@@ -82,24 +76,26 @@ public class SimulationService implements Runnable {
                 }
             }
         } finally {
-            stateLock.unlock();
+            this.stateLock.unlock();
         }
     }
 
     // Method signature uses VertexNode now, logic remains the same
-    private void calculateNextState(VertexNode node) {
+    private void calculateNextState(final VertexNode node) {
         //List<VertexNode> neighbors = grid.getNeighbors(node);
 
         // --- State Value Calculation (Example: Simple cycle) ---
-        int nextStateValue = node.getStateValue() + 1;
-        if (nextStateValue > grid.getMaxValue()) {
+        final int nextStateValue;
+        if (node.getStateValue() + 1 > grid.getMaxValue()) {
             nextStateValue = grid.getMinValue();
+        } else {
+            nextStateValue = node.getStateValue() + 1;
         }
         // Other physics logic (averaging, etc.) would work similarly
 
         // --- Angle Calculations (Example: Simple rotation) ---
-        double nextProbAngle = VertexNode.normalizeAngle(node.getProbabilityAngle() + PROBABILITY_ROTATION_SPEED);
-        double nextVelAngle = VertexNode.normalizeAngle(node.getVelocityAngle() + VELOCITY_ROTATION_SPEED);
+        final double nextProbAngle = VertexNode.normalizeAngle(node.getProbabilityAngle() + PROBABILITY_ROTATION_SPEED);
+        final double nextVelAngle = VertexNode.normalizeAngle(node.getVelocityAngle() + VELOCITY_ROTATION_SPEED);
         // Neighbor influence logic would also work similarly
 
         node.setNextState(nextStateValue, nextProbAngle, nextVelAngle);
@@ -107,34 +103,13 @@ public class SimulationService implements Runnable {
 
     public SimulationStateDto getSimulationStateDto() {
         // Use VertexNodeStateDto
-        //Map<Point, VertexNodeStateDto> nodeStatesSnapshot = new HashMap<>();
-        VertexNodeStateDto[][] nodeStateSnapshotArr = new VertexNodeStateDto[this.grid.getWidth()][this.grid.getHeight()];
-        stateLock.lock();
+        final VertexNodeStateDto[][] nodeStateSnapshotArr = new VertexNodeStateDto[this.grid.getWidth()][this.grid.getHeight()];
+        this.stateLock.lock();
         try {
             // Iterate over VertexNode
-            //for (VertexNode node : grid.getAllNodes()) {
-            //    nodeStatesSnapshot.put(node.getCoords(),
-            //            new VertexNodeStateDto( // Create VertexNodeStateDto
-            //                    node.getQ(),
-            //                    node.getR(),
-            //                    node.getStateValue(),
-            //                    node.getProbabilityAngle(),
-            //                    node.getVelocityAngle()
-            //            )
-            //    );
-            //}
             for (int xPos = 0; xPos < this.grid.getWidth(); xPos++) {
                 for (int yPos = 0; yPos < this.grid.getHeight(); yPos++) {
                     final VertexNode node = this.grid.getNode(xPos, yPos);
-                    //nodeStatesSnapshot.put(node.getCoords(),
-                    //        new VertexNodeStateDto( // Create VertexNodeStateDto
-                    //                node.getQ(),
-                    //                node.getR(),
-                    //                node.getStateValue(),
-                    //                node.getProbabilityAngle(),
-                    //                node.getVelocityAngle()
-                    //        )
-                    //);
                     nodeStateSnapshotArr[xPos][yPos] = new VertexNodeStateDto( // Create VertexNodeStateDto
                             node.getQ(),
                             node.getR(),
@@ -145,8 +120,15 @@ public class SimulationService implements Runnable {
                 }
             }
         } finally {
-            stateLock.unlock();
+            this.stateLock.unlock();
         }
-        return new SimulationStateDto(nodeStateSnapshotArr, grid.getMinValue(), grid.getMaxValue());
+        return new SimulationStateDto(grid.getWidth(), grid.getHeight(), nodeStateSnapshotArr, grid.getMinValue(), grid.getMaxValue());
+    }
+
+    public TriangularGridDto retrieveTriangularGridDto() {
+        final TriangularGridDto triangularGridDto = new TriangularGridDto();
+        triangularGridDto.setWidth(this.grid.getWidth());
+        triangularGridDto.setHeight(this.grid.getHeight());
+        return triangularGridDto;
     }
 }

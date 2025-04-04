@@ -5,14 +5,16 @@ import java.awt.Point;
 public class VertexNode { // Renamed from HexNode
     private final int q;
     private final int r;
+
     private int stateValue;
     private double probabilityAngle;
     private double velocityAngle;
+
     private int nextStateValue;
     private double nextProbabilityAngle;
     private double nextVelocityAngle;
 
-    public VertexNode(int q, int r, int initialStateValue, double initialProbabilityAngle, double initialVelocityAngle) {
+    public VertexNode(final int q, final int r, final int initialStateValue, final double initialProbabilityAngle, final double initialVelocityAngle) {
         this.q = q;
         this.r = r;
         this.stateValue = initialStateValue;
@@ -24,15 +26,14 @@ public class VertexNode { // Renamed from HexNode
     }
 
     // Getters remain the same...
-    public int getQ() { return q; }
-    public int getR() { return r; }
-    public Point getCoords() { return new Point(q, r); }
-    public int getStateValue() { return stateValue; }
-    public double getProbabilityAngle() { return probabilityAngle; }
-    public double getVelocityAngle() { return velocityAngle; }
+    public int getQ() { return this.q; }
+    public int getR() { return this.r; }
+    public int getStateValue() { return this.stateValue; }
+    public double getProbabilityAngle() { return this.probabilityAngle; }
+    public double getVelocityAngle() { return this.velocityAngle; }
 
     // Methods for SimulationService remain the same...
-    public void setNextState(int nextVal, double nextProbAngle, double nextVelAngle) {
+    public void setNextState(final int nextVal, final double nextProbAngle, final double nextVelAngle) {
         this.nextStateValue = nextVal;
         this.nextProbabilityAngle = nextProbAngle;
         this.nextVelocityAngle = nextVelAngle;
@@ -44,7 +45,7 @@ public class VertexNode { // Renamed from HexNode
         this.velocityAngle = this.nextVelocityAngle;
     }
 
-    public static double normalizeAngle(double angle) {
+    public static double normalizeAngle(final double angle) {
         double result = angle % 360.0;
         if (result < 0) {
             result += 360.0;

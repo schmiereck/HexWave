@@ -19,27 +19,28 @@ public class TriangularSimulationMain { // Renamed
     private Thread simulationThread;
     private Thread viewUpdateThread;
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         SwingUtilities.invokeLater(() -> {
-            TriangularSimulationMain sim = new TriangularSimulationMain(); // Create TriangularSimulation
+            final TriangularSimulationMain sim = new TriangularSimulationMain(); // Create TriangularSimulation
             sim.start();
         });
     }
 
     public TriangularSimulationMain() {
         // 1. Create Grid (TriangularGrid) and Service
-        TriangularGrid grid = new TriangularGrid(GRID_WIDTH, GRID_HEIGHT, MIN_STATE_VALUE, MAX_STATE_VALUE);
-        simulationService = new SimulationService(grid, CALCULATION_DELAY_MS); // Service uses the grid
+        final TriangularGrid grid = new TriangularGrid(GRID_WIDTH, GRID_HEIGHT, MIN_STATE_VALUE, MAX_STATE_VALUE);
+        this.simulationService = new SimulationService(grid, CALCULATION_DELAY_MS); // Service uses the grid
 
         // 2. Create View (TriangularSimulationView)
-        simulationView = new TriangularSimulationView();
-        simulationView.setGridReference(grid); // Pass grid reference
+        this.simulationView = new TriangularSimulationView(this.simulationService);
+        //this.simulationView.setGridReference(grid); // Pass grid reference
+        this.simulationView.revalidate();
 
         // 3. Create Main Frame
-        JFrame frame = new JFrame("Triangular Grid Simulation"); // Updated Title
+        final JFrame frame = new JFrame("Triangular Grid Simulation"); // Updated Title
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
-        frame.add(simulationView, BorderLayout.CENTER);
+        frame.add(this.simulationView, BorderLayout.CENTER);
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
@@ -48,28 +49,28 @@ public class TriangularSimulationMain { // Renamed
     }
 
     public void start() {
-        simulationThread = new Thread(simulationService, "SimulationThread");
-        simulationThread.start();
+        this.simulationThread = new Thread(this.simulationService, "SimulationThread");
+        this.simulationThread.start();
 
-        viewUpdateThread = new Thread(this::viewUpdateLoop, "ViewUpdateThread");
-        viewUpdateThread.start();
+        this.viewUpdateThread = new Thread(this::viewUpdateLoop, "ViewUpdateThread");
+        this.viewUpdateThread.start();
     }
 
     private void viewUpdateLoop() {
         System.out.println("View Update Thread started.");
-        while (running) {
+        while (this.running) {
             try {
-                SimulationStateDto dto = simulationService.getSimulationStateDto();
-                simulationView.updateState(dto); // Update the correct view
+                final SimulationStateDto dto = simulationService.getSimulationStateDto();
+                this.simulationView.updateState(dto); // Update the correct view
                 Thread.sleep(RENDER_DELAY_MS);
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 Thread.currentThread().interrupt();
-                running = false;
+                this.running = false;
                 System.out.println("View Update Thread interrupted.");
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 System.err.println("Error in view update loop: " + e.getMessage());
                 e.printStackTrace();
-                running = false;
+                this.running = false;
             }
         }
         System.out.println("View Update Thread stopped.");
@@ -77,22 +78,22 @@ public class TriangularSimulationMain { // Renamed
 
     private void shutdown() {
         System.out.println("Shutdown requested...");
-        running = false;
-        if (simulationService != null) {
-            simulationService.stopSimulation();
+        this.running = false;
+        if (this.simulationService != null) {
+            this.simulationService.stopSimulation();
         }
         try {
-            if (simulationThread != null && simulationThread.isAlive()) {
+            if (this.simulationThread != null && this.simulationThread.isAlive()) {
                 System.out.println("Waiting for simulation thread...");
-                simulationThread.interrupt();
-                simulationThread.join(1000);
+                this.simulationThread.interrupt();
+                this.simulationThread.join(1000);
             }
-            if (viewUpdateThread != null && viewUpdateThread.isAlive()) {
+            if (this.viewUpdateThread != null && viewUpdateThread.isAlive()) {
                 System.out.println("Waiting for view update thread...");
-                viewUpdateThread.interrupt();
-                viewUpdateThread.join(1000);
+                this.viewUpdateThread.interrupt();
+                this.viewUpdateThread.join(1000);
             }
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
             System.err.println("Interrupted during shutdown wait.");
         }
