@@ -1,7 +1,5 @@
 package de.schmiereck.probWave.v2;
 
-import java.awt.Point;
-import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -58,8 +56,9 @@ public class SimulationService implements Runnable {
             // Iterate over VertexNode
             for (int xPos = 0; xPos < this.grid.getWidth(); xPos++) {
                 for (int yPos = 0; yPos < this.grid.getHeight(); yPos++) {
-                    final VertexNode node = this.grid.getNode(xPos, yPos);
-                    this.calculateNextState(node);
+                    final VertexNode actNode = this.grid.getActNode(xPos, yPos);
+                    final VertexNode nextNode = this.grid.getNextNode(xPos, yPos);
+                    this.calculateNextState(actNode, nextNode);
                 }
             }
         } finally {
@@ -68,37 +67,38 @@ public class SimulationService implements Runnable {
 
         this.stateLock.lock();
         try {
-            // Iterate over VertexNode
-            for (int xPos = 0; xPos < this.grid.getWidth(); xPos++) {
-                for (int yPos = 0; yPos < this.grid.getHeight(); yPos++) {
-                    final VertexNode node = this.grid.getNode(xPos, yPos);
-                    node.advanceState();
-                }
-            }
+        //    // Iterate over VertexNode
+        //    for (int xPos = 0; xPos < this.grid.getWidth(); xPos++) {
+        //        for (int yPos = 0; yPos < this.grid.getHeight(); yPos++) {
+        //            final VertexNode node = this.grid.getActNode(xPos, yPos);
+        //            node.advanceState();
+        //        }
+        //    }
+            this.grid.setActTimePos(TriangularGrid.calcNextTimePos(this.grid.getActTimePos()));
         } finally {
             this.stateLock.unlock();
         }
     }
 
     // Method signature uses VertexNode now, logic remains the same
-    private void calculateNextState(final VertexNode node) {
-        //List<VertexNode> neighbors = grid.getNeighbors(node);
+    private void calculateNextState(final VertexNode actNode, final VertexNode nextNode) {
+        //List<VertexNode> neighbors = grid.getNeighbors(actNode);
 
         // --- State Value Calculation (Example: Simple cycle) ---
         final int nextStateValue;
-        if (node.getStateValue() + 1 > grid.getMaxValue()) {
+        if (actNode.getStateValue() + 1 > grid.getMaxValue()) {
             nextStateValue = grid.getMinValue();
         } else {
-            nextStateValue = node.getStateValue() + 1;
+            nextStateValue = actNode.getStateValue() + 1;
         }
         // Other physics logic (averaging, etc.) would work similarly
 
         // --- Angle Calculations (Example: Simple rotation) ---
-        final double nextProbAngle = VertexNode.normalizeAngle(node.getProbabilityAngle() + PROBABILITY_ROTATION_SPEED);
-        final double nextVelAngle = VertexNode.normalizeAngle(node.getVelocityAngle() + VELOCITY_ROTATION_SPEED);
+        final double nextProbAngle = VertexNode.normalizeAngle(actNode.getProbabilityAngle() + PROBABILITY_ROTATION_SPEED);
+        final double nextVelAngle = VertexNode.normalizeAngle(actNode.getVelocityAngle() + VELOCITY_ROTATION_SPEED);
         // Neighbor influence logic would also work similarly
 
-        node.setNextState(nextStateValue, nextProbAngle, nextVelAngle);
+        nextNode.setNextState(nextStateValue, nextProbAngle, nextVelAngle);
     }
 
     public SimulationStateDto getSimulationStateDto() {
@@ -109,7 +109,7 @@ public class SimulationService implements Runnable {
             // Iterate over VertexNode
             for (int xPos = 0; xPos < this.grid.getWidth(); xPos++) {
                 for (int yPos = 0; yPos < this.grid.getHeight(); yPos++) {
-                    final VertexNode node = this.grid.getNode(xPos, yPos);
+                    final VertexNode node = this.grid.getActNode(xPos, yPos);
                     nodeStateSnapshotArr[xPos][yPos] = new VertexNodeStateDto( // Create VertexNodeStateDto
                             node.getQ(),
                             node.getR(),

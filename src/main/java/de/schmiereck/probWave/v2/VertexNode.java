@@ -10,19 +10,12 @@ public class VertexNode { // Renamed from HexNode
     private double probabilityAngle;
     private double velocityAngle;
 
-    private int nextStateValue;
-    private double nextProbabilityAngle;
-    private double nextVelocityAngle;
-
     public VertexNode(final int q, final int r, final int initialStateValue, final double initialProbabilityAngle, final double initialVelocityAngle) {
         this.q = q;
         this.r = r;
         this.stateValue = initialStateValue;
         this.probabilityAngle = initialProbabilityAngle;
         this.velocityAngle = initialVelocityAngle;
-        this.nextStateValue = initialStateValue;
-        this.nextProbabilityAngle = initialProbabilityAngle;
-        this.nextVelocityAngle = initialVelocityAngle;
     }
 
     // Getters remain the same...
@@ -34,15 +27,9 @@ public class VertexNode { // Renamed from HexNode
 
     // Methods for SimulationService remain the same...
     public void setNextState(final int nextVal, final double nextProbAngle, final double nextVelAngle) {
-        this.nextStateValue = nextVal;
-        this.nextProbabilityAngle = nextProbAngle;
-        this.nextVelocityAngle = nextVelAngle;
-    }
-
-    public void advanceState() {
-        this.stateValue = this.nextStateValue;
-        this.probabilityAngle = this.nextProbabilityAngle;
-        this.velocityAngle = this.nextVelocityAngle;
+        this.stateValue = nextVal;
+        this.probabilityAngle = nextProbAngle;
+        this.velocityAngle = nextVelAngle;
     }
 
     public static double normalizeAngle(final double angle) {

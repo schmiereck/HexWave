@@ -192,3 +192,5 @@ TODO elektr. Felder haben Richtung
    https://www.spektrum.de/news/eine-weltformel-ohne-quantengravitation/2201277
 * Ist die Raumzeit gequantelt? - Neue Experimente sollen Vereinbarkeit von Gravitation und Quantenphysik testen - scinexx.de   
   https://www.scinexx.de/?p=278997
+* Könnte Gravitation ein Rechenprozess sein? Studie sieht neue Ordnung
+  https://m.winfuture.de/news/150550
